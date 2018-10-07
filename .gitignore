@@ -2,7 +2,6 @@
 .merlin
 .bsb.lock
 npm-debug.log
-/lib/bs/
-/lib/js/
+/lib
 /node_modules/
 .env

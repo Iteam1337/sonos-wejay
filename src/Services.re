@@ -4,11 +4,6 @@ let device = Sonos.device(Devices.Rickard.home);
 
 device->setSpotifyRegion(regionEurope);
 
-let handleResponse = (channel, message, value) => {
-  Slack.sendSlackResponse(channel, message, ());
-  value |> Js.Promise.resolve;
-};
-
 let queueTrack = (track, sendMessage) => {
   let parsedTrack = track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
 
@@ -19,7 +14,6 @@ let queueTrack = (track, sendMessage) => {
 
          sendMessage(
            "Queued track in position " ++ response.firstTrackNumberEnqueued,
-           (),
          );
 
          response |> resolve;
@@ -31,49 +25,57 @@ let queueTrack = (track, sendMessage) => {
 let playTrack = () =>
   Js.Promise.(device->play() |> then_(value => value |> resolve)) |> ignore;
 
-let pauseTrack = () =>
-  Js.Promise.(device->pause() |> then_(value => value |> resolve)) |> ignore;
+let pause = (sendMessage) =>
+  Js.Promise.(device->pause() |> then_(value => {
+    sendMessage("Paused");
+    value |> resolve;
+  })
+  ) |> ignore;
 
-let clearPlaylist = () =>
-  Js.Promise.(device->Sonos.flush() |> then_(value => value |> resolve))
+let clearPlaylist = (sendMessage) =>
+  Js.Promise.(device->Sonos.flush() |> then_(value => {
+    sendMessage("Cleared queue");
+    value |> resolve
+  }))
   |> ignore;
 
-let setVolume = (channel: string, volume: string) => {
-  let sendMessage = handleResponse(channel);
-
+let setVolume = (volume: string, sendMessage) => {
   Js.Promise.(
     device->setVolume(volume |> float_of_string)
-    |> then_(sendMessage("Volume set to " ++ volume))
-  );
+    |> then_(value => {
+      sendMessage("Volume set to " ++ volume);
+      value |> resolve
+    })
+  ) |> ignore;
 };
 
-let mute = (channel: string, isMuted) => {
-  let sendMessage = handleResponse(channel);
-
-  Js.Promise.(device->setMuted(isMuted) |> then_(sendMessage("Muted")));
+let mute = (isMuted) => {
+  Js.Promise.(device->setMuted(isMuted) |> then_(value => value |> resolve)) |> ignore;
 };
 
-let previousTrack = (channel: string) => {
-  let sendMessage = handleResponse(channel);
-
-  Js.Promise.(device->previous() |> then_(sendMessage("Previous track")));
+let previousTrack = () => {
+  Js.Promise.(device->previous() |> then_(value => value |> resolve)) |> ignore;
 };
 
-let nextTrack = (channel: string) => {
-  let sendMessage = handleResponse(channel);
-
-  Js.Promise.(device->next() |> then_(sendMessage("Next track")));
+let nextTrack = () => {
+  Js.Promise.(device->next() |> then_(value =>value |> resolve)) |> ignore;
 };
 
-let currentQueue = () =>
+let currentQueue = (sendMessage) =>
   Js.Promise.(
     device->getQueue()
     |> then_(value => {
-         Js.log(value);
+    sendMessage("Current queue");
          value |> resolve;
        })
   )
   |> ignore;
 
-let currentTrack = () =>
-  Js.Promise.(device->currentTrack() |> then_(value => value |> resolve));
+let currentTrack = (sendMessage) =>
+  Js.Promise.(device->currentTrack() |> then_(value => {
+    let response = value |> SonosDecode.currentTrackResponse;
+
+    sendMessage(
+          "*Currently playing*\n" ++ response##artist ++ " - " ++ response##title ++ " (" ++ ((response##position *. 1000.) |> Duration.parse) ++ "/" ++ ((response##duration *. 1000.) |> Duration.parse) ++ ")")
+    value |> resolve
+  })) |> ignore;

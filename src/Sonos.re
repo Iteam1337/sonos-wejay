@@ -6,6 +6,15 @@ type queueResponse = {
   numTracksAdded: string,
 };
 
+type currentTrackResponse = {
+  album: string,
+  artist: string,
+  duration: float,
+  position: float,
+  queuePosition: float,
+  title: string
+};
+
 module SonosDecode = {
   let queueResponse = json =>
     Json.Decode.{
@@ -14,6 +23,15 @@ module SonosDecode = {
       newQueueLength: json |> field("NewQueueLength", string),
       numTracksAdded: json |> field("NumTracksAdded", string),
     };
+
+  let currentTrackResponse = json => Json.Decode.{
+    "album": json |> field("album", string),
+    "artist": json |> field("artist", string),
+    "duration": json |> field("duration", float),
+    "position": json |> field("position", float),
+    "queuePosition": json |> field("queuePosition", float),
+    "title": json |> field("title", string),
+  };
 };
 
 [@bs.new] [@bs.module "sonos"]

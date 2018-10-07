@@ -1,11 +1,20 @@
+[@bs.scope "JSON"] [@bs.val]
+external parseToJson : string => Js.Json.t = "parse";
+
 type command =
   | Clear
   | CurrentQueue
+  | CurrentTrack
+  | Mute
+  | Next
   | Pause
   | Play
+  | Previous
   | Queue
   | Search
-  | Unknown;
+  | Unknown
+  | Unmute
+  | Volume;
 
 type eventType =
   | UrlVerification
@@ -28,6 +37,9 @@ type event = {
 };
 
 type message = {event};
+
+type action = {value: string};
+type actions = array(action);
 
 let type_ = json =>
   Json.Decode.{
@@ -58,12 +70,22 @@ let event = json =>
           |> Js.Array.slice(~start=0, ~end_=1)
         ) {
         | [|"clear"|] => Clear
+        | [|"current"|]
+        | [|"np"|]
+        | [|"nowplaying"|] => CurrentTrack
         | [|"currentqueue"|]
         | [|"getqueue"|] => CurrentQueue
+        | [|"mute"|] => Mute
+        | [|"next"|] => Next
         | [|"pause"|] => Pause
         | [|"play"|] => Play
+        | [|"previous"|] => Previous
+        | [|"q"|]
         | [|"queue"|] => Queue
+        | [|"s"|]
         | [|"search"|] => Search
+        | [|"unmute"|] => Unmute
+        | [|"volume"|] => Volume
         | _ => Unknown
         }
       | None => Unknown
@@ -82,3 +104,21 @@ let event = json =>
   };
 
 let message = json => Json.Decode.{"event": json |> field("event", event)};
+
+let action = json => Json.Decode.{
+  "value": json |> field("value", string)
+};
+
+let channel = json => Json.Decode.{
+  "id": json |> field("id", string),
+};
+
+let actionPayload = json => Json.Decode.{
+  "actions": json |> field("actions", array(action)),
+  "channel": json |> field("channel", channel),
+
+}
+
+let parseAction = json => Json.Decode.{
+  "payload": json |> field("payload", string) |> parseToJson
+};

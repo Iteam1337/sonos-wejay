@@ -6,6 +6,7 @@ App.use(app, Middleware.json());
 App.use(app, Middleware.urlencoded(~extended=false, ()));
 
 App.post(app, ~path="/event") @@ Routes.event;
+App.post(app, ~path="/action") @@ Routes.action;
 
 let onListen = e =>
   switch (e) {
