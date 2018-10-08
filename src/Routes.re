@@ -5,26 +5,48 @@ let handleVerification = body => {
   Response.sendString(verification##challenge);
 };
 
+let handleEasterEgg = (egg: Decode.egg, sendMessage) =>
+  switch (egg) {
+  | FreeBird =>
+    sendMessage
+    |> Services.queueEasterEgg("spotify:track:4qsAYBCJnu2OkTKUVbbOF1")
+  | Friday =>
+    switch (Js.Date.make() |> Js.Date.getDay) {
+    | 5. =>
+      sendMessage
+      |> Services.queueEasterEgg("spotify:track:4fK6E2UywZTJIa5kWnCD6x")
+    | _ => sendMessage("Sorry, it's not Friday")
+    }
+  | Shoreline =>
+    sendMessage
+    |> Services.queueEasterEgg("spotify:track:77jVczOFXfbdugN4djsIqs")
+  | Tequila =>
+    sendMessage
+    |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
+  };
+
 let handleEventCallback = body => {
   let message = body |> Decode.message;
   let event = message##event;
   let sendMessage = Slack.sendSlackResponse(event##channel);
   let sendMessageWithAttachments =
     Slack.sendResponseWithAttachments(event##channel);
+  let q = event##text;
 
   switch (event##command) {
-  | Search => sendMessageWithAttachments |> Spotify.searchTrack(event##text)
+  | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
   | Clear => sendMessage |> Services.clearPlaylist
   | CurrentQueue => sendMessage |> Services.currentQueue
   | CurrentTrack => sendMessage |> Services.currentTrack
+  | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
   | Mute => Services.mute(true)
   | Next => Services.nextTrack()
   | Pause => sendMessage |> Services.pause
   | Play => Services.playTrack()
   | Previous => Services.previousTrack()
-  | Queue => sendMessage |> Services.queueTrack(event##text)
+  | Queue => sendMessage |> Services.queueTrack(q)
   | Unmute => Services.mute(false)
-  | Volume => sendMessage |> Services.setVolume(event##text)
+  | Volume => sendMessage |> Services.setVolume(q)
   | Unknown => failwith("Unknown command")
   };
 

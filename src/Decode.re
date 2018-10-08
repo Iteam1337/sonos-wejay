@@ -1,10 +1,17 @@
 [@bs.scope "JSON"] [@bs.val]
 external parseToJson: string => Js.Json.t = "parse";
 
+type egg =
+  | FreeBird
+  | Friday
+  | Shoreline
+  | Tequila;
+
 type command =
   | Clear
   | CurrentQueue
   | CurrentTrack
+  | EasterEgg(egg)
   | Mute
   | Next
   | Pause
@@ -32,7 +39,6 @@ type event = {
   command,
   channel: string,
   text: string,
-  subtype: string,
   user: string,
 };
 
@@ -57,40 +63,45 @@ let verification = json =>
     "token": json |> field("token", string),
   };
 
+let decodeCommand = text =>
+  switch (
+    text
+    |> Js.String.toLowerCase
+    |> Js.String.split(" ")
+    |> Js.Array.slice(~start=0, ~end_=1)
+    |> (array => array[0])
+  ) {
+  | "clear" => Clear
+  | "current"
+  | "freebird" => EasterEgg(FreeBird)
+  | "friday" => EasterEgg(Friday)
+  | "np"
+  | "nowplaying" => CurrentTrack
+  | "currentqueue"
+  | "getqueue" => CurrentQueue
+  | "mute" => Mute
+  | "next" => Next
+  | "pause" => Pause
+  | "play" => Play
+  | "previous" => Previous
+  | "q"
+  | "queue" => Queue
+  | "search" => Search
+  | "shoreline" => EasterEgg(Shoreline)
+  | "tequila" => EasterEgg(Tequila)
+  | "unmute" => Unmute
+  | "volume" => Volume
+  | _ => Unknown
+  };
+
 let event = json =>
   Json.Decode.{
     "channel": json |> field("channel", string),
     "command":
       switch (json |> optional(field("text", string))) {
-      | Some(text) =>
-        switch (
-          text
-          |> Js.String.toLowerCase
-          |> Js.String.split(" ")
-          |> Js.Array.slice(~start=0, ~end_=1)
-        ) {
-        | [|"clear"|] => Clear
-        | [|"current"|]
-        | [|"np"|]
-        | [|"nowplaying"|] => CurrentTrack
-        | [|"currentqueue"|]
-        | [|"getqueue"|] => CurrentQueue
-        | [|"mute"|] => Mute
-        | [|"next"|] => Next
-        | [|"pause"|] => Pause
-        | [|"play"|] => Play
-        | [|"previous"|] => Previous
-        | [|"q"|]
-        | [|"queue"|] => Queue
-        | [|"s"|]
-        | [|"search"|] => Search
-        | [|"unmute"|] => Unmute
-        | [|"volume"|] => Volume
-        | _ => Unknown
-        }
+      | Some(text) => text |> decodeCommand
       | None => Unknown
       },
-    "subtype": json |> optional(field("subtype", string)),
     "text":
       switch (json |> optional(field("text", string))) {
       | Some(text) =>

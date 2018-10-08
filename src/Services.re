@@ -98,3 +98,13 @@ let currentTrack = sendMessage =>
        })
   )
   |> ignore;
+
+let queueEasterEgg = (track, sendMessage) => {
+  sendMessage |> clearPlaylist;
+
+  for (_ in 1 to 10) {
+    sendMessage |> queueTrack(track);
+  };
+
+  playTrack() |> ignore;
+};
