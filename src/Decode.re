@@ -1,5 +1,5 @@
 [@bs.scope "JSON"] [@bs.val]
-external parseToJson : string => Js.Json.t = "parse";
+external parseToJson: string => Js.Json.t = "parse";
 
 type command =
   | Clear
@@ -105,20 +105,15 @@ let event = json =>
 
 let message = json => Json.Decode.{"event": json |> field("event", event)};
 
-let action = json => Json.Decode.{
-  "value": json |> field("value", string)
-};
+let action = json => Json.Decode.{"value": json |> field("value", string)};
 
-let channel = json => Json.Decode.{
-  "id": json |> field("id", string),
-};
+let channel = json => Json.Decode.{"id": json |> field("id", string)};
 
-let actionPayload = json => Json.Decode.{
-  "actions": json |> field("actions", array(action)),
-  "channel": json |> field("channel", channel),
+let actionPayload = json =>
+  Json.Decode.{
+    "actions": json |> field("actions", array(action)),
+    "channel": json |> field("channel", channel),
+  };
 
-}
-
-let parseAction = json => Json.Decode.{
-  "payload": json |> field("payload", string) |> parseToJson
-};
+let parseAction = json =>
+  Json.Decode.{"payload": json |> field("payload", string) |> parseToJson};
