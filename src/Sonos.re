@@ -8,11 +8,14 @@ type queueResponse = {
 
 type currentTrackResponse = {
   album: string,
+  albumArtURI: string,
+  albumArtURL: string,
   artist: string,
   duration: float,
   position: float,
   queuePosition: float,
   title: string,
+  uri: string,
 };
 
 module SonosDecode = {
@@ -27,11 +30,14 @@ module SonosDecode = {
   let currentTrackResponse = json =>
     Json.Decode.{
       "album": json |> field("album", string),
+      "albumArtURI": json |> field("albumArtURI", string),
+      "albumArtURL": json |> field("albumArtURL", string),
       "artist": json |> field("artist", string),
       "duration": json |> field("duration", Json.Decode.float),
       "position": json |> field("position", Json.Decode.float),
       "queuePosition": json |> field("queuePosition", Json.Decode.float),
       "title": json |> field("title", string),
+      "uri": json |> field("uri", string),
     };
 };
 

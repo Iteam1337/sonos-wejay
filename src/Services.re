@@ -1,6 +1,6 @@
 open Sonos;
 
-let device = Sonos.device(Devices.Rickard.home);
+let device = Sonos.device(Devices.Iteam.lounge);
 
 device->setSpotifyRegion(regionEurope);
 
@@ -75,24 +75,37 @@ let currentQueue = sendMessage =>
   )
   |> ignore;
 
+let parseDuration = duration => duration *. 1000. |> Duration.parse;
+
 let currentTrack = sendMessage =>
   Js.Promise.(
     device->currentTrack()
     |> then_(value => {
+         Js.log(value);
+
          let response = value |> SonosDecode.currentTrackResponse;
 
-         sendMessage(
-           "*Currently playing*\n"
-           ++
+         let track =
            response##artist
            ++ " - "
            ++
            response##title
            ++ " ("
-           ++ (response##position *. 1000. |> Duration.parse)
+           ++
+           response##album
+           ++ ")";
+         let position =
+           (response##position |> parseDuration)
            ++ "/"
-           ++ (response##duration *. 1000. |> Duration.parse)
-           ++ ")",
+           ++ (response##duration |> parseDuration);
+
+         sendMessage(
+           "*Currently playing*\n"
+           ++ track
+           ++ "\n Position in queue "
+           ++ string_of_int(int_of_float(response##queuePosition))
+           ++ " - "
+           ++ position,
          );
          value |> resolve;
        })
