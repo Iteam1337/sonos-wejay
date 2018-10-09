@@ -10,10 +10,10 @@ type egg =
 type command =
   | Clear
   | CurrentQueue
-  | CurrentTrack
   | EasterEgg(egg)
   | Mute
   | Next
+  | NowPlaying
   | Pause
   | Play
   | Previous
@@ -76,7 +76,7 @@ let decodeCommand = text =>
   | "freebird" => EasterEgg(FreeBird)
   | "friday" => EasterEgg(Friday)
   | "np"
-  | "nowplaying" => CurrentTrack
+  | "nowplaying" => NowPlaying
   | "currentqueue"
   | "getqueue" => CurrentQueue
   | "mute" => Mute

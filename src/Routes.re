@@ -37,10 +37,10 @@ let handleEventCallback = body => {
   | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
   | Clear => sendMessage |> Services.clearPlaylist
   | CurrentQueue => sendMessage |> Services.currentQueue
-  | CurrentTrack => sendMessage |> Services.currentTrack
   | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
   | Mute => Services.mute(true)
   | Next => Services.nextTrack()
+  | NowPlaying => sendMessage |> Services.nowPlaying
   | Pause => sendMessage |> Services.pause
   | Play => Services.playTrack()
   | Previous => Services.previousTrack()

@@ -77,7 +77,7 @@ let currentQueue = sendMessage =>
 
 let parseDuration = duration => duration *. 1000. |> Duration.parse;
 
-let currentTrack = sendMessage =>
+let nowPlaying = sendMessage =>
   Js.Promise.(
     device->currentTrack()
     |> then_(value => {
