@@ -4,7 +4,9 @@ external parseToJson: string => Js.Json.t = "parse";
 type egg =
   | FreeBird
   | Friday
+  | IteamClassics
   | Shoreline
+  | Slowdance
   | Tequila;
 
 type command =
@@ -72,23 +74,25 @@ let decodeCommand = text =>
     |> (array => array[0])
   ) {
   | "clear" => Clear
-  | "current"
-  | "freebird" => EasterEgg(FreeBird)
-  | "friday" => EasterEgg(Friday)
-  | "np"
-  | "nowplaying" => NowPlaying
   | "currentqueue"
   | "getqueue" => CurrentQueue
+  | "freebird" => EasterEgg(FreeBird)
+  | "friday" => EasterEgg(Friday)
+  | "classics" => EasterEgg(IteamClassics)
+  | "shoreline" => EasterEgg(Shoreline)
+  | "slowdance" => EasterEgg(Slowdance)
+  | "tequila" => EasterEgg(Tequila)
   | "mute" => Mute
   | "next" => Next
+  | "np"
+  | "nowplaying" => NowPlaying
   | "pause" => Pause
   | "play" => Play
   | "previous" => Previous
   | "q"
   | "queue" => Queue
+  | "s"
   | "search" => Search
-  | "shoreline" => EasterEgg(Shoreline)
-  | "tequila" => EasterEgg(Tequila)
   | "unmute" => Unmute
   | "volume" => Volume
   | _ => Unknown

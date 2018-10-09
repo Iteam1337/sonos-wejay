@@ -7,6 +7,9 @@ let handleVerification = body => {
 
 let handleEasterEgg = (egg: Decode.egg, sendMessage) =>
   switch (egg) {
+  | IteamClassics =>
+    sendMessage
+    |> Services.queue("spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI")
   | FreeBird =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:4qsAYBCJnu2OkTKUVbbOF1")
@@ -20,6 +23,9 @@ let handleEasterEgg = (egg: Decode.egg, sendMessage) =>
   | Shoreline =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:77jVczOFXfbdugN4djsIqs")
+  | Slowdance =>
+    sendMessage
+    |> Services.queue("spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy")
   | Tequila =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
@@ -44,7 +50,7 @@ let handleEventCallback = body => {
   | Pause => sendMessage |> Services.pause
   | Play => Services.playTrack()
   | Previous => Services.previousTrack()
-  | Queue => sendMessage |> Services.queueTrack(q)
+  | Queue => sendMessage |> Services.queue(q)
   | Unmute => Services.mute(false)
   | Volume => sendMessage |> Services.setVolume(q)
   | Unknown => failwith("Unknown command")
@@ -79,7 +85,7 @@ let action =
         let payload = response##payload |> Decode.actionPayload;
 
         Slack.sendSlackResponse(payload##channel##id)
-        |> Services.queueTrack(payload##actions[0]##value);
+        |> Services.queue(payload##actions[0]##value);
 
         Response.sendStatus(Ok);
       | None => Response.sendStatus(BadRequest)

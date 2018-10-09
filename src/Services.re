@@ -4,7 +4,7 @@ let device = Sonos.device(Devices.Iteam.lounge);
 
 device->setSpotifyRegion(regionEurope);
 
-let queueTrack = (track, sendMessage) => {
+let queue = (track, sendMessage) => {
   let parsedTrack = track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
 
   Js.Promise.(
@@ -69,7 +69,7 @@ let currentQueue = sendMessage =>
   Js.Promise.(
     device->getQueue()
     |> then_(value => {
-         sendMessage("Current queue");
+         sendMessage("Tracks in queue");
          value |> resolve;
        })
   )
@@ -116,7 +116,7 @@ let queueEasterEgg = (track, sendMessage) => {
   sendMessage |> clearPlaylist;
 
   for (_ in 1 to 10) {
-    sendMessage |> queueTrack(track);
+    sendMessage |> queue(track);
   };
 
   playTrack() |> ignore;
