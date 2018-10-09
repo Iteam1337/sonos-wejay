@@ -1,3 +1,5 @@
+[@bs.module "query-string"] external stringify: 'a => 'a = "";
+
 type artist = {name: string};
 
 type item = {
@@ -9,6 +11,13 @@ type item = {
 type tracks = {items: array(item)};
 
 type data = {tracks};
+
+type token = {
+  accessToken: string,
+  tokenType: string,
+  expiresIn: int,
+  scope: string,
+};
 
 module Decode = {
   let artist = json => Json.Decode.{"name": json |> field("name", string)};
@@ -24,49 +33,71 @@ module Decode = {
     Json.Decode.{"items": json |> field("items", array(item))};
 
   let data = json => Json.Decode.{"tracks": json |> field("tracks", tracks)};
+
+  let token = json =>
+    Json.Decode.{
+      "accessToken": json |> field("access_token", string),
+      "tokenType": json |> field("token_type", string),
+      "expiresIn": json |> field("expires_in", int),
+      "scope": json |> field("scope", string),
+    };
 };
 
-let searchTrack = (query: string, sendMessage) => {
-  let headers = {"Authorization": "Bearer " ++ Config.spotifyToken};
-
-  let url =
-    "https://api.spotify.com/v1/search?q="
-    ++ (query |> Js.String.split(" ") |> Js.Array.joinWith("%20"))
-    ++ "&type=track&limit=5&market=SE";
-
-  let request = Axios.makeConfigWithUrl(~url, ~_method="GET", ~headers, ());
-
+let getToken = () =>
   Js.Promise.(
-    Axios.request(request)
-    |> then_(posted => {
-         let response = posted##data |> Decode.data;
+    Axios.makeConfigWithUrl(
+      ~url="https://accounts.spotify.com/api/token",
+      ~_method="GET",
+      ~data=stringify({"grant_type": "client_credentials"}),
+      ~headers={"Authorization": "Basic " ++ Config.spotifyAuth},
+      (),
+    )
+    |> Axios.request
+    |> then_(value => value##data |> Decode.token |> resolve)
+  );
 
-         let attachments =
-           response##tracks##items
-           |> Array.map(item => {
-                let artists =
-                  item##artists
-                  |> Array.map(artist => artist##name)
-                  |> Js.Array.joinWith(", ");
+let displayTracks = item => {
+  let artists =
+    item##artists
+    |> Array.map(artist => artist##name)
+    |> Js.Array.joinWith(", ");
 
-                {
-                  "text": artists ++ " - " ++ item##name,
-                  "callback_id": "queue",
-                  "actions": [|
-                    {
-                      "name": "track",
-                      "text": "Queue",
-                      "type": "button",
-                      "value": item##uri,
-                    },
-                  |],
-                };
-              });
+  {
+    "text": artists ++ " - " ++ item##name,
+    "callback_id": "queue",
+    "actions": [|
+      {
+        "name": "track",
+        "text": "Queue",
+        "type": "button",
+        "value": item##uri,
+      },
+    |],
+  };
+};
 
-         sendMessage("Searching for *" ++ query ++ "*", attachments);
+let searchTrack = (query: string, sendMessage) =>
+  Js.Promise.(
+    getToken()
+    |> then_(token => {
+         let headers = {"Authorization": "Bearer " ++ token##accessToken};
 
-         posted |> resolve;
+         let url =
+           "https://api.spotify.com/v1/search?q="
+           ++ (query |> Js.String.split(" ") |> Js.Array.joinWith("%20"))
+           ++ "&type=track&limit=5&market=SE";
+
+         Axios.makeConfigWithUrl(~url, ~_method="GET", ~headers, ())
+         |> Axios.request
+         |> then_(posted => {
+              let response = posted##data |> Decode.data;
+
+              response##tracks##items
+              |> Array.map(displayTracks)
+              |> sendMessage("Searching for *" ++ query ++ "*");
+
+              posted |> resolve;
+            });
        })
   )
   |> ignore;
-};

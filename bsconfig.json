@@ -13,7 +13,8 @@
     "bs-axios",
     "bs-express",
     "@glennsl/bs-json",
-    "@ahrefs/bs-dotenv"
+    "@ahrefs/bs-dotenv",
+    "bs-node"
   ],
   "warnings": {
     "error": "+101"
