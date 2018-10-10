@@ -1,0 +1,10 @@
+pipeline:
+  docker_build:
+    image: plugins/docker
+    repo: iteam1337/sonos-wejay
+    secrets: [docker_username, docker_password]
+    tags: latest
+    when:
+      status: success
+      branch: master
+      event: push

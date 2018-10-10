@@ -2,7 +2,8 @@
   "name": "wejay-sonos-r",
   "version": "0.1.0",
   "scripts": {
-    "server": "nodemon lib/js/src/Server.bs.js",
+    "dev": "nodemon lib/js/src/Server.bs.js",
+    "server": "node lib/js/src/Server.bs.js",
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world"
@@ -13,14 +14,14 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "4.0.6"
-  },
-  "dependencies": {
     "@ahrefs/bs-dotenv": "1.0.3",
     "@glennsl/bs-json": "3.0.0",
-    "body-parser": "1.18.3",
+    "bs-platform": "4.0.6",
     "bs-axios": "0.0.39",
-    "bs-express": "0.9.0",
+    "bs-express": "0.9.0"
+  },
+  "dependencies": {
+    "body-parser": "1.18.3",
     "dotenv": "6.0.0",
     "express": "4.16.3",
     "query-string": "6.2.0",
