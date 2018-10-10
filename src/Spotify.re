@@ -47,7 +47,7 @@ let getToken = () =>
   Js.Promise.(
     Axios.makeConfigWithUrl(
       ~url="https://accounts.spotify.com/api/token",
-      ~_method="GET",
+      ~_method="POST",
       ~data=stringify({"grant_type": "client_credentials"}),
       ~headers={"Authorization": "Basic " ++ Config.spotifyAuth},
       (),
@@ -80,14 +80,17 @@ let searchTrack = (query: string, sendMessage) =>
   Js.Promise.(
     getToken()
     |> then_(token => {
-         let headers = {"Authorization": "Bearer " ++ token##accessToken};
-
          let url =
            "https://api.spotify.com/v1/search?q="
            ++ (query |> Js.String.split(" ") |> Js.Array.joinWith("%20"))
            ++ "&type=track&limit=5&market=SE";
 
-         Axios.makeConfigWithUrl(~url, ~_method="GET", ~headers, ())
+         Axios.makeConfigWithUrl(
+           ~url,
+           ~_method="GET",
+           ~headers={"Authorization": "Bearer " ++ token##accessToken},
+           (),
+         )
          |> Axios.request
          |> then_(posted => {
               let response = posted##data |> Decode.data;

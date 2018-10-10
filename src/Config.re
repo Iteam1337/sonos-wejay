@@ -1,3 +1,8 @@
+type t;
+
+[@bs.val] external fromStringWithEncoding: string => t = "Buffer.from";
+[@bs.send] external toString: (t, string) => string = "";
+
 Dotenv.config();
 
 let env = Node.Process.process##env;
@@ -6,7 +11,5 @@ let spotifySecret = Js.Dict.unsafeGet(env, "SPOTIFY_SECRET");
 let slackToken = Js.Dict.unsafeGet(env, "SLACK_TOKEN");
 
 let spotifyAuth =
-  Node.Buffer.(
-    fromStringWithEncoding(spotifyId ++ ":" ++ spotifySecret, `base64)
-    |> toString
-  );
+  fromStringWithEncoding(spotifyId ++ ":" ++ spotifySecret)
+  ->toString("base64");
