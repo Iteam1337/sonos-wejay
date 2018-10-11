@@ -1,18 +1,26 @@
-# Basic Reason Template
+# Wejay Sonos
 
-Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).
-
-# Build
-```
-npm run build
-```
-
-# Build + Watch
+## Get started
 
 ```
-npm run start
+$ git clone https://github.com/Iteam1337/sonos-wejay.git
+$ cd sonos-wejay
+$ npm install
 ```
 
+In one terminal run `npm start`, this will compile the Reason code to JavaScript.
+In another terminal run `npm run dev` to start the Express service.
 
-# Editor
-If you use `vscode`, Press `Windows + Shift + B` it will build automatically
+### POST /event
+
+This is the basic POST data needed for a response. See `decodeCommand` in `Decode.re` for all available commands (first value in `event.text`).
+
+```
+{
+  "event": {
+    "text": "search test",
+    "channel": "ABC"
+  },
+  "type": "event_callback"
+}
+```
