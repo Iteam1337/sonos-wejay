@@ -20,10 +20,19 @@ type token = {
 };
 
 module Decode = {
+  let images = json => Json.Decode.{"url": json |> field("url", string)};
+
+  let album = json =>
+    Json.Decode.{
+      "images": json |> field("images", array(images)),
+      "name": json |> field("name", string),
+    };
+
   let artist = json => Json.Decode.{"name": json |> field("name", string)};
 
   let item = json =>
     Json.Decode.{
+      "album": json |> field("album", album),
       "artists": json |> field("artists", array(artist)),
       "name": json |> field("name", string),
       "uri": json |> field("uri", string),
@@ -63,8 +72,9 @@ let displayTracks = item => {
     |> Js.Array.joinWith(", ");
 
   {
-    "text": artists ++ " - " ++ item##name,
+    "text": "*" ++ artists ++ " - " ++ item##name ++ "*\n" ++ item##album##name,
     "callback_id": "queue",
+    "thumb_url": item##album##images[0]##url,
     "actions": [|
       {
         "name": "track",
