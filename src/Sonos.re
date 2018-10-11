@@ -6,6 +6,20 @@ type queueResponse = {
   numTracksAdded: string,
 };
 
+type currentQueue = {
+  album: string,
+  albumArtURI: string,
+  artist: string,
+  title: string,
+  uri: string,
+};
+
+type currentQueueResponse = {
+  returned: string,
+  total: string,
+  items: array(currentQueue),
+};
+
 type currentTrackResponse = {
   album: string,
   albumArtURI: string,
@@ -25,6 +39,22 @@ module SonosDecode = {
         json |> field("FirstTrackNumberEnqueued", string),
       newQueueLength: json |> field("NewQueueLength", string),
       numTracksAdded: json |> field("NumTracksAdded", string),
+    };
+
+  let currentQueue = json =>
+    Json.Decode.{
+      "album": json |> field("album", string),
+      "albumArtURI": json |> field("albumArtURI", string),
+      "artist": json |> field("artist", string),
+      "title": json |> field("title", string),
+      "uri": json |> field("uri", string),
+    };
+
+  let currentQueueResponse = json =>
+    Json.Decode.{
+      "returned": json |> field("returned", string),
+      "total": json |> field("total", string),
+      "items": json |> field("items", array(currentQueue)),
     };
 
   let currentTrackResponse = json =>

@@ -68,10 +68,39 @@ let nextTrack = () =>
 let currentQueue = sendMessage =>
   Js.Promise.(
     device->getQueue()
-    |> then_(value => {
-         sendMessage("Tracks in queue");
-         value |> resolve;
-       })
+    |> then_(value =>
+         device->currentTrack()
+         |> then_(current => {
+              let currentResponse =
+                current |> SonosDecode.currentTrackResponse;
+              let response = value |> SonosDecode.currentQueueResponse;
+
+              let tracks =
+                response##items
+                |> Js.Array.sliceFrom(
+                     currentResponse##queuePosition |> int_of_float,
+                   )
+                |> Js.Array.mapi((item, i) =>
+                     string_of_int(i + 1)
+                     ++ ". "
+                     ++
+                     item##artist
+                     ++ " - "
+                     ++
+                     item##title
+                     ++ " ("
+                     ++
+                     item##album
+                     ++ ")\n"
+                   )
+                |> Js.Array.joinWith("");
+
+              Js.log(tracks);
+
+              sendMessage("Upcoming tracks\n" ++ tracks);
+              value |> resolve;
+            })
+       )
   )
   |> ignore;
 
