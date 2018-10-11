@@ -81,8 +81,6 @@ let nowPlaying = sendMessage =>
   Js.Promise.(
     device->currentTrack()
     |> then_(value => {
-         Js.log(value);
-
          let response = value |> SonosDecode.currentTrackResponse;
 
          let track =
