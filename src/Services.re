@@ -95,8 +95,6 @@ let currentQueue = sendMessage =>
                    )
                 |> Js.Array.joinWith("");
 
-              Js.log(tracks);
-
               sendMessage("*Upcoming tracks*\n" ++ tracks);
               value |> resolve;
             })
