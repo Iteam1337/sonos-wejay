@@ -97,7 +97,7 @@ let currentQueue = sendMessage =>
 
               Js.log(tracks);
 
-              sendMessage("Upcoming tracks\n" ++ tracks);
+              sendMessage("*Upcoming tracks*\n" ++ tracks);
               value |> resolve;
             })
        )
