@@ -39,21 +39,25 @@ let handleEventCallback = body => {
     Slack.sendResponseWithAttachments(event##channel);
   let q = event##text;
 
-  switch (event##command) {
-  | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
-  | Clear => sendMessage |> Services.clearPlaylist
-  | CurrentQueue => sendMessage |> Services.currentQueue
-  | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
-  | Mute => Services.mute(true)
-  | Next => Services.nextTrack()
-  | NowPlaying => sendMessage |> Services.nowPlaying
-  | Pause => sendMessage |> Services.pause
-  | Play => Services.playTrack()
-  | Previous => Services.previousTrack()
-  | Queue => sendMessage |> Services.queue(q)
-  | Unmute => Services.mute(false)
-  | Volume => sendMessage |> Services.setVolume(q)
-  | Unknown => failwith("Unknown command")
+  switch (event##subtype) {
+  | Human =>
+    switch (event##command) {
+    | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
+    | Clear => sendMessage |> Services.clearPlaylist
+    | CurrentQueue => sendMessage |> Services.currentQueue
+    | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
+    | Mute => Services.mute(true)
+    | Next => Services.nextTrack()
+    | NowPlaying => sendMessage |> Services.nowPlaying
+    | Pause => sendMessage |> Services.pause
+    | Play => Services.playTrack()
+    | Previous => Services.previousTrack()
+    | Queue => sendMessage |> Services.queue(q)
+    | Unmute => Services.mute(false)
+    | Volume => sendMessage |> Services.setVolume(q)
+    | Unknown => ()
+    }
+  | Bot => ()
   };
 
   Response.sendStatus(Ok);

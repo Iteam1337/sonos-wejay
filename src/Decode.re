@@ -25,6 +25,10 @@ type command =
   | Unmute
   | Volume;
 
+type subtype =
+  | Bot
+  | Human;
+
 type eventType =
   | UrlVerification
   | EventCallback
@@ -114,6 +118,15 @@ let event = json =>
         |> Js.Array.sliceFrom(1)
         |> Js.Array.joinWith(" ")
       | None => ""
+      },
+    "subtype":
+      switch (json |> optional(field("subtype", string))) {
+      | Some(subtype) =>
+        switch (subtype) {
+        | "bot_message" => Bot
+        | _ => Human
+        }
+      | None => Human
       },
     "user": json |> optional(field("user", string)),
   };
