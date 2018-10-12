@@ -70,7 +70,7 @@ let handleEventCallback = body => {
     | Mute => Services.mute(true)
     | Next => Services.nextTrack()
     | NowPlaying => sendMessage |> Services.nowPlaying
-    | Pause => sendMessage |> Services.pause
+    | Pause => Services.pause()
     | Play => Services.playTrack()
     | Previous => Services.previousTrack()
     | Queue => sendMessage |> Services.queue(q)

@@ -4,36 +4,13 @@ let device = Sonos.device(Devices.Iteam.lounge);
 
 device->setSpotifyRegion(regionEurope);
 
-let queue = (track, sendMessage) => {
-  let parsedTrack = track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
+let justResolve = inputFunction =>
+  Js.Promise.(inputFunction |> then_(value => value |> resolve)) |> ignore;
 
-  Js.Promise.(
-    device->queue(parsedTrack)
-    |> then_(value => {
-         let response = value |> SonosDecode.queueResponse;
-
-         sendMessage(
-           "Queued track in position " ++ response.firstTrackNumberEnqueued,
-         );
-
-         response |> resolve;
-       })
-  )
-  |> ignore;
-};
-
-let playTrack = () =>
-  Js.Promise.(device->play() |> then_(value => value |> resolve)) |> ignore;
-
-let pause = sendMessage =>
-  Js.Promise.(
-    device->pause()
-    |> then_(value => {
-         sendMessage("Paused");
-         value |> resolve;
-       })
-  )
-  |> ignore;
+let playTrack = () => device->play() |> justResolve;
+let pause = () => device->pause() |> justResolve;
+let mute = isMuted => device->setMuted(isMuted) |> justResolve;
+let previousTrack = () => device->previous() |> justResolve;
 
 let clearPlaylist = sendMessage =>
   Js.Promise.(
@@ -55,12 +32,23 @@ let setVolume = (volume: string, sendMessage) =>
   )
   |> ignore;
 
-let mute = isMuted =>
-  Js.Promise.(device->setMuted(isMuted) |> then_(value => value |> resolve))
-  |> ignore;
+let queue = (track, sendMessage) => {
+  let parsedTrack = track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
 
-let previousTrack = () =>
-  Js.Promise.(device->previous() |> then_(value => value |> resolve)) |> ignore;
+  Js.Promise.(
+    device->queue(parsedTrack)
+    |> then_(value => {
+         let response = value |> SonosDecode.queueResponse;
+
+         sendMessage(
+           "Queued track in position " ++ response.firstTrackNumberEnqueued,
+         );
+
+         response |> resolve;
+       })
+  )
+  |> ignore;
+};
 
 let nextTrack = () =>
   Js.Promise.(device->next() |> then_(value => value |> resolve)) |> ignore;
@@ -83,11 +71,7 @@ let currentQueue = sendMessage =>
                 |> Js.Array.mapi((item, i) =>
                      string_of_int(i + 1)
                      ++ ". "
-                     ++
-                     item##artist
-                     ++ " - "
-                     ++
-                     item##title
+                     ++ (item |> Utils.trackInfo)
                      ++ "\n"
                    )
                 |> Js.Array.joinWith("");
@@ -99,8 +83,6 @@ let currentQueue = sendMessage =>
   )
   |> ignore;
 
-let parseDuration = duration => duration *. 1000. |> Duration.parse;
-
 let nowPlaying = sendMessage =>
   Js.Promise.(
     device->currentTrack()
@@ -108,24 +90,17 @@ let nowPlaying = sendMessage =>
          let response = value |> SonosDecode.currentTrackResponse;
 
          let track =
-           response##artist
-           ++ " - "
-           ++
-           response##title
-           ++ " ("
-           ++
-           response##album
-           ++ ")";
+           (response |> Utils.trackInfo) ++ " (" ++ response##album ++ ")";
          let position =
-           (response##position |> parseDuration)
+           (response##position |> Utils.parseDuration)
            ++ "/"
-           ++ (response##duration |> parseDuration);
+           ++ (response##duration |> Utils.parseDuration);
 
          sendMessage(
            "*Currently playing*\n"
            ++ track
            ++ "\n Position in queue "
-           ++ string_of_int(int_of_float(response##queuePosition))
+           ++ (response##queuePosition |> Utils.cleanFloat)
            ++ " - "
            ++ position,
          );
@@ -148,9 +123,7 @@ let getVolume = sendMessage =>
   Js.Promise.(
     device->getVolume()
     |> then_(volume => {
-         sendMessage(
-           "Current volume is " ++ string_of_int(int_of_float(volume)),
-         );
+         sendMessage("Current volume is " ++ (volume |> Utils.cleanFloat));
          volume |> resolve;
        })
   )
