@@ -10,23 +10,52 @@ let justResolve = inputFunction =>
 let playTrack = () => device->play() |> justResolve;
 let pause = () => device->pause() |> justResolve;
 let mute = isMuted => device->setMuted(isMuted) |> justResolve;
+let nextTrack = () => device->next() |> justResolve;
 let previousTrack = () => device->previous() |> justResolve;
+
+let searchLibrary = (q, sendMessage) =>
+  Js.Promise.(
+    device->searchMusicLibrary("tracks", q)
+    |> then_(library => {
+         let response = library |> SonosDecode.currentQueueResponse;
+
+         response##items
+         |> Array.map(item =>
+              {
+                "text":
+                  "*"
+                  ++ (item |> Utils.trackInfo)
+                  ++ "*"
+                  ++ (
+                    switch (item##album) {
+                    | Some(album) => "\n" ++ album
+                    | None => ""
+                    }
+                  ),
+                "callback_id": "queue",
+                "thumb_url": "",
+                "actions": [|
+                  {
+                    "name": "track",
+                    "text": "Queue",
+                    "type": "button",
+                    "value": item##uri,
+                  },
+                |],
+              }
+            )
+         |> sendMessage("Searching in music library *" ++ q ++ "*");
+
+         library |> resolve;
+       })
+  )
+  |> ignore;
 
 let clearPlaylist = sendMessage =>
   Js.Promise.(
     device->Sonos.flush()
     |> then_(value => {
          sendMessage("Cleared queue");
-         value |> resolve;
-       })
-  )
-  |> ignore;
-
-let setVolume = (volume: string, sendMessage) =>
-  Js.Promise.(
-    device->setVolume(volume |> float_of_string)
-    |> then_(value => {
-         sendMessage("Volume set to " ++ volume);
          value |> resolve;
        })
   )
@@ -49,9 +78,6 @@ let queue = (track, sendMessage) => {
   )
   |> ignore;
 };
-
-let nextTrack = () =>
-  Js.Promise.(device->next() |> then_(value => value |> resolve)) |> ignore;
 
 let currentQueue = sendMessage =>
   Js.Promise.(
@@ -125,6 +151,16 @@ let getVolume = sendMessage =>
     |> then_(volume => {
          sendMessage("Current volume is " ++ (volume |> Utils.cleanFloat));
          volume |> resolve;
+       })
+  )
+  |> ignore;
+
+let setVolume = (volume: string, sendMessage) =>
+  Js.Promise.(
+    device->setVolume(volume |> float_of_string)
+    |> then_(value => {
+         sendMessage("Volume set to " ++ volume);
+         value |> resolve;
        })
   )
   |> ignore;

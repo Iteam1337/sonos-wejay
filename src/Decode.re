@@ -14,6 +14,7 @@ type command =
   | CurrentQueue
   | EasterEgg(egg)
   | Help
+  | Library
   | Mute
   | Next
   | NowPlaying
@@ -88,6 +89,8 @@ let decodeCommand = text =>
   | "slowdance" => EasterEgg(Slowdance)
   | "tequila" => EasterEgg(Tequila)
   | "help" => Help
+  | "l"
+  | "library" => Library
   | "mute" => Mute
   | "next" => Next
   | "np"

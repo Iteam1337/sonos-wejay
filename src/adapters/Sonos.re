@@ -43,7 +43,7 @@ module SonosDecode = {
 
   let currentQueue = json =>
     Json.Decode.{
-      "album": json |> field("album", string),
+      "album": json |> optional(field("album", string)),
       "albumArtURI": json |> field("albumArtURI", string),
       "artist": json |> field("artist", string),
       "title": json |> field("title", string),
@@ -94,3 +94,6 @@ external currentTrack: (sonosDevice, unit) => Js.Promise.t('a) = "";
 [@bs.send] external previous: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send]
 external selectQueue: (sonosDevice, unit) => Js.Promise.t(bool) = "";
+[@bs.send]
+external searchMusicLibrary: (sonosDevice, string, string) => Js.Promise.t('a) =
+  "";

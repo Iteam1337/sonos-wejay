@@ -1,7 +1,7 @@
-let floatToString = value => value |> int_of_float |> string_of_int;
+let cleanFloat = value => value |> int_of_float |> string_of_int;
 
 let addLeadingZero = value =>
-  value < 10.0 ? "0" ++ (value |> floatToString) : value |> floatToString;
+  value < 10.0 ? "0" ++ (value |> cleanFloat) : value |> cleanFloat;
 
 let parseToMinutes = (seconds, hours) => seconds /. 60.0 -. 60.0 *. hours;
 let parseOutputSeconds = seconds =>
@@ -14,9 +14,9 @@ let parse = milliseconds => {
   let minutesOutput = parseToMinutes(seconds, hours);
 
   switch (hours, minutesOutput, secondsOutput) {
-  | (0.0, _, _) => (minutesOutput |> floatToString) ++ ":" ++ secondsOutput
+  | (0.0, _, _) => (minutesOutput |> cleanFloat) ++ ":" ++ secondsOutput
   | _ =>
-    (hours |> floatToString)
+    (hours |> cleanFloat)
     ++ ":"
     ++ addLeadingZero(minutesOutput)
     ++ ":"

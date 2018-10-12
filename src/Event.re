@@ -31,7 +31,8 @@ let help = sendMessage =>
     ++ "currentqueue|getqueue _______________ Display upcoming tracks\n"
     ++ "nowplaying|np _______________________ Display what's playing right now\n"
     ++ "queue|q <Spotify URI> _______________ Queue a track using a Spotify URI\n"
-    ++ "search|s <your search string here> __ Search Spotify for a track"
+    ++ "search|s <your search string> _______ Search Spotify for a track\n"
+    ++ "library|l <your search string> ______ Search in music library"
     ++ "```"
     ++ "\n\n*Play control*\n"
     ++ "```"
@@ -67,6 +68,7 @@ let handleEventCallback = body => {
     | CurrentQueue => sendMessage |> Services.currentQueue
     | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
     | Help => sendMessage |> help
+    | Library => sendMessageWithAttachments |> Services.searchLibrary(q)
     | Mute => Services.mute(true)
     | Next => Services.nextTrack()
     | NowPlaying => sendMessage |> Services.nowPlaying
