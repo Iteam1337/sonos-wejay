@@ -88,10 +88,6 @@ let currentQueue = sendMessage =>
                      ++ " - "
                      ++
                      item##title
-                     ++ " ("
-                     ++
-                     item##album
-                     ++ ")\n"
                    )
                 |> Js.Array.joinWith("");
 
@@ -146,3 +142,15 @@ let queueEasterEgg = (track, sendMessage) => {
 
   playTrack() |> ignore;
 };
+
+let getVolume = sendMessage =>
+  Js.Promise.(
+    device->getVolume()
+    |> then_(volume => {
+         sendMessage(
+           "Current volume is " ++ string_of_int(int_of_float(volume)),
+         );
+         volume |> resolve;
+       })
+  )
+  |> ignore;

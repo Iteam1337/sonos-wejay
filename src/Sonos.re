@@ -80,6 +80,8 @@ external regionEurope: string = "EU";
 [@bs.send] external setSpotifyRegion: (sonosDevice, string) => unit = "";
 
 [@bs.send]
+external getVolume: (sonosDevice, unit) => Js.Promise.t(float) = "";
+[@bs.send]
 external currentTrack: (sonosDevice, unit) => Js.Promise.t('a) = "";
 [@bs.send] external queue: (sonosDevice, string) => Js.Promise.t('a) = "";
 [@bs.send] external play: (sonosDevice, unit) => Js.Promise.t(bool) = "";
