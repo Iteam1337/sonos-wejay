@@ -68,12 +68,12 @@ let nextTrack = () =>
 let currentQueue = sendMessage =>
   Js.Promise.(
     device->getQueue()
-    |> then_(value =>
+    |> then_(queue =>
          device->currentTrack()
          |> then_(current => {
               let currentResponse =
                 current |> SonosDecode.currentTrackResponse;
-              let response = value |> SonosDecode.currentQueueResponse;
+              let response = queue |> SonosDecode.currentQueueResponse;
 
               let tracks =
                 response##items
@@ -88,11 +88,12 @@ let currentQueue = sendMessage =>
                      ++ " - "
                      ++
                      item##title
+                     ++ "\n"
                    )
                 |> Js.Array.joinWith("");
 
               sendMessage("*Upcoming tracks*\n" ++ tracks);
-              value |> resolve;
+              queue |> resolve;
             })
        )
   )
