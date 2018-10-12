@@ -92,7 +92,7 @@ let searchTrack = (query: string, sendMessage) =>
     |> then_(token => {
          let url =
            "https://api.spotify.com/v1/search?q="
-           ++ (query |> Js.String.split(" ") |> Js.Array.joinWith("%20"))
+           ++ (query |> Js.Global.encodeURIComponent)
            ++ "&type=track&limit=5&market=SE";
 
          Axios.makeConfigWithUrl(
