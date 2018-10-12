@@ -1,4 +1,4 @@
-let handleEasterEgg = (egg: Decode.egg, sendMessage) =>
+let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
   switch (egg) {
   | IteamClassics =>
     sendMessage
