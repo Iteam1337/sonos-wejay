@@ -31,6 +31,33 @@ let handleEasterEgg = (egg: Decode.egg, sendMessage) =>
     |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
   };
 
+let help = sendMessage =>
+  sendMessage(
+    "*Queue and search*\n"
+    ++ "```"
+    ++ "currentqueue|getqueue _______________ Display upcoming tracks\n"
+    ++ "nowplaying|np _______________________ Display what's playing right now\n"
+    ++ "queue|q <Spotify URI> _______________ Queue a track using a Spotify URI\n"
+    ++ "search|s <your search string here> __ Search Spotify for a track"
+    ++ "```"
+    ++ "\n\n*Play control*\n"
+    ++ "```"
+    ++ "clear _____________ Reset playlist\n"
+    ++ "mute ______________ Mute\n"
+    ++ "next ______________ Skip one track forward\n"
+    ++ "pause _____________ Pause\n"
+    ++ "play ______________ Play\n"
+    ++ "previous __________ Go back one track\n"
+    ++ "unmute ____________ Unmute\n"
+    ++ "volume <0-100> ____ Set volume"
+    ++ "```"
+    ++ "\n\n*Misc*\n"
+    ++ "```"
+    ++ "help ______________ Display this message\n"
+    ++ "```"
+    ++ "\n\nThere's also some hidden easter eggs :hatching_chick:",
+  );
+
 let handleEventCallback = body => {
   let message = body |> Decode.message;
   let event = message##event;
@@ -46,6 +73,7 @@ let handleEventCallback = body => {
     | Clear => sendMessage |> Services.clearPlaylist
     | CurrentQueue => sendMessage |> Services.currentQueue
     | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
+    | Help => sendMessage |> help
     | Mute => Services.mute(true)
     | Next => Services.nextTrack()
     | NowPlaying => sendMessage |> Services.nowPlaying
