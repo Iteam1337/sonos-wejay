@@ -59,7 +59,7 @@ module SonosDecode = {
 
   let currentTrackResponse = json =>
     Json.Decode.{
-      "album": json |> field("album", string),
+      "album": json |> optional(field("album", string)),
       "albumArtURI": json |> field("albumArtURI", string),
       "albumArtURL": json |> field("albumArtURL", string),
       "artist": json |> field("artist", string),

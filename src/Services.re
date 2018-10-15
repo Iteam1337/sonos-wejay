@@ -116,7 +116,15 @@ let nowPlaying = sendMessage =>
          let response = value |> SonosDecode.currentTrackResponse;
 
          let track =
-           (response |> Utils.trackInfo) ++ " (" ++ response##album ++ ")";
+           (response |> Utils.trackInfo)
+           ++ " ("
+           ++ (
+             switch (response##album) {
+             | Some(album) => album
+             | None => ""
+             }
+           )
+           ++ ")";
          let position =
            (response##position |> Utils.parseDuration)
            ++ "/"
@@ -130,6 +138,7 @@ let nowPlaying = sendMessage =>
            ++ " - "
            ++ position,
          );
+
          value |> resolve;
        })
   )
