@@ -1,4 +1,17 @@
 pipeline:
+  run_tests:
+    image: docker:17.09.0-ce
+    environment:
+      - TZ=Europe/Stockholm
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    commands:
+      - docker build --pull --rm --no-cache -t ${DRONE_REPO,,}:test -f ./Dockerfile.test .
+      - docker run --rm ${DRONE_REPO,,}:test
+    when:
+      event: [push, pull_request, tag]
+
   docker_build:
     image: plugins/docker
     repo: iteam1337/sonos-wejay

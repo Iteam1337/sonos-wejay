@@ -14,4 +14,4 @@ COPY ./__tests__ ./__tests__
 RUN npm ci -s
 RUN npm run build
 
-CMD npm run server
+CMD npm run test:ci
