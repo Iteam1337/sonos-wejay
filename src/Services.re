@@ -66,15 +66,26 @@ let queue = (track, sendMessage) => {
 
   Js.Promise.(
     device->queue(parsedTrack)
-    |> then_(value => {
-         let response = value |> SonosDecode.queueResponse;
+    |> then_(value =>
+         device->currentTrack()
+         |> then_(current => {
+              let currentTrack = current |> SonosDecode.currentTrackResponse;
+              let response = value |> SonosDecode.queueResponse;
 
-         sendMessage(
-           "Queued track in position " ++ response.firstTrackNumberEnqueued,
-         );
+              let queuedPosition =
+                int_of_string(response.firstTrackNumberEnqueued)
+                - int_of_float(currentTrack##queuePosition)
+                |> string_of_int;
 
-         response |> resolve;
-       })
+              sendMessage(
+                "Sweet! Your track is number *"
+                ++ queuedPosition
+                ++ "* in the queue :musical_note:",
+              );
+
+              response |> resolve;
+            })
+       )
   )
   |> ignore;
 };
