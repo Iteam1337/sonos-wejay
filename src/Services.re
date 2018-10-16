@@ -13,6 +13,12 @@ let mute = isMuted => device->setMuted(isMuted) |> justResolve;
 let nextTrack = () => device->next() |> justResolve;
 let previousTrack = () => device->previous() |> justResolve;
 
+let getCurrentTrack = () =>
+  Js.Promise.(
+    device->currentTrack()
+    |> then_(current => current |> SonosDecode.currentTrackResponse |> resolve)
+  );
+
 let searchLibrary = (q, sendMessage) =>
   Js.Promise.(
     device->searchMusicLibrary("tracks", q)
@@ -20,30 +26,20 @@ let searchLibrary = (q, sendMessage) =>
          let response = library |> SonosDecode.currentQueueResponse;
 
          response##items
-         |> Array.map(item =>
-              {
-                "text":
-                  "*"
-                  ++ (item |> Utils.trackInfo)
-                  ++ "*"
-                  ++ (
-                    switch (item##album) {
-                    | Some(album) => "\n" ++ album
-                    | None => ""
-                    }
-                  ),
-                "callback_id": "queue",
-                "thumb_url": "",
-                "actions": [|
-                  {
-                    "name": "track",
-                    "text": "Queue",
-                    "type": "button",
-                    "value": item##uri,
-                  },
-                |],
-              }
-            )
+         |> Array.map(item => {
+              let text =
+                "*"
+                ++ (item |> Utils.trackInfo)
+                ++ "*"
+                ++ (
+                  switch (item##album) {
+                  | Some(album) => "\n" ++ album
+                  | None => ""
+                  }
+                );
+
+              Utils.createAttachment(~text, ~uri=item##uri, ());
+            })
          |> sendMessage("Searching in music library *" ++ q ++ "*");
 
          library |> resolve;
@@ -66,15 +62,14 @@ let queue = (track, sendMessage) => {
 
   Js.Promise.(
     device->queue(parsedTrack)
-    |> then_(value =>
-         device->currentTrack()
+    |> then_(queuedTrack =>
+         getCurrentTrack()
          |> then_(current => {
-              let currentTrack = current |> SonosDecode.currentTrackResponse;
-              let response = value |> SonosDecode.queueResponse;
+              let response = queuedTrack |> SonosDecode.queueResponse;
 
               let queuedPosition =
                 int_of_string(response.firstTrackNumberEnqueued)
-                - int_of_float(currentTrack##queuePosition)
+                - int_of_float(current##queuePosition)
                 |> string_of_int;
 
               sendMessage(
@@ -94,17 +89,13 @@ let currentQueue = sendMessage =>
   Js.Promise.(
     device->getQueue()
     |> then_(queue =>
-         device->currentTrack()
+         getCurrentTrack()
          |> then_(current => {
-              let currentResponse =
-                current |> SonosDecode.currentTrackResponse;
               let response = queue |> SonosDecode.currentQueueResponse;
 
               let tracks =
                 response##items
-                |> Js.Array.sliceFrom(
-                     currentResponse##queuePosition |> int_of_float,
-                   )
+                |> Js.Array.sliceFrom(current##queuePosition |> int_of_float)
                 |> Js.Array.mapi((item, i) =>
                      string_of_int(i + 1)
                      ++ ". "
@@ -122,10 +113,8 @@ let currentQueue = sendMessage =>
 
 let nowPlaying = sendMessage =>
   Js.Promise.(
-    device->currentTrack()
-    |> then_(value => {
-         let response = value |> SonosDecode.currentTrackResponse;
-
+    getCurrentTrack()
+    |> then_(response => {
          let track =
            (response |> Utils.trackInfo)
            ++ " ("
@@ -150,7 +139,7 @@ let nowPlaying = sendMessage =>
            ++ position,
          );
 
-         value |> resolve;
+         response |> resolve;
        })
   )
   |> ignore;

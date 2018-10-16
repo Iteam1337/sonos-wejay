@@ -1,7 +1,7 @@
 [@bs.scope "JSON"] [@bs.val]
 external parseToJson: string => Js.Json.t = "parse";
 
-type subtype =
+type subType =
   | Bot
   | Human;
 

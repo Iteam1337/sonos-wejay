@@ -33,42 +33,40 @@ type currentTrackResponse = {
 };
 
 module SonosDecode = {
-  let queueResponse = json =>
-    Json.Decode.{
-      firstTrackNumberEnqueued:
-        json |> field("FirstTrackNumberEnqueued", string),
-      newQueueLength: json |> field("NewQueueLength", string),
-      numTracksAdded: json |> field("NumTracksAdded", string),
-    };
+  open Json.Decode;
 
-  let currentQueue = json =>
-    Json.Decode.{
-      "album": json |> optional(field("album", string)),
-      "albumArtURI": json |> field("albumArtURI", string),
-      "artist": json |> field("artist", string),
-      "title": json |> field("title", string),
-      "uri": json |> field("uri", string),
-    };
+  let queueResponse = json => {
+    firstTrackNumberEnqueued:
+      json |> field("FirstTrackNumberEnqueued", string),
+    newQueueLength: json |> field("NewQueueLength", string),
+    numTracksAdded: json |> field("NumTracksAdded", string),
+  };
 
-  let currentQueueResponse = json =>
-    Json.Decode.{
-      "returned": json |> field("returned", string),
-      "total": json |> field("total", string),
-      "items": json |> field("items", array(currentQueue)),
-    };
+  let currentQueue = json => {
+    "album": json |> optional(field("album", string)),
+    "albumArtURI": json |> field("albumArtURI", string),
+    "artist": json |> field("artist", string),
+    "title": json |> field("title", string),
+    "uri": json |> field("uri", string),
+  };
 
-  let currentTrackResponse = json =>
-    Json.Decode.{
-      "album": json |> optional(field("album", string)),
-      "albumArtURI": json |> field("albumArtURI", string),
-      "albumArtURL": json |> field("albumArtURL", string),
-      "artist": json |> field("artist", string),
-      "duration": json |> field("duration", Json.Decode.float),
-      "position": json |> field("position", Json.Decode.float),
-      "queuePosition": json |> field("queuePosition", Json.Decode.float),
-      "title": json |> field("title", string),
-      "uri": json |> field("uri", string),
-    };
+  let currentQueueResponse = json => {
+    "returned": json |> field("returned", string),
+    "total": json |> field("total", string),
+    "items": json |> field("items", array(currentQueue)),
+  };
+
+  let currentTrackResponse = json => {
+    "album": json |> optional(field("album", string)),
+    "albumArtURI": json |> field("albumArtURI", string),
+    "albumArtURL": json |> field("albumArtURL", string),
+    "artist": json |> field("artist", string),
+    "duration": json |> field("duration", Json.Decode.float),
+    "position": json |> field("position", Json.Decode.float),
+    "queuePosition": json |> field("queuePosition", Json.Decode.float),
+    "title": json |> field("title", string),
+    "uri": json |> field("uri", string),
+  };
 };
 
 [@bs.new] [@bs.module "sonos"]

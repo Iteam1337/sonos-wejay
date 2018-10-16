@@ -20,36 +20,34 @@ type token = {
 };
 
 module Decode = {
-  let images = json => Json.Decode.{"url": json |> field("url", string)};
+  open Json.Decode;
 
-  let album = json =>
-    Json.Decode.{
-      "images": json |> field("images", array(images)),
-      "name": json |> field("name", string),
-    };
+  let images = json => {"url": json |> field("url", string)};
 
-  let artist = json => Json.Decode.{"name": json |> field("name", string)};
+  let album = json => {
+    "images": json |> field("images", array(images)),
+    "name": json |> field("name", string),
+  };
 
-  let item = json =>
-    Json.Decode.{
-      "album": json |> field("album", album),
-      "artists": json |> field("artists", array(artist)),
-      "name": json |> field("name", string),
-      "uri": json |> field("uri", string),
-    };
+  let artist = json => {"name": json |> field("name", string)};
 
-  let tracks = json =>
-    Json.Decode.{"items": json |> field("items", array(item))};
+  let item = json => {
+    "album": json |> field("album", album),
+    "artists": json |> field("artists", array(artist)),
+    "name": json |> field("name", string),
+    "uri": json |> field("uri", string),
+  };
 
-  let data = json => Json.Decode.{"tracks": json |> field("tracks", tracks)};
+  let tracks = json => {"items": json |> field("items", array(item))};
 
-  let token = json =>
-    Json.Decode.{
-      "accessToken": json |> field("access_token", string),
-      "tokenType": json |> field("token_type", string),
-      "expiresIn": json |> field("expires_in", int),
-      "scope": json |> field("scope", string),
-    };
+  let data = json => {"tracks": json |> field("tracks", tracks)};
+
+  let token = json => {
+    "accessToken": json |> field("access_token", string),
+    "tokenType": json |> field("token_type", string),
+    "expiresIn": json |> field("expires_in", int),
+    "scope": json |> field("scope", string),
+  };
 };
 
 let getToken = () =>
@@ -71,19 +69,12 @@ let displayTracks = item => {
     |> Array.map(artist => artist##name)
     |> Js.Array.joinWith(", ");
 
-  {
-    "text": "*" ++ artists ++ " - " ++ item##name ++ "*\n" ++ item##album##name,
-    "callback_id": "queue",
-    "thumb_url": item##album##images[0]##url,
-    "actions": [|
-      {
-        "name": "track",
-        "text": "Queue",
-        "type": "button",
-        "value": item##uri,
-      },
-    |],
-  };
+  Utils.createAttachment(
+    ~text="*" ++ artists ++ " - " ++ item##name ++ "*\n" ++ item##album##name,
+    ~thumbUrl=item##album##images[0]##url,
+    ~uri=item##uri,
+    (),
+  );
 };
 
 let searchTrack = (query: string, sendMessage) =>
