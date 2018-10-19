@@ -67,11 +67,9 @@ let clearPlaylist = sendMessage =>
   )
   |> ignore;
 
-let queue = (track, sendMessage) => {
-  let parsedTrack = track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
-
+let queueAsLast = (track, sendMessage) =>
   Js.Promise.(
-    device->queue(parsedTrack)
+    device->queue(Utils.parsedTrack(track), 0)
     |> then_(queuedTrack =>
          getCurrentTrack()
          |> then_(current => {
@@ -95,7 +93,21 @@ let queue = (track, sendMessage) => {
     |> catch(Utils.handleError("queue"))
   )
   |> ignore;
-};
+
+let queueAsNext = (track, sendMessage) =>
+  Js.Promise.(
+    getCurrentTrack()
+    |> then_(current =>
+         device->queue(
+           Utils.parsedTrack(track),
+           int_of_float(current##queuePosition) + 1,
+         )
+         |> then_(() =>
+              sendMessage("Your track will play right after the current")
+            )
+       )
+  )
+  |> ignore;
 
 let currentQueue = sendMessage =>
   Js.Promise.(
@@ -159,15 +171,8 @@ let nowPlaying = sendMessage =>
   )
   |> ignore;
 
-let queueEasterEgg = (track, sendMessage) => {
-  sendMessage |> clearPlaylist;
-
-  for (_ in 1 to 10) {
-    sendMessage |> queue(track);
-  };
-
-  playTrack() |> ignore;
-};
+let queueEasterEgg = (track, sendMessage) =>
+  sendMessage |> queueAsNext(track);
 
 let getVolume = sendMessage =>
   Js.Promise.(

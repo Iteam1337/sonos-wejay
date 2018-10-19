@@ -2,7 +2,9 @@ let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
   switch (egg) {
   | IteamClassics =>
     sendMessage
-    |> Services.queue("spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI")
+    |> Services.queueAsLast(
+         "spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI",
+       )
   | FreeBird =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:4qsAYBCJnu2OkTKUVbbOF1")
@@ -11,14 +13,16 @@ let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
     | 5. =>
       sendMessage
       |> Services.queueEasterEgg("spotify:track:4fK6E2UywZTJIa5kWnCD6x")
-    | _ => sendMessage("Sorry, it's not Friday")
+    | _ => sendMessage("Sorry, it's not Friday") |> ignore
     }
   | Shoreline =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:77jVczOFXfbdugN4djsIqs")
   | Slowdance =>
     sendMessage
-    |> Services.queue("spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy")
+    |> Services.queueAsLast(
+         "spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy",
+       )
   | Tequila =>
     sendMessage
     |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
@@ -67,7 +71,7 @@ let handleEventCallback = body => {
     | Clear => sendMessage |> Services.clearPlaylist
     | CurrentQueue => sendMessage |> Services.currentQueue
     | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
-    | Help => sendMessage |> help
+    | Help => sendMessage |> help |> ignore
     | Library => sendMessageWithAttachments |> Services.searchLibrary(q)
     | Mute => Services.mute(true)
     | Next => Services.nextTrack()
@@ -75,7 +79,7 @@ let handleEventCallback = body => {
     | Pause => Services.pause()
     | Play => Services.playTrack()
     | Previous => Services.previousTrack()
-    | Queue => sendMessage |> Services.queue(q)
+    | Queue => sendMessage |> Services.queueAsLast(q)
     | Unmute => Services.mute(false)
     | Volume =>
       switch (q) {

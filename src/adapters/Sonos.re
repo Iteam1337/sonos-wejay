@@ -81,7 +81,8 @@ external regionEurope: string = "EU";
 external getVolume: (sonosDevice, unit) => Js.Promise.t(float) = "";
 [@bs.send]
 external currentTrack: (sonosDevice, unit) => Js.Promise.t('a) = "";
-[@bs.send] external queue: (sonosDevice, string) => Js.Promise.t('a) = "";
+[@bs.send]
+external queue: (sonosDevice, string, int) => Js.Promise.t('a) = "";
 [@bs.send] external play: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external pause: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external flush: (sonosDevice, unit) => Js.Promise.t(bool) = "";
