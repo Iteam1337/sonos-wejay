@@ -5,7 +5,12 @@ let device = Sonos.device(Devices.Iteam.lounge);
 device->setSpotifyRegion(regionEurope);
 
 let justResolve = inputFunction =>
-  Js.Promise.(inputFunction |> then_(value => value |> resolve)) |> ignore;
+  Js.Promise.(
+    inputFunction
+    |> then_(value => value |> resolve)
+    |> catch(Utils.handleError("justResolve"))
+  )
+  |> ignore;
 
 let playTrack = () => device->play() |> justResolve;
 let pause = () => device->pause() |> justResolve;
@@ -16,7 +21,10 @@ let previousTrack = () => device->previous() |> justResolve;
 let getCurrentTrack = () =>
   Js.Promise.(
     device->currentTrack()
-    |> then_(current => current |> SonosDecode.currentTrackResponse |> resolve)
+    |> then_(current =>
+         current |> SonosDecode.currentTrackResponse |> resolve
+       )
+    |> catch(Utils.handleError("getCurrentTrack"))
   );
 
 let searchLibrary = (q, sendMessage) =>
@@ -44,6 +52,7 @@ let searchLibrary = (q, sendMessage) =>
 
          library |> resolve;
        })
+    |> catch(Utils.handleError("searchLibrary"))
   )
   |> ignore;
 
@@ -54,6 +63,7 @@ let clearPlaylist = sendMessage =>
          sendMessage("Cleared queue");
          value |> resolve;
        })
+    |> catch(Utils.handleError("clearPlaylist"))
   )
   |> ignore;
 
@@ -80,7 +90,9 @@ let queue = (track, sendMessage) => {
 
               response |> resolve;
             })
+         |> catch(Utils.handleError("queue -> currentTrack"))
        )
+    |> catch(Utils.handleError("queue"))
   )
   |> ignore;
 };
@@ -107,7 +119,9 @@ let currentQueue = sendMessage =>
               sendMessage("*Upcoming tracks*\n" ++ tracks);
               queue |> resolve;
             })
+         |> catch(Utils.handleError("currentQueue -> currentTrack"))
        )
+    |> catch(Utils.handleError("currentQueue"))
   )
   |> ignore;
 
@@ -141,6 +155,7 @@ let nowPlaying = sendMessage =>
 
          response |> resolve;
        })
+    |> catch(Utils.handleError("nowPlaying"))
   )
   |> ignore;
 
@@ -161,6 +176,7 @@ let getVolume = sendMessage =>
          sendMessage("Current volume is " ++ (volume |> Utils.cleanFloat));
          volume |> resolve;
        })
+    |> catch(Utils.handleError("getVolume"))
   )
   |> ignore;
 
@@ -171,5 +187,6 @@ let setVolume = (volume: string, sendMessage) =>
          sendMessage("Volume set to " ++ volume);
          value |> resolve;
        })
+    |> catch(Utils.handleError("setVolume"))
   )
   |> ignore;

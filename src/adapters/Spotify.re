@@ -61,6 +61,7 @@ let getToken = () =>
     )
     |> Axios.request
     |> then_(value => value##data |> Decode.token |> resolve)
+    |> catch(Utils.handleError("spotifyToken"))
   );
 
 let displayTracks = item => {
@@ -101,7 +102,8 @@ let searchTrack = (query: string, sendMessage) =>
               |> sendMessage("Searching for *" ++ query ++ "*");
 
               posted |> resolve;
-            });
+            })
+         |> catch(Utils.handleError("spotifySearchTrack"));
        })
   )
   |> ignore;

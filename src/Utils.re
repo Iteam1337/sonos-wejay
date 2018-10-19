@@ -10,3 +10,8 @@ let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
     {"name": "track", "text": "Queue", "type": "button", "value": uri},
   |],
 };
+
+let handleError = (parent, err) => {
+  Js.log(err);
+  Js.Promise.reject(Js.Exn.raiseError("Something went wrong in " ++ parent));
+};
