@@ -69,7 +69,7 @@ let clearPlaylist = sendMessage =>
 
 let queueAsLast = (track, sendMessage) =>
   Js.Promise.(
-    device->queue(Utils.parsedTrack(track), 0)
+    device->queueAsLast(Utils.parsedTrack(track))
     |> then_(queuedTrack =>
          getCurrentTrack()
          |> then_(current => {
