@@ -29,6 +29,19 @@ type message = {event};
 type action = {value: string};
 type actions = array(action);
 
+type channel = {id: string};
+
+type user = {
+  id: string,
+  name: string,
+};
+
+type actionPayload = {
+  actions,
+  channel,
+  user,
+};
+
 let type_ = json =>
   Json.Decode.{
     "eventType":
@@ -76,14 +89,21 @@ let event = json =>
 
 let message = json => Json.Decode.{"event": json |> field("event", event)};
 
-let action = json => Json.Decode.{"value": json |> field("value", string)};
+let action = json => Json.Decode.{value: json |> field("value", string)};
 
-let channel = json => Json.Decode.{"id": json |> field("id", string)};
+let channel = json => Json.Decode.{id: json |> field("id", string)};
+
+let user = json =>
+  Json.Decode.{
+    id: json |> field("id", string),
+    name: json |> field("name", string),
+  };
 
 let actionPayload = json =>
   Json.Decode.{
-    "actions": json |> field("actions", array(action)),
-    "channel": json |> field("channel", channel),
+    actions: json |> field("actions", array(action)),
+    channel: json |> field("channel", channel),
+    user: json |> field("user", user),
   };
 
 let parseAction = json =>

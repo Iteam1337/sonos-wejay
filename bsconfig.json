@@ -19,7 +19,8 @@
     "bs-axios",
     "bs-express",
     "@glennsl/bs-json",
-    "@ahrefs/bs-dotenv"
+    "@ahrefs/bs-dotenv",
+    "bs-mysql2"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "warnings": {

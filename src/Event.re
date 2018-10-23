@@ -67,6 +67,7 @@ let handleEventCallback = body => {
   switch (event##subtype) {
   | Human =>
     switch (event##command) {
+    | Blame => sendMessage |> Services.blame
     | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
     | Clear => sendMessage |> Services.clearPlaylist
     | CurrentQueue => sendMessage |> Services.currentQueue

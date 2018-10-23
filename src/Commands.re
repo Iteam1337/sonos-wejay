@@ -7,6 +7,7 @@ type egg =
   | Tequila;
 
 type command =
+  | Blame
   | Clear
   | CurrentQueue
   | EasterEgg(egg)
@@ -32,6 +33,7 @@ let decodeCommand = text =>
     |> Js.Array.slice(~start=0, ~end_=1)
     |> (array => array[0])
   ) {
+  | "blame" => Blame
   | "clear" => Clear
   | "currentqueue"
   | "getqueue" => CurrentQueue

@@ -77,7 +77,7 @@ let queueAsLast = (track, sendMessage) =>
 
               let queuedPosition =
                 int_of_string(response.firstTrackNumberEnqueued)
-                - int_of_float(current##queuePosition)
+                - int_of_float(current.queuePosition)
                 |> string_of_int;
 
               sendMessage(
@@ -100,7 +100,7 @@ let queueAsNext = (track, sendMessage) =>
     |> then_(current =>
          device->queue(
            Utils.parsedTrack(track),
-           int_of_float(current##queuePosition) + 1,
+           int_of_float(current.queuePosition) + 1,
          )
          |> then_(() =>
               sendMessage("Your track will play right after the current")
@@ -119,7 +119,7 @@ let currentQueue = sendMessage =>
 
               let tracks =
                 response##items
-                |> Js.Array.sliceFrom(current##queuePosition |> int_of_float)
+                |> Js.Array.sliceFrom(current.queuePosition |> int_of_float)
                 |> Js.Array.mapi((item, i) =>
                      string_of_int(i + 1)
                      ++ ". "
@@ -142,25 +142,27 @@ let nowPlaying = sendMessage =>
     getCurrentTrack()
     |> then_(response => {
          let track =
-           (response |> Utils.trackInfo)
+           response.artist
+           ++ " - "
+           ++ response.title
            ++ " ("
            ++ (
-             switch (response##album) {
+             switch (response.album) {
              | Some(album) => album
              | None => ""
              }
            )
            ++ ")";
          let position =
-           (response##position |> Utils.parseDuration)
+           (response.position |> Utils.parseDuration)
            ++ "/"
-           ++ (response##duration |> Utils.parseDuration);
+           ++ (response.duration |> Utils.parseDuration);
 
          sendMessage(
            "*Currently playing*\n"
            ++ track
            ++ "\n Position in queue "
-           ++ (response##queuePosition |> Utils.cleanFloat)
+           ++ (response.queuePosition |> Utils.cleanFloat)
            ++ " - "
            ++ position,
          );
@@ -193,5 +195,23 @@ let setVolume = (volume: string, sendMessage) =>
          value |> resolve;
        })
     |> catch(Utils.handleError("setVolume"))
+  )
+  |> ignore;
+
+let blame = sendMessage =>
+  Js.Promise.(
+    getCurrentTrack()
+    |> then_(response => {
+         let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
+
+         let uri =
+           switch (response.uri |> Js.String.match(spotifyUri)) {
+           | Some(match) => Js.Global.decodeURIComponent(match[0])
+           | None => ""
+           };
+
+         sendMessage |> Database.lastPlay(uri);
+         response |> resolve;
+       })
   )
   |> ignore;
