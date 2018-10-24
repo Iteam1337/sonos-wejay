@@ -23,7 +23,7 @@ module Decode = {
 let insertTrack = (~uri, ~user, ~time) => {
   let conn =
     MySql2.Connection.connect(
-      ~host="127.0.0.1",
+      ~host="mysql",
       ~port=3306,
       ~user="root",
       ~password="test",
@@ -61,7 +61,7 @@ let insertTrack = (~uri, ~user, ~time) => {
 let lastPlay = (uri, sendMessage) => {
   let conn =
     MySql2.Connection.connect(
-      ~host="127.0.0.1",
+      ~host="mysql",
       ~port=3306,
       ~user="root",
       ~password="test",
