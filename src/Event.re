@@ -28,67 +28,45 @@ let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
     |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
   };
 
-let help = sendMessage =>
-  sendMessage(
-    "*Queue and search*\n"
-    ++ "```"
-    ++ "currentqueue|getqueue _______________ Display upcoming tracks\n"
-    ++ "nowplaying|np _______________________ Display what's playing right now\n"
-    ++ "queue|q <Spotify URI> _______________ Queue a track using a Spotify URI\n"
-    ++ "search|s <your search string> _______ Search Spotify for a track\n"
-    ++ "library|l <your search string> ______ Search in music library"
-    ++ "```"
-    ++ "\n\n*Play control*\n"
-    ++ "```"
-    ++ "clear _____________ Reset playlist\n"
-    ++ "mute ______________ Mute\n"
-    ++ "next ______________ Skip one track forward\n"
-    ++ "pause _____________ Pause\n"
-    ++ "play ______________ Play\n"
-    ++ "previous __________ Go back one track\n"
-    ++ "unmute ____________ Unmute\n"
-    ++ "volume <0-100> ____ Set volume, if no number is provided displays current volume"
-    ++ "```"
-    ++ "\n\n*Misc*\n"
-    ++ "```"
-    ++ "help ______________ Display this message\n"
-    ++ "```"
-    ++ "\n\nThere's also some hidden easter eggs :hatching_chick:",
-  );
-
 let handleEventCallback = body => {
-  let message = body |> Decode.message;
-  let event = message##event;
-  let sendMessage = Slack.sendSlackResponse(event##channel);
-  let sendMessageWithAttachments =
-    Slack.sendResponseWithAttachments(event##channel);
-  let q = event##text;
+  let {event}: Decode.message = body |> Decode.message;
+  let {channel, text: q, subtype, command}: Decode.event = event;
+  let sendMessage = Slack.sendSlackResponse(channel);
+  let sendMessageWithAttachments = Slack.sendResponseWithAttachments(channel);
 
-  switch (event##subtype) {
-  | Human =>
-    switch (event##command) {
-    | Blame => sendMessage |> Services.blame
-    | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
-    | Clear => sendMessage |> Services.clearPlaylist
-    | CurrentQueue => sendMessage |> Services.currentQueue
-    | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
-    | Help => sendMessage |> help |> ignore
-    | Library => sendMessageWithAttachments |> Services.searchLibrary(q)
-    | Mute => Services.mute(true)
-    | Next => Services.nextTrack()
-    | NowPlaying => sendMessage |> Services.nowPlaying
-    | Pause => Services.pause()
-    | Play => Services.playTrack()
-    | Previous => Services.previousTrack()
-    | Queue => sendMessage |> Services.queueAsLast(q)
-    | Unmute => Services.mute(false)
-    | Volume =>
-      switch (q) {
-      | "" => sendMessage |> Services.getVolume
-      | _ => sendMessage |> Services.setVolume(q)
+  Services.(
+    switch (subtype) {
+    | Human =>
+      switch (command) {
+      /* Send string message */
+      | Blame => sendMessage |> blame
+      | Clear => sendMessage |> clearPlaylist
+      | CurrentQueue => sendMessage |> currentQueue
+      | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
+      | Help => Utils.help |> sendMessage |> ignore
+      | NowPlaying => sendMessage |> nowPlaying
+      | PlayTrack => sendMessage |> playTrackNumber(q)
+      | Queue => sendMessage |> queueAsLast(q)
+      | Volume =>
+        switch (q) {
+        | "" => sendMessage |> getVolume
+        | _ => sendMessage |> setVolume(q)
+        }
+
+      /* Send message with attachments */
+      | Library => sendMessageWithAttachments |> searchLibrary(q)
+      | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
+
+      /* Don't send a message */
+      | Mute => mute(true)
+      | Next => nextTrack()
+      | Pause => pause()
+      | Play => playTrack()
+      | Previous => previousTrack()
+      | Unmute => mute(false)
+      | Unknown => ()
       }
-    | Unknown => ()
+    | Bot => ()
     }
-  | Bot => ()
-  };
+  );
 };

@@ -20,8 +20,9 @@ type verification = {
 type event = {
   command: Commands.command,
   channel: string,
+  subtype: subType,
   text: string,
-  user: string,
+  user: option(string),
 };
 
 type message = {event};
@@ -60,13 +61,13 @@ let verification = json =>
 
 let event = json =>
   Json.Decode.{
-    "channel": json |> field("channel", string),
-    "command":
+    channel: json |> field("channel", string),
+    command:
       switch (json |> optional(field("text", string))) {
       | Some(text) => text |> Commands.decodeCommand
       | None => Unknown
       },
-    "text":
+    text:
       switch (json |> optional(field("text", string))) {
       | Some(text) =>
         text
@@ -75,7 +76,7 @@ let event = json =>
         |> Js.Array.joinWith(" ")
       | None => ""
       },
-    "subtype":
+    subtype:
       switch (json |> optional(field("subtype", string))) {
       | Some(subtype) =>
         switch (subtype) {
@@ -84,10 +85,10 @@ let event = json =>
         }
       | None => Human
       },
-    "user": json |> optional(field("user", string)),
+    user: json |> optional(field("user", string)),
   };
 
-let message = json => Json.Decode.{"event": json |> field("event", event)};
+let message = json => Json.Decode.{event: json |> field("event", event)};
 
 let action = json => Json.Decode.{value: json |> field("value", string)};
 

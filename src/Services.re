@@ -1,6 +1,6 @@
 open Sonos;
 
-let device = Sonos.device(Devices.Iteam.lamarr);
+let device = Sonos.device(Devices.Iteam.lounge);
 
 device->setSpotifyRegion(regionEurope);
 
@@ -215,3 +215,46 @@ let blame = sendMessage =>
        })
   )
   |> ignore;
+
+let playTrackNumber = (trackNumber, sendMessage) =>
+  Js.Promise.(
+    device->selectTrack(trackNumber |> int_of_string)
+    |> then_(_ =>
+         getCurrentTrack()
+         |> then_(response => {
+              sendMessage(
+                "*Playing track*\n"
+                ++ response.artist
+                ++ " - "
+                ++ response.title,
+              )
+              |> ignore;
+
+              resolve(true);
+            })
+       )
+    |> catch(_ => {
+         sendMessage(
+           "*Cannot play track " ++ trackNumber ++ ". Here's the whole queue*",
+         )
+         |> ignore;
+
+         device->getQueue()
+         |> then_(queue => {
+              let response = queue |> SonosDecode.currentQueueResponse;
+
+              let tracks =
+                response##items
+                |> Js.Array.mapi((item, i) =>
+                     string_of_int(i + 1) ++ ". " ++ (item |> Utils.trackInfo)
+                   )
+                |> Js.Array.joinWith("\n");
+
+              sendMessage(tracks);
+            })
+         |> ignore;
+
+         resolve(false);
+       })
+    |> ignore
+  );

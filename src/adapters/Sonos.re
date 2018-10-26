@@ -98,3 +98,5 @@ external selectQueue: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send]
 external searchMusicLibrary: (sonosDevice, string, string) => Js.Promise.t('a) =
   "";
+[@bs.send]
+external selectTrack: (sonosDevice, int) => Js.Promise.t(bool) = "";

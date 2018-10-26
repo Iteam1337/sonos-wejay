@@ -20,16 +20,18 @@ module Decode = {
   let decodeUser = json => json |> array(userRow);
 };
 
+let openConnection = () =>
+  MySql2.Connection.connect(
+    ~host="mysql",
+    ~port=3306,
+    ~user="root",
+    ~password="test",
+    ~database="wejay",
+    (),
+  );
+
 let insertTrack = (~uri, ~user, ~time) => {
-  let conn =
-    MySql2.Connection.connect(
-      ~host="127.0.0.1",
-      ~port=3306,
-      ~user="root",
-      ~password="test",
-      ~database="wejay",
-      (),
-    );
+  let conn = openConnection();
 
   let params =
     MySql2.Params.named(
@@ -59,15 +61,7 @@ let insertTrack = (~uri, ~user, ~time) => {
 };
 
 let lastPlay = (uri, sendMessage) => {
-  let conn =
-    MySql2.Connection.connect(
-      ~host="127.0.0.1",
-      ~port=3306,
-      ~user="root",
-      ~password="test",
-      ~database="wejay",
-      (),
-    );
+  let conn = openConnection();
 
   let params =
     MySql2.Params.named(Json.Encode.(object_([("uri", string(uri))])));

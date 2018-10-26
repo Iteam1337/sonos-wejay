@@ -77,6 +77,10 @@ describe("Commands", () =>
         expect(decodeCommand("play")) |> toEqual(Play)
       );
 
+      test("playtrack", () =>
+        expect(decodeCommand("playtrack")) |> toEqual(PlayTrack)
+      );
+
       test("previous", () =>
         expect(decodeCommand("previous")) |> toEqual(Previous)
       );

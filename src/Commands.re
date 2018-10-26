@@ -18,6 +18,7 @@ type command =
   | NowPlaying
   | Pause
   | Play
+  | PlayTrack
   | Previous
   | Queue
   | Search
@@ -52,6 +53,7 @@ let decodeCommand = text =>
   | "nowplaying" => NowPlaying
   | "pause" => Pause
   | "play" => Play
+  | "playtrack" => PlayTrack
   | "previous" => Previous
   | "q"
   | "queue" => Queue
