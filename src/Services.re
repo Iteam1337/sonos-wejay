@@ -1,6 +1,6 @@
 open Sonos;
 
-let device = Sonos.device(Devices.Iteam.lounge);
+let device = Sonos.device(Devices.Iteam.lamarr);
 
 device->setSpotifyRegion(regionEurope);
 

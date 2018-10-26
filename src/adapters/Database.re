@@ -23,7 +23,7 @@ module Decode = {
 let insertTrack = (~uri, ~user, ~time) => {
   let conn =
     MySql2.Connection.connect(
-      ~host="mysql",
+      ~host="127.0.0.1",
       ~port=3306,
       ~user="root",
       ~password="test",
@@ -61,7 +61,7 @@ let insertTrack = (~uri, ~user, ~time) => {
 let lastPlay = (uri, sendMessage) => {
   let conn =
     MySql2.Connection.connect(
-      ~host="mysql",
+      ~host="127.0.0.1",
       ~port=3306,
       ~user="root",
       ~password="test",
@@ -80,12 +80,34 @@ let lastPlay = (uri, sendMessage) => {
       switch (res) {
       | `Error(e) => Js.log2("ERROR: ", e)
       | `Select(select) =>
-        let resp =
+        let rows =
           select
           |> MySql2.Select.rows
           |> Array.map(item => item |> Decode.userRow);
 
-        sendMessage("<@" ++ resp[0].userId ++ "> added this awesome track!");
+        (
+          switch (Array.length(rows)) {
+          | 0 => "Sorry, I don't know who added this track"
+          | 1 => "<@" ++ rows[0].userId ++ "> added this awesome track!"
+          | _ =>
+            "*This track has been added by*\n"
+            ++ (
+              rows
+              |> Array.mapi((i, row) =>
+                   (i + 1 |> string_of_int)
+                   ++ ". <@"
+                   ++ row.userId
+                   ++ "> on "
+                   ++ DateFns.format(
+                        row.timestamp |> string_of_int,
+                        "YYYY-MM-DD HH:mm",
+                      )
+                 )
+              |> Js.Array.joinWith("\n")
+            )
+          }
+        )
+        |> sendMessage;
 
         ();
       | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
