@@ -43,14 +43,19 @@ let handleEventCallback = body => {
       | Clear => sendMessage |> clearPlaylist
       | CurrentQueue => sendMessage |> currentQueue
       | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
+      | Emoji(emoji) =>
+        switch (emoji) {
+        | ThumbsDown => sendMessage |> changeVolumeWithValue(-10.)
+        | ThumbsUp => sendMessage |> changeVolumeWithValue(10.)
+        }
       | Help => Utils.help |> sendMessage |> ignore
       | NowPlaying => sendMessage |> nowPlaying
       | PlayTrack => sendMessage |> playTrackNumber(q)
       | Queue => sendMessage |> queueAsLast(q)
       | Volume =>
         switch (q) {
-        | "" => sendMessage |> getVolume
-        | _ => sendMessage |> setVolume(q)
+        | "" => sendMessage |> getCurrentVolume
+        | _ => sendMessage |> setNewVolume(q)
         }
 
       /* Send message with attachments */

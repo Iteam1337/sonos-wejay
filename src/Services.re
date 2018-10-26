@@ -1,6 +1,6 @@
 open Sonos;
 
-let device = Sonos.device(Devices.Iteam.lamarr);
+let device = Sonos.device(Devices.Iteam.lounge);
 
 device->setSpotifyRegion(regionEurope);
 
@@ -181,7 +181,7 @@ let nowPlaying = sendMessage =>
 let queueEasterEgg = (track, sendMessage) =>
   sendMessage |> queueAsNext(track);
 
-let getVolume = sendMessage =>
+let getCurrentVolume = sendMessage =>
   Js.Promise.(
     device->getVolume()
     |> then_(volume => {
@@ -192,7 +192,7 @@ let getVolume = sendMessage =>
   )
   |> ignore;
 
-let setVolume = (volume: string, sendMessage) =>
+let setNewVolume = (volume: string, sendMessage) =>
   Js.Promise.(
     device->setVolume(volume |> float_of_string)
     |> then_(value => {
@@ -267,3 +267,22 @@ let playTrackNumber = (trackNumber, sendMessage) =>
        })
     |> ignore
   );
+
+let changeVolumeWithValue = (volumeValue, sendMessage) =>
+  Js.Promise.(
+    device->getVolume()
+    |> then_(currentVolume => {
+         let newVolume =
+           switch (currentVolume, volumeValue) {
+           | (0., v) when v < 0. => 0.
+           | (c, v) => c +. v
+           };
+
+         device->setVolume(newVolume)
+         |> then_(_ => {
+              sendMessage("Volume set to " ++ Utils.cleanFloat(newVolume));
+              true |> resolve;
+            });
+       })
+  )
+  |> ignore;

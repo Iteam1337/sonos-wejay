@@ -1,3 +1,7 @@
+type emoji =
+  | ThumbsDown
+  | ThumbsUp;
+
 type egg =
   | FreeBird
   | Friday
@@ -11,6 +15,7 @@ type command =
   | Clear
   | CurrentQueue
   | EasterEgg(egg)
+  | Emoji(emoji)
   | Help
   | Library
   | Mute
@@ -34,6 +39,8 @@ let decodeCommand = text =>
     |> Js.Array.slice(~start=0, ~end_=1)
     |> (array => array[0])
   ) {
+  | ":+1:" => Emoji(ThumbsUp)
+  | ":-1:" => Emoji(ThumbsDown)
   | "blame" => Blame
   | "clear" => Clear
   | "currentqueue"
