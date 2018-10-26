@@ -45,7 +45,7 @@ type actionPayload = {
 
 let type_ = json =>
   Json.Decode.{
-    "eventType":
+    eventType:
       switch (json |> field("type", string)) {
       | "url_verification" => UrlVerification
       | "event_callback" => EventCallback
@@ -55,8 +55,8 @@ let type_ = json =>
 
 let verification = json =>
   Json.Decode.{
-    "challenge": json |> field("challenge", string),
-    "token": json |> field("token", string),
+    challenge: json |> field("challenge", string),
+    token: json |> field("token", string),
   };
 
 let event = json =>

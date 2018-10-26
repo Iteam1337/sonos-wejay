@@ -1,6 +1,6 @@
 open Sonos;
 
-let device = Sonos.device(Devices.Iteam.lounge);
+let device = Sonos.device(Devices.Iteam.lamarr);
 
 device->setSpotifyRegion(regionEurope);
 
@@ -27,28 +27,32 @@ let getCurrentTrack = () =>
     |> catch(Utils.handleError("getCurrentTrack"))
   );
 
-let searchLibrary = (q, sendMessage) =>
+let searchLibrary = (q, sendMessageWithAttachments) =>
   Js.Promise.(
     device->searchMusicLibrary("tracks", q)
     |> then_(library => {
-         let response = library |> SonosDecode.currentQueueResponse;
+         let {items} = library |> SonosDecode.currentQueueResponse;
 
-         response##items
-         |> Array.map(item => {
+         items
+         |> Array.map((item: Sonos.currentQueue) => {
               let text =
                 "*"
-                ++ (item |> Utils.trackInfo)
+                ++ item.artist
+                ++ " - "
+                ++ item.title
                 ++ "*"
                 ++ (
-                  switch (item##album) {
+                  switch (item.album) {
                   | Some(album) => "\n" ++ album
                   | None => ""
                   }
                 );
 
-              Utils.createAttachment(~text, ~uri=item##uri, ());
+              Utils.createAttachment(~text, ~uri=item.uri, ());
             })
-         |> sendMessage("Searching in music library *" ++ q ++ "*");
+         |> sendMessageWithAttachments(
+              "Searching in music library *" ++ q ++ "*",
+            );
 
          library |> resolve;
        })
@@ -115,18 +119,19 @@ let currentQueue = sendMessage =>
     |> then_(queue =>
          getCurrentTrack()
          |> then_(current => {
-              let response = queue |> SonosDecode.currentQueueResponse;
+              let {items} = queue |> SonosDecode.currentQueueResponse;
 
               let tracks =
-                response##items
+                items
                 |> Js.Array.sliceFrom(current.queuePosition |> int_of_float)
-                |> Js.Array.mapi((item, i) =>
+                |> Js.Array.mapi((item: Sonos.currentQueue, i) =>
                      string_of_int(i + 1)
                      ++ ". "
-                     ++ (item |> Utils.trackInfo)
-                     ++ "\n"
+                     ++ item.artist
+                     ++ " - "
+                     ++ item.title
                    )
-                |> Js.Array.joinWith("");
+                |> Js.Array.joinWith("\n");
 
               sendMessage("*Upcoming tracks*\n" ++ tracks);
               queue |> resolve;
@@ -241,12 +246,16 @@ let playTrackNumber = (trackNumber, sendMessage) =>
 
          device->getQueue()
          |> then_(queue => {
-              let response = queue |> SonosDecode.currentQueueResponse;
+              let {items} = queue |> SonosDecode.currentQueueResponse;
 
               let tracks =
-                response##items
-                |> Js.Array.mapi((item, i) =>
-                     string_of_int(i + 1) ++ ". " ++ (item |> Utils.trackInfo)
+                items
+                |> Js.Array.mapi((item: Sonos.currentQueue, i) =>
+                     string_of_int(i + 1)
+                     ++ ". "
+                     ++ item.artist
+                     ++ " - "
+                     ++ item.title
                    )
                 |> Js.Array.joinWith("\n");
 

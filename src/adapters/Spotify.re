@@ -1,8 +1,14 @@
 [@bs.module "query-string"] external stringify: 'a => 'a = "";
 
+type images = {url: string};
+type album = {
+  images: array(images),
+  name: string,
+};
 type artist = {name: string};
 
 type item = {
+  album,
   artists: array(artist),
   name: string,
   uri: string,
@@ -22,31 +28,31 @@ type token = {
 module Decode = {
   open Json.Decode;
 
-  let images = json => {"url": json |> field("url", string)};
+  let images = json => {url: json |> field("url", string)};
 
   let album = json => {
-    "images": json |> field("images", array(images)),
-    "name": json |> field("name", string),
+    images: json |> field("images", array(images)),
+    name: json |> field("name", string),
   };
 
-  let artist = json => {"name": json |> field("name", string)};
+  let artist = json => {name: json |> field("name", string)};
 
   let item = json => {
-    "album": json |> field("album", album),
-    "artists": json |> field("artists", array(artist)),
-    "name": json |> field("name", string),
-    "uri": json |> field("uri", string),
+    album: json |> field("album", album),
+    artists: json |> field("artists", array(artist)),
+    name: json |> field("name", string),
+    uri: json |> field("uri", string),
   };
 
-  let tracks = json => {"items": json |> field("items", array(item))};
+  let tracks = json => {items: json |> field("items", array(item))};
 
-  let data = json => {"tracks": json |> field("tracks", tracks)};
+  let data = json => {tracks: json |> field("tracks", tracks)};
 
   let token = json => {
-    "accessToken": json |> field("access_token", string),
-    "tokenType": json |> field("token_type", string),
-    "expiresIn": json |> field("expires_in", int),
-    "scope": json |> field("scope", string),
+    accessToken: json |> field("access_token", string),
+    tokenType: json |> field("token_type", string),
+    expiresIn: json |> field("expires_in", int),
+    scope: json |> field("scope", string),
   };
 };
 
@@ -66,14 +72,14 @@ let getToken = () =>
 
 let displayTracks = item => {
   let artists =
-    item##artists
-    |> Array.map(artist => artist##name)
+    item.artists
+    |> Array.map((artist: artist) => artist.name)
     |> Js.Array.joinWith(", ");
 
   Utils.createAttachment(
-    ~text="*" ++ artists ++ " - " ++ item##name ++ "*\n" ++ item##album##name,
-    ~thumbUrl=item##album##images[0]##url,
-    ~uri=item##uri,
+    ~text="*" ++ artists ++ " - " ++ item.name ++ "*\n" ++ item.album.name,
+    ~thumbUrl=item.album.images[0].url,
+    ~uri=item.uri,
     (),
   );
 };
@@ -90,14 +96,14 @@ let searchTrack = (query: string, sendMessage) =>
          Axios.makeConfigWithUrl(
            ~url,
            ~_method="GET",
-           ~headers={"Authorization": "Bearer " ++ token##accessToken},
+           ~headers={"Authorization": "Bearer " ++ token.accessToken},
            (),
          )
          |> Axios.request
          |> then_(posted => {
-              let response = posted##data |> Decode.data;
+              let {tracks} = posted##data |> Decode.data;
 
-              response##tracks##items
+              tracks.items
               |> Array.map(displayTracks)
               |> sendMessage("Searching for *" ++ query ++ "*");
 

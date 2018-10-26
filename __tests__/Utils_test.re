@@ -3,17 +3,6 @@ open Utils;
 
 describe("Utils", () => {
   open Expect;
-  describe("#trackInfo", () =>
-    test("return artist and track", () =>
-      expect(
-        trackInfo({
-          "artist": "Bring Me The Horizon",
-          "title": "Hospital for Souls",
-        }),
-      )
-      |> toEqual("Bring Me The Horizon - Hospital for Souls")
-    )
-  );
 
   describe("#parseDuration", () =>
     test("parses durations as seconds", () =>

@@ -7,7 +7,7 @@ type queueResponse = {
 };
 
 type currentQueue = {
-  album: string,
+  album: option(string),
   albumArtURI: string,
   artist: string,
   title: string,
@@ -43,17 +43,17 @@ module SonosDecode = {
   };
 
   let currentQueue = json => {
-    "album": json |> optional(field("album", string)),
-    "albumArtURI": json |> field("albumArtURI", string),
-    "artist": json |> field("artist", string),
-    "title": json |> field("title", string),
-    "uri": json |> field("uri", string),
+    album: json |> optional(field("album", string)),
+    albumArtURI: json |> field("albumArtURI", string),
+    artist: json |> field("artist", string),
+    title: json |> field("title", string),
+    uri: json |> field("uri", string),
   };
 
   let currentQueueResponse = json => {
-    "returned": json |> field("returned", string),
-    "total": json |> field("total", string),
-    "items": json |> field("items", array(currentQueue)),
+    returned: json |> field("returned", string),
+    total: json |> field("total", string),
+    items: json |> field("items", array(currentQueue)),
   };
 
   let currentTrackResponse = json => {

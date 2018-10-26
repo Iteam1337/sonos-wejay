@@ -1,8 +1,8 @@
 open Express;
 
 let handleVerification = body => {
-  let verification = body |> Decode.verification;
-  Response.sendString(verification##challenge);
+  let {challenge}: Decode.verification = body |> Decode.verification;
+  Response.sendString(challenge);
 };
 
 let event =
@@ -11,13 +11,15 @@ let event =
     |> (
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        switch ((body |> Decode.type_)##eventType) {
+        let {eventType}: Decode.messageType = Decode.type_(body);
+
+        switch (eventType) {
         | UrlVerification => handleVerification(body)
         | EventCallback =>
           Event.handleEventCallback(body);
           Response.sendStatus(Ok);
         | _ => Response.sendStatus(BadRequest)
-        }
+        };
       | None => Response.sendStatus(BadRequest)
       }
     )
