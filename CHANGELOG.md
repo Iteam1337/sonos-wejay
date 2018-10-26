@@ -1,16 +1,11 @@
 # Changelog
 
-## [0.6.0] - 2018-10-26
-
-### Added
-
-- Emoji support (:+1:, :-1:)
-
 ## [0.5.0] - 2018-10-26
 
 ### Added
 
 - Play track with number
+- Emoji support (:+1:, :-1:)
 
 ### Changed
 
