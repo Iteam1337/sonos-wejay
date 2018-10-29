@@ -8,7 +8,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "test": "jest --watch",
-    "test:ci": "jest"
+    "test:ci": "npm run build && jest"
   },
   "keywords": [
     "BuckleScript"
