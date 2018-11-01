@@ -84,7 +84,7 @@ let displayTracks = item => {
   );
 };
 
-let searchTrack = (query: string, sendMessage) =>
+let searchTrack = (query: string, sendMessageWithAttachments) =>
   Js.Promise.(
     getToken()
     |> then_(token => {
@@ -103,9 +103,14 @@ let searchTrack = (query: string, sendMessage) =>
          |> then_(posted => {
               let {tracks} = posted##data |> Decode.data;
 
-              tracks.items
-              |> Array.map(displayTracks)
-              |> sendMessage("Searching for *" ++ query ++ "*");
+              let message =
+                switch (Belt.Array.length(tracks.items)) {
+                | 0 => "Sorry, I couldn't find anything with *" ++ query ++ "*"
+                | _ => "Here are the results for *" ++ query ++ "*"
+                };
+
+              tracks.items->Belt.Array.map(displayTracks)
+              |> sendMessageWithAttachments(message);
 
               posted |> resolve;
             })
