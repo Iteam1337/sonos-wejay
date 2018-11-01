@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2] - 2018-11-01
+
+### Fixed
+
+- All commands that queue adds a database entry
+- Empty search results (#6)
+
 ## [0.6.1] - 2018-11-01
 
 ### Fixed
