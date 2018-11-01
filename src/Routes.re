@@ -34,14 +34,11 @@ let action =
         let response = body |> Decode.parseAction;
         let payload = response##payload |> Decode.actionPayload;
 
-        Database.insertTrack(
-          ~uri=payload.actions[0].value,
-          ~user=payload.user.id,
-          ~time=Js.Math.abs_int(Js.Date.now() |> int_of_float),
-        );
-
         Slack.sendSlackResponse(payload.channel.id)
-        |> Services.queueAsLast(payload.actions[0].value);
+        |> Services.queueAsLast(
+             payload.actions[0].value,
+             Some(payload.user.id),
+           );
 
         Response.sendStatus(Ok);
       | None => Response.sendStatus(BadRequest)

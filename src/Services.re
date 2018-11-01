@@ -71,9 +71,21 @@ let clearPlaylist = sendMessage =>
   )
   |> ignore;
 
-let queueAsLast = (track, sendMessage) =>
+let queueAsLast = (track, user, sendMessage) => {
+  let parsedTrack = Utils.parsedTrack(track);
+
+  switch (user) {
+  | Some(u) =>
+    Database.insertTrack(
+      ~uri=parsedTrack,
+      ~user=u,
+      ~time=Js.Math.abs_int(Js.Date.now() |> int_of_float),
+    )
+  | None => ()
+  };
+
   Js.Promise.(
-    device->queueAsLast(Utils.parsedTrack(track))
+    device->queueAsLast(parsedTrack)
     |> then_(queuedTrack =>
          getCurrentTrack()
          |> then_(current => {
@@ -97,6 +109,7 @@ let queueAsLast = (track, sendMessage) =>
     |> catch(Utils.handleError("queue"))
   )
   |> ignore;
+};
 
 let queueAsNext = (track, sendMessage) =>
   Js.Promise.(

@@ -1,9 +1,10 @@
-let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
+let handleEasterEgg = (egg: Commands.egg, user, sendMessage) =>
   switch (egg) {
   | IteamClassics =>
     sendMessage
     |> Services.queueAsLast(
          "spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI",
+         user,
        )
   | FreeBird =>
     sendMessage
@@ -22,6 +23,7 @@ let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
     sendMessage
     |> Services.queueAsLast(
          "spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy",
+         user,
        )
   | Tequila =>
     sendMessage
@@ -30,7 +32,7 @@ let handleEasterEgg = (egg: Commands.egg, sendMessage) =>
 
 let handleEventCallback = body => {
   let {event}: Decode.message = body |> Decode.message;
-  let {channel, text: q, subtype, command}: Decode.event = event;
+  let {channel, text: q, subtype, command, user}: Decode.event = event;
   let sendMessage = Slack.sendSlackResponse(channel);
   let sendMessageWithAttachments = Slack.sendResponseWithAttachments(channel);
 
@@ -42,7 +44,7 @@ let handleEventCallback = body => {
       | Blame => sendMessage |> blame
       | Clear => sendMessage |> clearPlaylist
       | CurrentQueue => sendMessage |> currentQueue
-      | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg)
+      | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg, user)
       | Emoji(emoji) =>
         switch (emoji) {
         | ThumbsDown => sendMessage |> changeVolumeWithValue(-10.)
@@ -51,7 +53,7 @@ let handleEventCallback = body => {
       | Help => Utils.help |> sendMessage |> ignore
       | NowPlaying => sendMessage |> nowPlaying
       | PlayTrack => sendMessage |> playTrackNumber(q)
-      | Queue => sendMessage |> queueAsLast(q)
+      | Queue => sendMessage |> queueAsLast(q, user)
       | Toplist => sendMessage |> Database.toplist
       | Volume =>
         switch (q) {
