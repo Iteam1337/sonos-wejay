@@ -27,6 +27,7 @@ type command =
   | Previous
   | Queue
   | Search
+  | Toplist
   | Unknown
   | Unmute
   | Volume;
@@ -66,6 +67,7 @@ let decodeCommand = text =>
   | "queue" => Queue
   | "s"
   | "search" => Search
+  | "toplist" => Toplist
   | "unmute" => Unmute
   | "volume" => Volume
   | _ => Unknown

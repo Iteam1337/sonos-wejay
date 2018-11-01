@@ -52,6 +52,7 @@ let handleEventCallback = body => {
       | NowPlaying => sendMessage |> nowPlaying
       | PlayTrack => sendMessage |> playTrackNumber(q)
       | Queue => sendMessage |> queueAsLast(q)
+      | Toplist => sendMessage |> Database.toplist
       | Volume =>
         switch (q) {
         | "" => sendMessage |> getCurrentVolume
