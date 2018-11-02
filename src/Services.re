@@ -111,7 +111,19 @@ let queueAsLast = (track, user, sendMessage) => {
   |> ignore;
 };
 
-let queueAsNext = (track, sendMessage) =>
+let queueAsNext = (track, user, sendMessage) => {
+  let parsedTrack = Utils.parsedTrack(track);
+
+  switch (user) {
+  | Some(u) =>
+    Database.insertTrack(
+      ~uri=parsedTrack,
+      ~user=u,
+      ~time=Js.Math.abs_int(Js.Date.now() |> int_of_float),
+    )
+  | None => ()
+  };
+
   Js.Promise.(
     getCurrentTrack()
     |> then_(current =>
@@ -125,6 +137,7 @@ let queueAsNext = (track, sendMessage) =>
        )
   )
   |> ignore;
+};
 
 let currentQueue = sendMessage =>
   Js.Promise.(
@@ -190,9 +203,6 @@ let nowPlaying = sendMessage =>
     |> catch(Utils.handleError("nowPlaying"))
   )
   |> ignore;
-
-let queueEasterEgg = (track, sendMessage) =>
-  sendMessage |> queueAsNext(track);
 
 let getCurrentVolume = sendMessage =>
   Js.Promise.(

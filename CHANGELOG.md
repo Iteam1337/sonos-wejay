@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.3] - 2018-11-02
+
+### Fixed
+
+- Add database entry to `queueAsNext` command
+
 ## [0.6.2] - 2018-11-01
 
 ### Fixed

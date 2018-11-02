@@ -1,34 +1,32 @@
 let handleEasterEgg = (egg: Commands.egg, user, sendMessage) =>
-  switch (egg) {
-  | IteamClassics =>
-    sendMessage
-    |> Services.queueAsLast(
-         "spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI",
-         user,
-       )
-  | FreeBird =>
-    sendMessage
-    |> Services.queueEasterEgg("spotify:track:4qsAYBCJnu2OkTKUVbbOF1")
-  | Friday =>
-    switch (Js.Date.make() |> Js.Date.getDay) {
-    | 5. =>
-      sendMessage
-      |> Services.queueEasterEgg("spotify:track:4fK6E2UywZTJIa5kWnCD6x")
-    | _ => sendMessage("Sorry, it's not Friday") |> ignore
+  Services.(
+    switch (egg) {
+    | IteamClassics =>
+      queueAsLast(
+        "spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI",
+        user,
+        sendMessage,
+      )
+    | FreeBird =>
+      queueAsNext("spotify:track:4qsAYBCJnu2OkTKUVbbOF1", user, sendMessage)
+    | Friday =>
+      switch (Js.Date.make() |> Js.Date.getDay) {
+      | 5. =>
+        queueAsNext("spotify:track:4fK6E2UywZTJIa5kWnCD6x", user, sendMessage)
+      | _ => sendMessage("Sorry, it's not Friday") |> ignore
+      }
+    | Shoreline =>
+      queueAsNext("spotify:track:77jVczOFXfbdugN4djsIqs", user, sendMessage)
+    | Slowdance =>
+      queueAsLast(
+        "spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy",
+        user,
+        sendMessage,
+      )
+    | Tequila =>
+      queueAsNext("spotify:track:5gJKsGij5oGt5H5RSFYXPa", user, sendMessage)
     }
-  | Shoreline =>
-    sendMessage
-    |> Services.queueEasterEgg("spotify:track:77jVczOFXfbdugN4djsIqs")
-  | Slowdance =>
-    sendMessage
-    |> Services.queueAsLast(
-         "spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy",
-         user,
-       )
-  | Tequila =>
-    sendMessage
-    |> Services.queueEasterEgg("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
-  };
+  );
 
 let handleEventCallback = body => {
   let {event}: Decode.message = body |> Decode.message;
