@@ -10,6 +10,11 @@ type toplistRow = {
   userId: string,
 };
 
+type mostPlayedRow = {
+  count: int,
+  uri: string,
+};
+
 module Decode = {
   open Json.Decode;
 
@@ -23,6 +28,11 @@ module Decode = {
   let toplistRow = json => {
     count: json |> field("count", int),
     userId: json |> field("user_id", string),
+  };
+
+  let mostPlayedRow = json => {
+    count: json |> field("count", int),
+    uri: json |> field("uri", string),
   };
 };
 
@@ -111,6 +121,64 @@ let lastPlay = (uri, sendMessage) => {
         ();
       | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
       };
+      MySql2.Connection.close(conn);
+    },
+  );
+};
+
+let mostPlayed = sendMessage => {
+  let conn = openConnection();
+
+  MySql2.execute(
+    conn,
+    "SELECT DISTINCT uri, COUNT(*) as count FROM users GROUP BY uri ORDER BY count DESC LIMIT 10",
+    None,
+    res => {
+      switch (res) {
+      | `Error(e) => Js.log2("ERROR: ", e)
+      | `Select(select) =>
+        let rows =
+          select
+          ->MySql2.Select.rows
+          ->Belt.Array.map(item => item |> Decode.mostPlayedRow);
+
+        let spotifyId = row =>
+          row.uri |> Js.String.split(":") |> (items => items[2]);
+
+        Js.Promise.(
+          all(rows->Belt.Array.map(row => Spotify.getTrack(spotifyId(row))))
+          |> then_((tracks: array(Spotify.track)) => {
+               (
+                 switch (Belt.Array.length(tracks)) {
+                 | 0 => "No plays :san_panda:"
+                 | _ =>
+                   "*Most played*\n"
+                   ++ (
+                     tracks->Belt.Array.mapWithIndex((i, track) =>
+                       (i + 1 |> string_of_int)
+                       ++ ". "
+                       ++ Spotify.buildArtist(track.artists)
+                       ++ " - "
+                       ++ track.name
+                       ++ " ("
+                       ++ string_of_int(rows[i].count)
+                       ++ ")"
+                     )
+                     |> Js.Array.joinWith("\n")
+                   )
+                 }
+               )
+               |> sendMessage;
+
+               resolve(tracks);
+             })
+        )
+        |> ignore;
+
+        ();
+      | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+      };
+
       MySql2.Connection.close(conn);
     },
   );

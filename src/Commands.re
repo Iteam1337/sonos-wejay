@@ -18,6 +18,7 @@ type command =
   | Emoji(emoji)
   | Help
   | Library
+  | MostPlayed
   | Mute
   | Next
   | NowPlaying
@@ -58,6 +59,7 @@ let decodeCommand = text =>
   | "l"
   | "library" => Library
   | "mute" => Mute
+  | "mostplayed" => MostPlayed
   | "next" => Next
   | "np"
   | "nowplaying" => NowPlaying

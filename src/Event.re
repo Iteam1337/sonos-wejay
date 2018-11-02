@@ -49,6 +49,7 @@ let handleEventCallback = body => {
         | ThumbsUp => sendMessage |> changeVolumeWithValue(10.)
         }
       | Help => Utils.help |> sendMessage |> ignore
+      | MostPlayed => sendMessage |> Database.mostPlayed
       | NowPlaying => sendMessage |> nowPlaying
       | PlayTrack => sendMessage |> playTrackNumber(q)
       | Queue => sendMessage |> queueAsLast(q, user)
@@ -61,7 +62,8 @@ let handleEventCallback = body => {
 
       /* Send message with attachments */
       | Library => sendMessageWithAttachments |> searchLibrary(q)
-      | Search => sendMessageWithAttachments |> Spotify.searchTrack(q)
+      | Search =>
+        sendMessageWithAttachments |> Spotify.searchTrackWithMessage(q)
 
       /* Don't send a message */
       | Mute => mute(true)

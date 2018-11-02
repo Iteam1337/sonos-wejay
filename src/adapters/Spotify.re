@@ -7,14 +7,14 @@ type album = {
 };
 type artist = {name: string};
 
-type item = {
+type track = {
   album,
   artists: array(artist),
   name: string,
   uri: string,
 };
 
-type tracks = {items: array(item)};
+type tracks = {items: array(track)};
 
 type data = {tracks};
 
@@ -37,14 +37,14 @@ module Decode = {
 
   let artist = json => {name: json |> field("name", string)};
 
-  let item = json => {
+  let track = json => {
     album: json |> field("album", album),
     artists: json |> field("artists", array(artist)),
     name: json |> field("name", string),
     uri: json |> field("uri", string),
   };
 
-  let tracks = json => {items: json |> field("items", array(item))};
+  let tracks = json => {items: json |> field("items", array(track))};
 
   let data = json => {tracks: json |> field("tracks", tracks)};
 
@@ -70,21 +70,48 @@ let getToken = () =>
     |> catch(Utils.handleError("spotifyToken"))
   );
 
-let displayTracks = item => {
-  let artists =
-    item.artists
-    |> Array.map((artist: artist) => artist.name)
-    |> Js.Array.joinWith(", ");
+let buildArtist = artists =>
+  artists
+  |> Array.map((artist: artist) => artist.name)
+  |> Js.Array.joinWith(", ");
 
+let displayTracks = item =>
   Utils.createAttachment(
-    ~text="*" ++ artists ++ " - " ++ item.name ++ "*\n" ++ item.album.name,
+    ~text=
+      "*"
+      ++ buildArtist(item.artists)
+      ++ " - "
+      ++ item.name
+      ++ "*\n"
+      ++ item.album.name,
     ~thumbUrl=item.album.images[0].url,
     ~uri=item.uri,
     (),
   );
-};
 
-let searchTrack = (query: string, sendMessageWithAttachments) =>
+let getTrack = (uri: string) =>
+  Js.Promise.(
+    getToken()
+    |> then_(token => {
+         let url = "https://api.spotify.com/v1/tracks/" ++ uri;
+
+         Axios.makeConfigWithUrl(
+           ~url,
+           ~_method="GET",
+           ~headers={"Authorization": "Bearer " ++ token.accessToken},
+           (),
+         )
+         |> Axios.request
+         |> then_(posted => {
+              let track = posted##data |> Decode.track;
+
+              track |> resolve;
+            })
+         |> catch(Utils.handleError("spotifyGetTrack"));
+       })
+  );
+
+let searchTrack = (query: string) =>
   Js.Promise.(
     getToken()
     |> then_(token => {
@@ -103,18 +130,27 @@ let searchTrack = (query: string, sendMessageWithAttachments) =>
          |> then_(posted => {
               let {tracks} = posted##data |> Decode.data;
 
-              let message =
-                switch (Belt.Array.length(tracks.items)) {
-                | 0 => "Sorry, I couldn't find anything with *" ++ query ++ "*"
-                | _ => "Here are the results for *" ++ query ++ "*"
-                };
-
-              tracks.items->Belt.Array.map(displayTracks)
-              |> sendMessageWithAttachments(message);
-
-              posted |> resolve;
+              tracks |> resolve;
             })
          |> catch(Utils.handleError("spotifySearchTrack"));
        })
+  );
+
+let searchTrackWithMessage = (query: string, sendMessageWithAttachments) =>
+  Js.Promise.(
+    searchTrack(query)
+    |> then_(tracks => {
+         let message =
+           switch (Belt.Array.length(tracks.items)) {
+           | 0 => "Sorry, I couldn't find anything with *" ++ query ++ "*"
+           | _ => "Here are the results for *" ++ query ++ "*"
+           };
+
+         tracks.items->Belt.Array.map(displayTracks)
+         |> sendMessageWithAttachments(message);
+
+         tracks |> resolve;
+       })
+    |> catch(Utils.handleError("spotifySearchTrackWithMessage"))
   )
   |> ignore;

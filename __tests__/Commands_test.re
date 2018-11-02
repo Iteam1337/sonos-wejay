@@ -6,14 +6,14 @@ describe("Commands", () => {
 
   describe("parseCommand", () => {
     test("removes user", () =>
-      expect(parseCommand("<@UD8UR2GGP> s test")) |> toEqual("s")
+      expect(parseCommand("<@UD8UR2GGP> s doors end")) |> toEqual("s")
     );
 
     test("lower cases text", () =>
       expect(parseCommand("Search WOOP")) |> toEqual("search")
     );
 
-        test("lower cases text", () =>
+    test("lower cases text", () =>
       expect(parseCommand("<@UD8UR2GGP> volume")) |> toEqual("volume")
     );
   });

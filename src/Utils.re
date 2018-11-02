@@ -44,6 +44,7 @@ let help =
   ++ "```"
   ++ "blame _____________ Who added the track?\n"
   ++ "help ______________ Display this message\n"
-  ++ "toplist ___________ List top wejayers\n"
+  ++ "mostplayed ________ List the most played tracks\n"
+  ++ "toplist ___________ List top Wejayers\n"
   ++ "```"
   ++ "\n\nThere's also some hidden easter eggs :hatching_chick:";

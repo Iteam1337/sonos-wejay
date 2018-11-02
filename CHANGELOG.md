@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0] - 2018-11-02
+
+### Added
+
+- Most played track
+
 ## [0.7.2] - 2018-11-02
 
 ### Fixed
