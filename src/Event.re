@@ -73,7 +73,7 @@ let handleEventCallback = body => {
       | Play => playTrack()
       | Previous => previousTrack()
       | Unmute => mute(false)
-      | Unknown => ()
+      | Unknown => Utils.help |> sendMessage |> ignore
       }
     | Bot => ()
     }
