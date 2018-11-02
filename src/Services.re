@@ -173,7 +173,7 @@ let getFullQueue = sendMessage =>
     device->getQueue()
     |> then_(queue => {
          let {items} = queue |> SonosDecode.currentQueueResponse;
-          let tracks =
+         let tracks =
            items
            |> Js.Array.mapi((item: Sonos.currentQueue, i) =>
                 string_of_int(i + 1)
@@ -183,7 +183,7 @@ let getFullQueue = sendMessage =>
                 ++ item.title
               )
            |> Js.Array.joinWith("\n");
-          sendMessage(tracks);
+         sendMessage(tracks);
        })
     |> catch(Utils.handleError("getFullQueue"))
   )
@@ -254,9 +254,13 @@ let blame = sendMessage =>
          let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
 
          let uri =
-           switch (response.uri |> Js.String.match(spotifyUri)) {
-           | Some(match) => Js.Global.decodeURIComponent(match[0])
-           | None => ""
+           switch (
+             Js.String.includes("x-file", response.uri),
+             response.uri |> Js.String.match(spotifyUri),
+           ) {
+           | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
+           | (true, None) => response.uri
+           | _ => ""
            };
 
          sendMessage |> Database.lastPlay(uri);

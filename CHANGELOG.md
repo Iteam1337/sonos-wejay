@@ -1,10 +1,17 @@
 # Changelog
 
+## [0.8.1] - 2018-11-02
+
+### Fixed
+
+- Fixed blame for music added by library
+
 ## [0.8.0] - 2018-11-02
 
 ### Added
 
 - Most played track
+- Added `fullqueue`
 
 ## [0.7.2] - 2018-11-02
 
