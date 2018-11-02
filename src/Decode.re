@@ -77,11 +77,7 @@ let event = json =>
       },
     text:
       switch (json |> optional(field("text", string))) {
-      | Some(text) =>
-        text
-        |> Js.String.split(" ")
-        |> Js.Array.sliceFrom(1)
-        |> Js.Array.joinWith(" ")
+      | Some(text) => parseQuery(text)
       | None => ""
       },
     subtype:

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.2] - 2018-11-02
+
+### Fixed
+
+- Search command for mention
+
 ## [0.7.1] - 2018-11-02
 
 ### Fixed

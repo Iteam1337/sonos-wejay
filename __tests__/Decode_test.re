@@ -5,7 +5,7 @@ describe("Decode", () =>
   Expect.(
     describe("parseQuery", () => {
       test("removes user", () =>
-        expect(parseQuery("<@UD8UR2GGP> s test")) |> toEqual("test")
+        expect(parseQuery("<@UD8UR2GGP> s doors end")) |> toEqual("doors end")
       );
 
       test("handles command query", () =>
