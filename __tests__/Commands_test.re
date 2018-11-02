@@ -1,113 +1,123 @@
 open Jest;
 open Commands;
 
-describe("Commands", () =>
-  Expect.(
-    describe("#decodeCommand", () => {
-      test("clear", () =>
-        expect(decodeCommand("clear")) |> toEqual(Clear)
-      );
+describe("Commands", () => {
+  open Expect;
 
-      test("currentqueue", () =>
-        expect(decodeCommand("currentqueue")) |> toEqual(CurrentQueue)
-      );
+  describe("parseCommand", () => {
+    test("removes user", () =>
+      expect(parseCommand("<@UD8UR2GGP> s test")) |> toEqual("s")
+    );
 
-      test("getqueue", () =>
-        expect(decodeCommand("getqueue")) |> toEqual(CurrentQueue)
-      );
+    test("lower cases text", () =>
+      expect(parseCommand("Search WOOP")) |> toEqual("search")
+    );
+  });
 
-      test("freebird", () =>
-        expect(decodeCommand("freebird")) |> toEqual(EasterEgg(FreeBird))
-      );
+  describe("#decodeCommand", () => {
+    test("clear", () =>
+      expect(decodeCommand("clear")) |> toEqual(Clear)
+    );
 
-      test("friday", () =>
-        expect(decodeCommand("friday")) |> toEqual(EasterEgg(Friday))
-      );
+    test("currentqueue", () =>
+      expect(decodeCommand("currentqueue")) |> toEqual(CurrentQueue)
+    );
 
-      test("classics", () =>
-        expect(decodeCommand("classics"))
-        |> toEqual(EasterEgg(IteamClassics))
-      );
+    test("getqueue", () =>
+      expect(decodeCommand("getqueue")) |> toEqual(CurrentQueue)
+    );
 
-      test("shoreline", () =>
-        expect(decodeCommand("shoreline")) |> toEqual(EasterEgg(Shoreline))
-      );
+    test("freebird", () =>
+      expect(decodeCommand("freebird")) |> toEqual(EasterEgg(FreeBird))
+    );
 
-      test("slowdance", () =>
-        expect(decodeCommand("slowdance")) |> toEqual(EasterEgg(Slowdance))
-      );
+    test("friday", () =>
+      expect(decodeCommand("friday")) |> toEqual(EasterEgg(Friday))
+    );
 
-      test("tequila", () =>
-        expect(decodeCommand("tequila")) |> toEqual(EasterEgg(Tequila))
-      );
+    test("classics", () =>
+      expect(decodeCommand("classics"))
+      |> toEqual(EasterEgg(IteamClassics))
+    );
 
-      test("help", () =>
-        expect(decodeCommand("help")) |> toEqual(Help)
-      );
+    test("shoreline", () =>
+      expect(decodeCommand("shoreline")) |> toEqual(EasterEgg(Shoreline))
+    );
 
-      test("l (library short-hand)", () =>
-        expect(decodeCommand("l")) |> toEqual(Library)
-      );
+    test("slowdance", () =>
+      expect(decodeCommand("slowdance")) |> toEqual(EasterEgg(Slowdance))
+    );
 
-      test("library", () =>
-        expect(decodeCommand("library")) |> toEqual(Library)
-      );
+    test("tequila", () =>
+      expect(decodeCommand("tequila")) |> toEqual(EasterEgg(Tequila))
+    );
 
-      test("mute", () =>
-        expect(decodeCommand("mute")) |> toEqual(Mute)
-      );
+    test("help", () =>
+      expect(decodeCommand("help")) |> toEqual(Help)
+    );
 
-      test("next", () =>
-        expect(decodeCommand("next")) |> toEqual(Next)
-      );
+    test("l (library short-hand)", () =>
+      expect(decodeCommand("l")) |> toEqual(Library)
+    );
 
-      test("np (nowplaying short-hand)", () =>
-        expect(decodeCommand("np")) |> toEqual(NowPlaying)
-      );
+    test("library", () =>
+      expect(decodeCommand("library")) |> toEqual(Library)
+    );
 
-      test("nowplaying", () =>
-        expect(decodeCommand("nowplaying")) |> toEqual(NowPlaying)
-      );
+    test("mute", () =>
+      expect(decodeCommand("mute")) |> toEqual(Mute)
+    );
 
-      test("pause", () =>
-        expect(decodeCommand("pause")) |> toEqual(Pause)
-      );
+    test("next", () =>
+      expect(decodeCommand("next")) |> toEqual(Next)
+    );
 
-      test("play", () =>
-        expect(decodeCommand("play")) |> toEqual(Play)
-      );
+    test("np (nowplaying short-hand)", () =>
+      expect(decodeCommand("np")) |> toEqual(NowPlaying)
+    );
 
-      test("playtrack", () =>
-        expect(decodeCommand("playtrack")) |> toEqual(PlayTrack)
-      );
+    test("nowplaying", () =>
+      expect(decodeCommand("nowplaying")) |> toEqual(NowPlaying)
+    );
 
-      test("previous", () =>
-        expect(decodeCommand("previous")) |> toEqual(Previous)
-      );
+    test("pause", () =>
+      expect(decodeCommand("pause")) |> toEqual(Pause)
+    );
 
-      test("q (queue short-hand)", () =>
-        expect(decodeCommand("q")) |> toEqual(Queue)
-      );
+    test("play", () =>
+      expect(decodeCommand("play")) |> toEqual(Play)
+    );
 
-      test("queue", () =>
-        expect(decodeCommand("queue")) |> toEqual(Queue)
-      );
+    test("playtrack", () =>
+      expect(decodeCommand("playtrack")) |> toEqual(PlayTrack)
+    );
 
-      test("s (search short-hand)", () =>
-        expect(decodeCommand("s")) |> toEqual(Search)
-      );
+    test("previous", () =>
+      expect(decodeCommand("previous")) |> toEqual(Previous)
+    );
 
-      test("search", () =>
-        expect(decodeCommand("search")) |> toEqual(Search)
-      );
+    test("q (queue short-hand)", () =>
+      expect(decodeCommand("q")) |> toEqual(Queue)
+    );
 
-      test("unmute", () =>
-        expect(decodeCommand("unmute")) |> toEqual(Unmute)
-      );
+    test("queue", () =>
+      expect(decodeCommand("queue")) |> toEqual(Queue)
+    );
 
-      test("volume", () =>
-        expect(decodeCommand("volume")) |> toEqual(Volume)
-      );
-    })
-  )
-);
+    test("s (search short-hand)", () =>
+      expect(decodeCommand("s")) |> toEqual(Search)
+    );
+
+    test("search", () =>
+      expect(decodeCommand("search")) |> toEqual(Search)
+    );
+
+    test("unmute", () =>
+      expect(decodeCommand("unmute")) |> toEqual(Unmute)
+    );
+
+    test("volume", () =>
+      expect(decodeCommand("volume")) |> toEqual(Volume)
+    );
+  });
+});

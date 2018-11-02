@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0] - 2018-11-02
+
+### Added
+
+- Add Slack event `app_mention` to handle direct message in other channels
+
 ## [0.6.3] - 2018-11-02
 
 ### Fixed

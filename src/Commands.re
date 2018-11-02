@@ -32,14 +32,19 @@ type command =
   | Unmute
   | Volume;
 
+let parseCommand = text => {
+  let userRegEx = [%re "/<@\w+>\s/g"];
+
+  text
+  |> Js.String.replaceByRe(userRegEx, "")
+  |> Js.String.toLowerCase
+  |> Js.String.split(" ")
+  |> Js.Array.slice(~start=0, ~end_=1)
+  |> (array => array[0]);
+};
+
 let decodeCommand = text =>
-  switch (
-    text
-    |> Js.String.toLowerCase
-    |> Js.String.split(" ")
-    |> Js.Array.slice(~start=0, ~end_=1)
-    |> (array => array[0])
-  ) {
+  switch (parseCommand(text)) {
   | ":+1:" => Emoji(ThumbsUp)
   | ":-1:" => Emoji(ThumbsDown)
   | "blame" => Blame

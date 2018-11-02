@@ -48,6 +48,7 @@ let type_ = json =>
     eventType:
       switch (json |> field("type", string)) {
       | "url_verification" => UrlVerification
+      | "app_mention"
       | "event_callback" => EventCallback
       | _ => UnknownEvent
       },
