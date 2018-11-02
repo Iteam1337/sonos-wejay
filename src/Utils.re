@@ -1,8 +1,9 @@
 let parseDuration = duration => duration *. 1000. |> Duration.parse;
 let cleanFloat = value => value |> int_of_float |> string_of_int;
 
-let parsedTrack = track =>
-  track |> Js.String.replaceByRe([%re "/(<|>)/g"], "");
+let parsedTrack = track => Js.String.replaceByRe([%re "/(<|>)/g"], "", track);
+
+let removeUser = text => Js.String.replaceByRe([%re "/<@\w+>\s/g"], "", text);
 
 let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   "text": text,

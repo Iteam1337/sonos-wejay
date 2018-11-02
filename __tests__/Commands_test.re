@@ -12,6 +12,10 @@ describe("Commands", () => {
     test("lower cases text", () =>
       expect(parseCommand("Search WOOP")) |> toEqual("search")
     );
+
+        test("lower cases text", () =>
+      expect(parseCommand("<@UD8UR2GGP> volume")) |> toEqual("volume")
+    );
   });
 
   describe("#decodeCommand", () => {

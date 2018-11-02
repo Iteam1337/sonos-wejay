@@ -32,16 +32,13 @@ type command =
   | Unmute
   | Volume;
 
-let parseCommand = text => {
-  let userRegEx = [%re "/<@\w+>\s/g"];
-
+let parseCommand = text =>
   text
-  |> Js.String.replaceByRe(userRegEx, "")
+  |> Utils.removeUser
   |> Js.String.toLowerCase
   |> Js.String.split(" ")
   |> Js.Array.slice(~start=0, ~end_=1)
   |> (array => array[0]);
-};
 
 let decodeCommand = text =>
   switch (parseCommand(text)) {

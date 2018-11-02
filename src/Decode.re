@@ -60,6 +60,13 @@ let verification = json =>
     token: json |> field("token", string),
   };
 
+let parseQuery = text =>
+  text
+  |> Utils.removeUser
+  |> Js.String.split(" ")
+  |> Js.Array.sliceFrom(1)
+  |> Js.Array.joinWith(" ");
+
 let event = json =>
   Json.Decode.{
     channel: json |> field("channel", string),

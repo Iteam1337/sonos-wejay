@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.1] - 2018-11-02
+
+### Fixed
+
+- Handle params for app mentions
+
 ## [0.7.0] - 2018-11-02
 
 ### Added
