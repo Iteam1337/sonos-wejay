@@ -50,6 +50,7 @@ let handleEventCallback = body => {
         | ThumbsDown => sendMessage |> changeVolumeWithValue(-10.)
         | ThumbsUp => sendMessage |> changeVolumeWithValue(10.)
         }
+      | FullQueue => sendMessage |> getFullQueue
       | Help => Utils.help |> sendMessage |> ignore
       | NowPlaying => sendMessage |> nowPlaying
       | PlayTrack => sendMessage |> playTrackNumber(q)

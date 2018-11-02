@@ -155,6 +155,29 @@ let currentQueue = sendMessage =>
   )
   |> ignore;
 
+let getFullQueue = sendMessage =>
+  Js.Promise.(
+    device->getQueue()
+    |> then_(queue => {
+         let {items} = queue |> SonosDecode.currentQueueResponse;
+
+         let tracks =
+           items
+           |> Js.Array.mapi((item: Sonos.currentQueue, i) =>
+                string_of_int(i + 1)
+                ++ ". "
+                ++ item.artist
+                ++ " - "
+                ++ item.title
+              )
+           |> Js.Array.joinWith("\n");
+
+         sendMessage(tracks);
+       })
+    |> catch(Utils.handleError("getFullQueue"))
+  )
+  |> ignore;
+
 let nowPlaying = sendMessage =>
   Js.Promise.(
     getCurrentTrack()

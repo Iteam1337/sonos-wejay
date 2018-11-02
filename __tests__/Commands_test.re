@@ -24,6 +24,10 @@ describe("Commands", () =>
         expect(decodeCommand("friday")) |> toEqual(EasterEgg(Friday))
       );
 
+      test("fullqueue", () =>
+        expect(decodeCommand("fullqueue")) |> toEqual(FullQueue)
+      );
+
       test("classics", () =>
         expect(decodeCommand("classics"))
         |> toEqual(EasterEgg(IteamClassics))
