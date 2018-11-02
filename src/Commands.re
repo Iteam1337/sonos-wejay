@@ -16,6 +16,7 @@ type command =
   | CurrentQueue
   | EasterEgg(egg)
   | Emoji(emoji)
+  | FullQueue
   | Help
   | Library
   | Mute
@@ -50,6 +51,7 @@ let decodeCommand = text =>
   | "getqueue" => CurrentQueue
   | "freebird" => EasterEgg(FreeBird)
   | "friday" => EasterEgg(Friday)
+  | "fullqueue" => FullQueue
   | "classics" => EasterEgg(IteamClassics)
   | "shoreline" => EasterEgg(Shoreline)
   | "slowdance" => EasterEgg(Slowdance)
