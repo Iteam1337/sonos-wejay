@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.3] - 2018-11-03
+
+### Changed
+
+- Use track information from database instead of querying Spotify for each track
+
 ## [0.8.2] - 2018-11-03
 
 ### Changed

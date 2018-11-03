@@ -11,7 +11,9 @@ type toplistRow = {
 };
 
 type mostPlayedRow = {
+  artist: option(string),
   count: int,
+  name: option(string),
   uri: string,
 };
 
@@ -31,6 +33,8 @@ module Decode = {
   };
 
   let mostPlayedRow = json => {
+    artist: json |> optional(field("artist", string)),
+    name: json |> optional(field("name", string)),
     count: json |> field("count", int),
     uri: json |> field("uri", string),
   };
@@ -148,7 +152,7 @@ let mostPlayed = sendMessage => {
 
   MySql2.execute(
     conn,
-    "SELECT DISTINCT uri, COUNT(*) as count FROM users GROUP BY uri ORDER BY count DESC LIMIT 10",
+    "SELECT DISTINCT artist, uri, name, COUNT(*) as count FROM users GROUP BY artist, name, uri ORDER BY count DESC LIMIT 10",
     None,
     res => {
       switch (res) {
@@ -159,39 +163,36 @@ let mostPlayed = sendMessage => {
           ->MySql2.Select.rows
           ->Belt.Array.map(item => item |> Decode.mostPlayedRow);
 
-        Js.Promise.(
-          all(
-            rows->Belt.Array.map(row =>
-              Spotify.getTrack(Utils.spotifyId(row.uri))
-            ),
-          )
-          |> then_((tracks: array(Spotify.track)) => {
-               (
-                 switch (Belt.Array.length(tracks)) {
-                 | 0 => "No plays :san_panda:"
-                 | _ =>
-                   "*Most played*\n"
-                   ++ (
-                     tracks->Belt.Array.mapWithIndex((i, track) =>
-                       (i + 1 |> string_of_int)
-                       ++ ". "
-                       ++ Spotify.buildArtist(track.artists)
-                       ++ " - "
-                       ++ track.name
-                       ++ " ("
-                       ++ string_of_int(rows[i].count)
-                       ++ ")"
-                     )
-                     |> Js.Array.joinWith("\n")
-                   )
-                 }
-               )
-               |> sendMessage;
-
-               resolve(tracks);
-             })
+        (
+          switch (Belt.Array.length(rows)) {
+          | 0 => "No plays :san_panda:"
+          | _ =>
+            "*Most played*\n"
+            ++ (
+              rows->Belt.Array.mapWithIndex((i, row) =>
+                (i + 1 |> string_of_int)
+                ++ ". "
+                ++ (
+                  switch (row.artist) {
+                  | Some(a) => a ++ " - "
+                  | None => ""
+                  }
+                )
+                ++ (
+                  switch (row.name) {
+                  | Some(n) => n
+                  | None => row.uri
+                  }
+                )
+                ++ " ("
+                ++ string_of_int(row.count)
+                ++ ")"
+              )
+              |> Js.Array.joinWith("\n")
+            )
+          }
         )
-        |> ignore;
+        |> sendMessage;
 
         ();
       | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
