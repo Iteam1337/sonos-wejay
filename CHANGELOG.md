@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.2] - 2018-11-03
+
+### Changed
+
+- Add track information to database insert
+
 ## [0.8.1] - 2018-11-02
 
 ### Fixed

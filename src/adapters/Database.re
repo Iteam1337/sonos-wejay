@@ -46,33 +46,50 @@ let openConnection = () =>
     (),
   );
 
-let insertTrack = (~uri, ~user, ~time) => {
-  let conn = openConnection();
+let insertTrack = (~uri, ~user) => {
+  let spotifyId = Utils.spotifyId(uri);
+  let timestamp = Js.Math.abs_int(Js.Date.now() |> int_of_float);
 
-  let params =
-    MySql2.Params.named(
-      Json.Encode.(
-        object_([
-          ("uri", string(uri)),
-          ("user_id", string(user)),
-          ("timestamp", int(time)),
-        ])
-      ),
-    );
+  Js.Promise.(
+    Spotify.getTrack(spotifyId)
+    |> then_((track: Spotify.track) => {
+         let conn = openConnection();
 
-  MySql2.execute(
-    conn,
-    "INSERT INTO users (uri, user_id, timestamp) VALUES (:uri, :user_id, :timestamp)",
-    Some(params),
-    res => {
-      switch (res) {
-      | `Error(e) => Js.log2("ERROR: ", e)
-      | `Select(select) => Js.log2("SELECT: ", select)
-      | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
-      };
+         let params =
+           MySql2.Params.named(
+             Json.Encode.(
+               object_([
+                 ("uri", string(uri)),
+                 ("user_id", string(user)),
+                 ("timestamp", int(timestamp)),
+                 ("artist", string(Spotify.buildArtist(track.artists))),
+                 ("duration", int(track.duration)),
+                 ("name", string(track.name)),
+                 ("spotify_id", string(spotifyId)),
+                 ("album", string(track.album.name)),
+                 ("cover", string(track.album.images[0].url)),
+               ])
+             ),
+           );
 
-      MySql2.Connection.close(conn);
-    },
+         MySql2.execute(
+           conn,
+           "INSERT INTO users (uri, user_id, timestamp, artist, duration, name, spotify_id, album, cover) VALUES (:uri, :user_id, :timestamp, :artist, :duration, :name, :spotify_id, :album, :cover)",
+           Some(params),
+           res => {
+             switch (res) {
+             | `Error(e) => Js.log2("ERROR: ", e)
+             | `Select(select) => Js.log2("SELECT: ", select)
+             | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+             };
+
+             MySql2.Connection.close(conn);
+           },
+         );
+
+         resolve(true);
+       })
+    |> ignore
   );
 };
 
@@ -142,11 +159,12 @@ let mostPlayed = sendMessage => {
           ->MySql2.Select.rows
           ->Belt.Array.map(item => item |> Decode.mostPlayedRow);
 
-        let spotifyId = row =>
-          row.uri |> Js.String.split(":") |> (items => items[2]);
-
         Js.Promise.(
-          all(rows->Belt.Array.map(row => Spotify.getTrack(spotifyId(row))))
+          all(
+            rows->Belt.Array.map(row =>
+              Spotify.getTrack(Utils.spotifyId(row.uri))
+            ),
+          )
           |> then_((tracks: array(Spotify.track)) => {
                (
                  switch (Belt.Array.length(tracks)) {

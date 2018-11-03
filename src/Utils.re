@@ -5,6 +5,8 @@ let parsedTrack = track => Js.String.replaceByRe([%re "/(<|>)/g"], "", track);
 
 let removeUser = text => Js.String.replaceByRe([%re "/<@\w+>\s/g"], "", text);
 
+let spotifyId = uri => uri |> Js.String.split(":") |> (items => items[2]);
+
 let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   "text": text,
   "callback_id": "queue",

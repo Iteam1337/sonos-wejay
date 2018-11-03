@@ -10,6 +10,7 @@ type artist = {name: string};
 type track = {
   album,
   artists: array(artist),
+  duration: int,
   name: string,
   uri: string,
 };
@@ -40,6 +41,7 @@ module Decode = {
   let track = json => {
     album: json |> field("album", album),
     artists: json |> field("artists", array(artist)),
+    duration: json |> field("duration_ms", int),
     name: json |> field("name", string),
     uri: json |> field("uri", string),
   };

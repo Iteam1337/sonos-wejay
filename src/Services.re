@@ -75,12 +75,7 @@ let queueAsLast = (track, user, sendMessage) => {
   let parsedTrack = Utils.parsedTrack(track);
 
   switch (user) {
-  | Some(u) =>
-    Database.insertTrack(
-      ~uri=parsedTrack,
-      ~user=u,
-      ~time=Js.Math.abs_int(Js.Date.now() |> int_of_float),
-    )
+  | Some(u) => Database.insertTrack(~uri=parsedTrack, ~user=u)
   | None => ()
   };
 
@@ -115,12 +110,7 @@ let queueAsNext = (track, user, sendMessage) => {
   let parsedTrack = Utils.parsedTrack(track);
 
   switch (user) {
-  | Some(u) =>
-    Database.insertTrack(
-      ~uri=parsedTrack,
-      ~user=u,
-      ~time=Js.Math.abs_int(Js.Date.now() |> int_of_float),
-    )
+  | Some(u) => Database.insertTrack(~uri=parsedTrack, ~user=u)
   | None => ()
   };
 
