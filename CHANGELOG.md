@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2018-11-04
+
+### Fixed
+
+- Fix typo in emoji-response for top list and most played when there is no result
+
 ## [1.0.0] - 2018-11-04
 
 Feels pretty solid and production worthy, let's bump it to 1.0.0! :tada:
