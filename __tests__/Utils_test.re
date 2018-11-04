@@ -4,6 +4,24 @@ open Utils;
 describe("Utils", () => {
   open Expect;
 
+  describe("#artistAndTitle", () =>
+    test("artist and title combined", () =>
+      expect(
+        artistAndTitle(
+          ~artist="Bring Me The Horizon",
+          ~title="Hospital for Souls",
+        ),
+      )
+      |> toEqual("Bring Me The Horizon - Hospital for Souls")
+    )
+  );
+
+  describe("#listNumber", () =>
+    test("create a list number item", () =>
+      expect(listNumber(0)) |> toEqual("1. ")
+    )
+  );
+
   describe("#parseDuration", () =>
     test("parses durations as seconds", () =>
       expect(parseDuration(50.)) |> toEqual("0:50")

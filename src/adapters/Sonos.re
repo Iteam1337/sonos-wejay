@@ -70,7 +70,7 @@ module SonosDecode = {
 };
 
 [@bs.new] [@bs.module "sonos"]
-external device: string => sonosDevice = "Sonos";
+external speaker: string => sonosDevice = "Sonos";
 
 [@bs.module "sonos"] [@bs.scope "SpotifyRegion"]
 external regionEurope: string = "EU";
@@ -100,3 +100,5 @@ external searchMusicLibrary: (sonosDevice, string, string) => Js.Promise.t('a) =
   "";
 [@bs.send]
 external selectTrack: (sonosDevice, int) => Js.Promise.t(bool) = "";
+
+let device = speaker(Devices.Rickard.home);

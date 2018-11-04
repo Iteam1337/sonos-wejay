@@ -1,3 +1,7 @@
+let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
+
+let listNumber = number => string_of_int(number + 1) ++ ". ";
+
 let parseDuration = duration => duration *. 1000. |> Duration.parse;
 let cleanFloat = value => value |> int_of_float |> string_of_int;
 

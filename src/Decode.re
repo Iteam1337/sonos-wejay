@@ -73,7 +73,7 @@ let event = json =>
     command:
       switch (json |> optional(field("text", string))) {
       | Some(text) => text |> Commands.decodeCommand
-      | None => Unknown
+      | None => UnknownCommand
       },
     text:
       switch (json |> optional(field("text", string))) {

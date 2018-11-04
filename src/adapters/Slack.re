@@ -25,3 +25,5 @@ let sendResponseWithAttachments =
 let sendSlackResponse = (channel: string, message: string) =>
   {"channel": channel, "username": "Wejay", "text": message, "mrkdwn": true}
   |> sendPayload;
+
+let userId = id => "<@" ++ id ++ ">";

@@ -1,32 +1,26 @@
-let handleEasterEgg = (egg: Commands.egg, user, sendMessage) =>
-  Services.(
-    switch (egg) {
-    | IteamClassics =>
-      queueAsLast(
-        "spotify:user:believer:playlist:445NQ4LkJFtBsHUOdr3LFI",
-        user,
-        sendMessage,
-      )
-    | FreeBird =>
-      queueAsNext("spotify:track:4qsAYBCJnu2OkTKUVbbOF1", user, sendMessage)
-    | Friday =>
-      switch (Js.Date.make() |> Js.Date.getDay) {
-      | 5. =>
-        queueAsNext("spotify:track:4fK6E2UywZTJIa5kWnCD6x", user, sendMessage)
-      | _ => sendMessage("Sorry, it's not Friday") |> ignore
-      }
-    | Shoreline =>
-      queueAsNext("spotify:track:77jVczOFXfbdugN4djsIqs", user, sendMessage)
-    | Slowdance =>
-      queueAsLast(
-        "spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy",
-        user,
-        sendMessage,
-      )
-    | Tequila =>
-      queueAsNext("spotify:track:5gJKsGij5oGt5H5RSFYXPa", user, sendMessage)
+let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
+  let qAsLast = uri => uri->Queue.asLast(user, sendMessage);
+  let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
+
+  switch (egg) {
+  | IteamClassics => SpotifyUtils.Playlists.iteamClassics->qAsLast
+  | FreeBird => SpotifyUtils.Tracks.freeBird->qAsNext
+  | Friday =>
+    switch (Js.Date.make() |> Js.Date.getDay) {
+    | 5. => SpotifyUtils.Tracks.friday->qAsNext
+    | _ => sendMessage("Sorry, it's not Friday") |> ignore
     }
-  );
+  | Shoreline => SpotifyUtils.Tracks.shoreline->qAsNext
+  | Slowdance => SpotifyUtils.Playlists.slowdance->qAsLast
+  | Tequila => SpotifyUtils.Tracks.tequila->qAsNext
+  };
+};
+
+let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
+  switch (emoji) {
+  | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
+  | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
+  };
 
 let handleEventCallback = body => {
   let {event}: Decode.message = body |> Decode.message;
@@ -39,41 +33,37 @@ let handleEventCallback = body => {
     | Human =>
       switch (command) {
       /* Send string message */
-      | Blame => sendMessage |> blame
-      | Clear => sendMessage |> clearPlaylist
-      | CurrentQueue => sendMessage |> currentQueue
-      | EasterEgg(egg) => sendMessage |> handleEasterEgg(egg, user)
-      | Emoji(emoji) =>
-        switch (emoji) {
-        | ThumbsDown => sendMessage |> changeVolumeWithValue(-10.)
-        | ThumbsUp => sendMessage |> changeVolumeWithValue(10.)
-        }
-      | FullQueue => sendMessage |> getFullQueue
-      | Help => Utils.help |> sendMessage |> ignore
-      | MostPlayed => sendMessage |> Database.mostPlayed
-      | NowPlaying => sendMessage |> nowPlaying
-      | PlayTrack => sendMessage |> playTrackNumber(q)
-      | Queue => sendMessage |> queueAsLast(q, user)
-      | Toplist => sendMessage |> Database.toplist
+      | Blame => Misc.blame(sendMessage)
+      | Clear => Queue.clearQueue(sendMessage)
+      | CurrentQueue => Queue.currentQueue(sendMessage)
+      | EasterEgg(egg) => handleEasterEgg(egg, user, sendMessage)
+      | Emoji(emoji) => handleEmoji(emoji, sendMessage)
+      | FullQueue => Queue.getFullQueue(sendMessage)
+      | Help => sendMessage(Utils.help) |> ignore
+      | MostPlayed => Database.mostPlayed(sendMessage)
+      | NowPlaying => nowPlaying(sendMessage)
+      | PlayTrack => Player.playTrackNumber(q, sendMessage)
+      | Queue => Queue.asLast(q, user, sendMessage)
+      | Toplist => Database.toplist(sendMessage)
       | Volume =>
         switch (q) {
-        | "" => sendMessage |> getCurrentVolume
-        | _ => sendMessage |> setNewVolume(q)
+        | "" => Volume.currentVolume(sendMessage)
+        | _ => Volume.updateVolume(q, sendMessage)
         }
 
       /* Send message with attachments */
-      | Library => sendMessageWithAttachments |> searchLibrary(q)
+      | Library => Search.library(q, sendMessageWithAttachments)
       | Search =>
-        sendMessageWithAttachments |> Spotify.searchTrackWithMessage(q)
+        Spotify.searchTrackWithMessage(q, sendMessageWithAttachments)
 
       /* Don't send a message */
-      | Mute => mute(true)
-      | Next => nextTrack()
-      | Pause => pause()
-      | Play => playTrack()
-      | Previous => previousTrack()
-      | Unmute => mute(false)
-      | Unknown => ()
+      | Mute => Player.mute(true)
+      | Next => Player.next()
+      | Pause => Player.pause()
+      | Play => Player.play()
+      | Previous => Player.previous()
+      | Unmute => Player.mute(false)
+      | UnknownCommand => ()
       }
     | Bot => ()
     }

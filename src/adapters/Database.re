@@ -119,17 +119,16 @@ let lastPlay = (uri, sendMessage) => {
         (
           switch (Belt.Array.length(rows)) {
           | 0 => "Sorry, I don't know who added this track"
-          | 1 => "<@" ++ rows[0].userId ++ "> added this awesome track!"
+          | 1 => Slack.userId(rows[0].userId) ++ " added this awesome track!"
           | _ =>
             "*This track has been added by*\n"
             ++ (
-              rows->Belt.Array.mapWithIndex((i, row) =>
-                (i + 1 |> string_of_int)
-                ++ ". <@"
-                ++ row.userId
-                ++ "> on "
+              rows->Belt.Array.mapWithIndex((i, {timestamp, userId}) =>
+                Utils.listNumber(i)
+                ++ Slack.userId(userId)
+                ++ " on "
                 ++ DateFns.format(
-                     row.timestamp |> string_of_int,
+                     timestamp |> string_of_int,
                      "YYYY-MM-DD HH:mm",
                    )
               )
@@ -169,23 +168,17 @@ let mostPlayed = sendMessage => {
           | _ =>
             "*Most played*\n"
             ++ (
-              rows->Belt.Array.mapWithIndex((i, row) =>
-                (i + 1 |> string_of_int)
-                ++ ". "
+              rows->Belt.Array.mapWithIndex((i, {artist, count, name, uri}) =>
+                Utils.listNumber(i)
                 ++ (
-                  switch (row.artist) {
+                  switch (artist) {
                   | Some(a) => a ++ " - "
                   | None => ""
                   }
                 )
-                ++ (
-                  switch (row.name) {
-                  | Some(n) => n
-                  | None => row.uri
-                  }
-                )
+                ++ Belt.Option.getWithDefault(name, uri)
                 ++ " ("
-                ++ string_of_int(row.count)
+                ++ string_of_int(count)
                 ++ ")"
               )
               |> Js.Array.joinWith("\n")
@@ -225,12 +218,11 @@ let toplist = sendMessage => {
           | _ =>
             "*Toplist*\n"
             ++ (
-              rows->Belt.Array.mapWithIndex((i, row) =>
-                (i + 1 |> string_of_int)
-                ++ ". <@"
-                ++ row.userId
-                ++ "> ("
-                ++ string_of_int(row.count)
+              rows->Belt.Array.mapWithIndex((i, {userId, count}) =>
+                Utils.listNumber(i)
+                ++ Slack.userId(userId)
+                ++ " ("
+                ++ string_of_int(count)
                 ++ ")"
               )
               |> Js.Array.joinWith("\n")

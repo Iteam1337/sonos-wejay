@@ -30,7 +30,7 @@ type command =
   | Queue
   | Search
   | Toplist
-  | Unknown
+  | UnknownCommand
   | Unmute
   | Volume;
 
@@ -47,16 +47,13 @@ let decodeCommand = text =>
   | ":+1:" => Emoji(ThumbsUp)
   | ":-1:" => Emoji(ThumbsDown)
   | "blame" => Blame
+  | "classics" => EasterEgg(IteamClassics)
   | "clear" => Clear
   | "currentqueue"
   | "getqueue" => CurrentQueue
   | "freebird" => EasterEgg(FreeBird)
   | "friday" => EasterEgg(Friday)
   | "fullqueue" => FullQueue
-  | "classics" => EasterEgg(IteamClassics)
-  | "shoreline" => EasterEgg(Shoreline)
-  | "slowdance" => EasterEgg(Slowdance)
-  | "tequila" => EasterEgg(Tequila)
   | "help" => Help
   | "l"
   | "library" => Library
@@ -73,8 +70,11 @@ let decodeCommand = text =>
   | "queue" => Queue
   | "s"
   | "search" => Search
+  | "shoreline" => EasterEgg(Shoreline)
+  | "slowdance" => EasterEgg(Slowdance)
+  | "tequila" => EasterEgg(Tequila)
   | "toplist" => Toplist
   | "unmute" => Unmute
   | "volume" => Volume
-  | _ => Unknown
+  | _ => UnknownCommand
   };

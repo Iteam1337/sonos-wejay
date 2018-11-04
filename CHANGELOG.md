@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0] - 2018-11-04
+
+Feels pretty solid and production worthy, let's bump it to 1.0.0! :tada:
+
+### Changed
+
+- Major refactoring
+
 ## [0.8.3] - 2018-11-03
 
 ### Changed
