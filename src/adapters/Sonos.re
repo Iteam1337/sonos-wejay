@@ -101,4 +101,4 @@ external searchMusicLibrary: (sonosDevice, string, string) => Js.Promise.t('a) =
 [@bs.send]
 external selectTrack: (sonosDevice, int) => Js.Promise.t(bool) = "";
 
-let device = speaker(Devices.Rickard.home);
+let device = speaker(Devices.Iteam.lounge);
