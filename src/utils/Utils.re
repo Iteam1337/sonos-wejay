@@ -55,3 +55,8 @@ let help =
   ++ "toplist ___________ List top Wejayers\n"
   ++ "```"
   ++ "\n\nThere's also some hidden easter eggs :hatching_chick:";
+
+let unknownCommand = (command) => 
+  "Sorry, the command: " 
+  ++ "*\"" ++ command ++ "\"*"
+  ++ " is not available. Type *\"help\"* in order to get all available commands! :face_with_monocle:\n\n";
