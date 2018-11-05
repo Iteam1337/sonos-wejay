@@ -70,11 +70,7 @@ let parseQuery = text =>
 let event = json =>
   Json.Decode.{
     channel: json |> field("channel", string),
-    command:
-      switch (json |> optional(field("text", string))) {
-      | Some(text) => text |> Commands.decodeCommand
-      | None => UnknownCommand
-      },
+    command: json |> field("text", string) |> Commands.decodeCommand,
     text:
       switch (json |> optional(field("text", string))) {
       | Some(text) => parseQuery(text)

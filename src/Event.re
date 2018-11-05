@@ -63,7 +63,7 @@ let handleEventCallback = body => {
       | Play => Player.play()
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
-      | UnknownCommand => ()
+      | UnknownCommand(text) => sendMessage(Utils.unknownCommand(text)) |> ignore
       }
     | Bot => ()
     }

@@ -30,7 +30,7 @@ type command =
   | Queue
   | Search
   | Toplist
-  | UnknownCommand
+  | UnknownCommand(string)
   | Unmute
   | Volume;
 
@@ -76,5 +76,5 @@ let decodeCommand = text =>
   | "toplist" => Toplist
   | "unmute" => Unmute
   | "volume" => Volume
-  | _ => UnknownCommand
+  | text => UnknownCommand(text)
   };

@@ -127,5 +127,9 @@ describe("Commands", () => {
     test("volume", () =>
       expect(decodeCommand("volume")) |> toEqual(Volume)
     );
+
+    test("unknowncommand", () =>
+      expect(decodeCommand("unknowncommand")) |> toEqual(UnknownCommand("unknowncommand"))
+    );
   });
 });

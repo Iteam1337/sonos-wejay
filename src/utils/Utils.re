@@ -59,3 +59,11 @@ let help =
     "\nThere's also some hidden easter eggs :hatching_chick",
   ]
   |> String.concat("\n");
+
+let unknownCommand = command =>
+  [
+    "Sorry, the command: ",
+    "*\"" ++ command ++ "\"*",
+    " is not available. Type *\"help\"* in order to get all available commands! :face_with_monocle:\n",
+  ]
+  |> String.concat("\n");
