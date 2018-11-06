@@ -76,4 +76,10 @@ describe("Utils", () => {
          })
     );
   });
+
+  describe("#help", () =>
+    test("returns help", () =>
+      expect(help) |> toMatchSnapshot
+    )
+  );
 });
