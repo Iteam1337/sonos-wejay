@@ -164,7 +164,7 @@ let mostPlayed = sendMessage => {
 
         (
           switch (Belt.Array.length(rows)) {
-          | 0 => "No plays :san_panda:"
+          | 0 => "No plays :sad_panda:"
           | _ =>
             "*Most played*\n"
             ++ (
@@ -214,7 +214,7 @@ let toplist = sendMessage => {
 
         (
           switch (Belt.Array.length(rows)) {
-          | 0 => "No plays :san_panda:"
+          | 0 => "No plays :sad_panda:"
           | _ =>
             "*Toplist*\n"
             ++ (
