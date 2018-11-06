@@ -7,7 +7,8 @@ let cleanFloat = value => value |> int_of_float |> string_of_int;
 
 let parsedTrack = track => Js.String.replaceByRe([%re "/(<|>)/g"], "", track);
 
-let removeUser = text => Js.String.replaceByRe([%re "/<@\w+>\s/g"], "", text);
+let removeUser = text =>
+  Js.String.replaceByRe([%re "/<@\\w+>\\s/g"], "", text);
 
 let spotifyId = uri => uri |> Js.String.split(":") |> (items => items[2]);
 
