@@ -76,4 +76,17 @@ describe("Utils", () => {
          })
     );
   });
+
+  describe("#help", () =>
+    test("returns help", () =>
+      expect(help) |> toMatchSnapshot
+    )
+  );
+
+  describe("#unknownCommand", () =>
+    test("returns unknownCommand", () =>
+      expect(unknownCommand("some_command_that_should_not_exist"))
+      |> toMatchSnapshot
+    )
+  );
 });
