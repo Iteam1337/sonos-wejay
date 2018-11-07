@@ -2,7 +2,9 @@
 .merlin
 .bsb.lock
 npm-debug.log
-/lib
+/lib/bs
+/lib/js/src
+/lib/js/__tests__/*.js
 /node_modules/
 .env
 data.sql
