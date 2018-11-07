@@ -63,6 +63,6 @@ let help =
 let unknownCommand = command =>
   [
     "Sorry, the command: *\"" ++ command ++ "\"* is not available.",
-    "Type *\"help\"* in order to get all available commands! :face_with_monocle:\n",
+    "Type *\"help\"* in order to get all available commands! :face_with_monocle:",
   ]
   |> String.concat("\n");
