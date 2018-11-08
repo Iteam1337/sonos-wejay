@@ -8,6 +8,11 @@ let getCurrentTrack = () =>
   |> then_(current => current |> SonosDecode.currentTrackResponse |> resolve)
   |> catch(Utils.handleError("getCurrentTrack"));
 
+let getPlayingState = () =>
+  device->getCurrentState() 
+  |> then_(playState => playState |> SonosDecode.currentPlayingState |> resolve)
+  |> catch(Utils.handleError("getPlayingState"));
+
 let nowPlaying = sendMessage =>
   getCurrentTrack()
   |> then_(({artist, title, album, position, duration, queuePosition}) => {
