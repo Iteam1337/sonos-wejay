@@ -44,6 +44,11 @@ let handleEventCallback = body => {
       | NowPlaying => nowPlaying(sendMessage) |> ignore
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | Queue => Queue.asLast(q, user, sendMessage) |> ignore
+      | Time =>
+        sendMessage(
+          "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif",
+        )
+        |> ignore
       | Toplist => Database.toplist(sendMessage)
       | Volume =>
         switch (q) {

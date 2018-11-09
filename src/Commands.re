@@ -29,6 +29,7 @@ type command =
   | Previous
   | Queue
   | Search
+  | Time
   | Toplist
   | UnknownCommand(string)
   | Unmute
@@ -72,6 +73,7 @@ let decodeCommand = text =>
   | "search" => Search
   | "shoreline" => EasterEgg(Shoreline)
   | "slowdance" => EasterEgg(Slowdance)
+  | "time" => Time
   | "tequila" => EasterEgg(Tequila)
   | "toplist" => Toplist
   | "unmute" => Unmute
