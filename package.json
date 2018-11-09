@@ -17,11 +17,11 @@
   "license": "MIT",
   "devDependencies": {
     "@ahrefs/bs-dotenv": "1.0.3",
-    "@glennsl/bs-jest": "0.4.4",
+    "@glennsl/bs-jest": "0.4.5",
     "@glennsl/bs-json": "3.0.0",
     "bs-axios": "0.0.39",
     "bs-express": "0.9.0",
-    "bs-platform": "4.0.6"
+    "bs-platform": "4.0.7"
   },
   "dependencies": {
     "body-parser": "1.18.3",
@@ -29,7 +29,8 @@
     "date-fns": "^1.29.0",
     "dotenv": "6.1.0",
     "express": "4.16.4",
+    "let-anything": "^1.0.1",
     "query-string": "6.2.0",
-    "sonos": "1.5.1"
+    "sonos": "1.5.4"
   }
 }

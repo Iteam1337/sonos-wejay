@@ -8,7 +8,9 @@ let sendPayload = payload => {
       (),
     );
 
-  Js.Promise.(Axios.request(request) |> then_(posted => posted |> resolve));
+  let%Await posted = Axios.request(request);
+
+  Js.Promise.resolve(posted) |> ignore;
 };
 
 let sendResponseWithAttachments =

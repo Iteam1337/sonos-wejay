@@ -1,6 +1,6 @@
 let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
-  let qAsLast = uri => uri->Queue.asLast(user, sendMessage);
-  let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
+  let qAsLast = uri => uri->Queue.asLast(user, sendMessage) |> ignore;
+  let qAsNext = uri => uri->Queue.asNext(user, sendMessage) |> ignore;
 
   switch (egg) {
   | IteamClassics => SpotifyUtils.Playlists.iteamClassics->qAsLast
@@ -33,26 +33,26 @@ let handleEventCallback = body => {
     | Human =>
       switch (command) {
       /* Send string message */
-      | Blame => Misc.blame(sendMessage)
-      | Clear => Queue.clearQueue(sendMessage)
-      | CurrentQueue => Queue.currentQueue(sendMessage)
+      | Blame => Misc.blame(sendMessage) |> ignore
+      | Clear => Queue.clearQueue(sendMessage) |> ignore
+      | CurrentQueue => Queue.currentQueue(sendMessage) |> ignore
       | EasterEgg(egg) => handleEasterEgg(egg, user, sendMessage)
-      | Emoji(emoji) => handleEmoji(emoji, sendMessage)
-      | FullQueue => Queue.getFullQueue(sendMessage)
+      | Emoji(emoji) => handleEmoji(emoji, sendMessage) |> ignore
+      | FullQueue => Queue.getFullQueue(sendMessage) |> ignore
       | Help => sendMessage(Utils.help) |> ignore
       | MostPlayed => Database.mostPlayed(sendMessage)
-      | NowPlaying => nowPlaying(sendMessage)
+      | NowPlaying => nowPlaying(sendMessage) |> ignore
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
-      | Queue => Queue.asLast(q, user, sendMessage)
+      | Queue => Queue.asLast(q, user, sendMessage) |> ignore
       | Toplist => Database.toplist(sendMessage)
       | Volume =>
         switch (q) {
-        | "" => Volume.currentVolume(sendMessage)
-        | _ => Volume.updateVolume(q, sendMessage)
+        | "" => Volume.currentVolume(sendMessage) |> ignore
+        | _ => Volume.updateVolume(q, sendMessage) |> ignore
         }
 
       /* Send message with attachments */
-      | Library => Search.library(q, sendMessageWithAttachments)
+      | Library => Search.library(q, sendMessageWithAttachments) |> ignore
       | Search =>
         Spotify.searchTrackWithMessage(q, sendMessageWithAttachments)
 
@@ -63,7 +63,8 @@ let handleEventCallback = body => {
       | Play => Player.play()
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
-      | UnknownCommand(text) => sendMessage(Utils.unknownCommand(text)) |> ignore
+      | UnknownCommand(text) =>
+        sendMessage(Utils.unknownCommand(text)) |> ignore
       }
     | Bot => ()
     }

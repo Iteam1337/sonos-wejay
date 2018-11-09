@@ -35,7 +35,8 @@ let action =
         let payload = response##payload |> Decode.actionPayload;
 
         Slack.sendSlackResponse(payload.channel.id)
-        |> Queue.asLast(payload.actions[0].value, Some(payload.user.id));
+        |> Queue.asLast(payload.actions[0].value, Some(payload.user.id))
+        |> ignore;
 
         Response.sendStatus(Ok);
       | None => Response.sendStatus(BadRequest)

@@ -8,7 +8,7 @@ type queueResponse = {
 
 type currentQueue = {
   album: option(string),
-  albumArtURI: string,
+  albumArtURI: option(string),
   artist: string,
   title: string,
   uri: string,
@@ -22,7 +22,7 @@ type currentQueueResponse = {
 
 type currentTrackResponse = {
   album: option(string),
-  albumArtURI: string,
+  albumArtURI: option(string),
   albumArtURL: string,
   artist: string,
   duration: float,
@@ -32,7 +32,10 @@ type currentTrackResponse = {
   uri: string,
 };
 
-type currentPlayingState = Stopped | Playing | UnknownState;
+type currentPlayingState =
+  | Stopped
+  | Playing
+  | UnknownState;
 
 module SonosDecode = {
   open Json.Decode;
@@ -46,7 +49,7 @@ module SonosDecode = {
 
   let currentQueue = json => {
     album: json |> optional(field("album", string)),
-    albumArtURI: json |> field("albumArtURI", string),
+    albumArtURI: json |> optional(field("albumArtURI", string)),
     artist: json |> field("artist", string),
     title: json |> field("title", string),
     uri: json |> field("uri", string),
@@ -60,7 +63,7 @@ module SonosDecode = {
 
   let currentTrackResponse = json => {
     album: json |> optional(field("album", string)),
-    albumArtURI: json |> field("albumArtURI", string),
+    albumArtURI: json |> optional(field("albumArtURI", string)),
     albumArtURL: json |> field("albumArtURL", string),
     artist: json |> field("artist", string),
     duration: json |> field("duration", Json.Decode.float),
@@ -71,7 +74,7 @@ module SonosDecode = {
   };
 
   let currentPlayingState = currentState =>
-    switch currentState {
+    switch (currentState) {
     | "stopped" => Stopped
     | "playing" => Playing
     | _ => UnknownState
@@ -98,8 +101,10 @@ external queueAsLast: (sonosDevice, string) => Js.Promise.t('a) = "queue";
 [@bs.send] external pause: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external flush: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external setVolume: (sonosDevice, float) => Js.Promise.t('a) = "";
-[@bs.send] external getCurrentState: (sonosDevice, unit) => Js.Promise.t(string) = "";
-[@bs.send] external getQueue: (sonosDevice, unit) => Js.Promise.t('a) = "";
+[@bs.send]
+external getCurrentState: (sonosDevice, unit) => Js.Promise.t(string) = "";
+[@bs.send]
+external getQueue: (sonosDevice, unit) => Js.Promise.t(Js.Json.t) = "";
 [@bs.send] external setMuted: (sonosDevice, bool) => Js.Promise.t(bool) = "";
 [@bs.send] external next: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external previous: (sonosDevice, unit) => Js.Promise.t(bool) = "";

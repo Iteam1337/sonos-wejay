@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0] - 2018-11-09
+
+### Changed
+
+- Switched to async/await
+
 ## [1.0.1] - 2018-11-04
 
 ### Fixed
