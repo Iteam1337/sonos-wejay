@@ -18,6 +18,18 @@ let playTrackNumber = (trackNumber, sendMessage) =>
   |> then_(_ =>
        Services.getCurrentTrack()
        |> then_(({artist, title}) => {
+
+            Services.getPlayingState()
+            |> then_(state => {
+              switch (state) {
+              | Stopped => play()
+              | Playing | UnknownState => ()
+              }
+
+              resolve(true)
+            })
+            |> ignore;
+
             sendMessage(
               "*Playing track*\n" ++ Utils.artistAndTitle(~artist, ~title),
             )
