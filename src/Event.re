@@ -1,6 +1,6 @@
 let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
-  let qAsLast = uri => uri->Queue.asLast(user, sendMessage) |> ignore;
-  let qAsNext = uri => uri->Queue.asNext(user, sendMessage) |> ignore;
+  let qAsLast = uri => uri->Queue.asLast(user, sendMessage);
+  let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
 
   switch (egg) {
   | IteamClassics => SpotifyUtils.Playlists.iteamClassics->qAsLast
@@ -33,17 +33,17 @@ let handleEventCallback = body => {
     | Human =>
       switch (command) {
       /* Send string message */
-      | Blame => Misc.blame(sendMessage) |> ignore
-      | Clear => Queue.clearQueue(sendMessage) |> ignore
-      | CurrentQueue => Queue.currentQueue(sendMessage) |> ignore
+      | Blame => Misc.blame(sendMessage)
+      | Clear => Queue.clearQueue(sendMessage)
+      | CurrentQueue => Queue.currentQueue(sendMessage)
       | EasterEgg(egg) => handleEasterEgg(egg, user, sendMessage)
-      | Emoji(emoji) => handleEmoji(emoji, sendMessage) |> ignore
-      | FullQueue => Queue.getFullQueue(sendMessage) |> ignore
+      | Emoji(emoji) => handleEmoji(emoji, sendMessage)
+      | FullQueue => Queue.getFullQueue(sendMessage)
       | Help => sendMessage(Utils.help) |> ignore
       | MostPlayed => Database.mostPlayed(sendMessage)
-      | NowPlaying => nowPlaying(sendMessage) |> ignore
+      | NowPlaying => nowPlaying(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
-      | Queue => Queue.asLast(q, user, sendMessage) |> ignore
+      | Queue => Queue.asLast(q, user, sendMessage)
       | Time =>
         sendMessage(
           "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif",
@@ -52,12 +52,12 @@ let handleEventCallback = body => {
       | Toplist => Database.toplist(sendMessage)
       | Volume =>
         switch (q) {
-        | "" => Volume.currentVolume(sendMessage) |> ignore
-        | _ => Volume.updateVolume(q, sendMessage) |> ignore
+        | "" => Volume.currentVolume(sendMessage)
+        | _ => Volume.updateVolume(q, sendMessage)
         }
 
       /* Send message with attachments */
-      | Library => Search.library(q, sendMessageWithAttachments) |> ignore
+      | Library => Search.library(q, sendMessageWithAttachments)
       | Search =>
         Spotify.searchTrackWithMessage(q, sendMessageWithAttachments)
 

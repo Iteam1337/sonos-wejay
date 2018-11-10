@@ -23,7 +23,6 @@
     "bs-mysql2"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
-  "ppx-flags": ["let-anything/lib/bs/native/let_anything.native"],
   "warnings": {
     "error": "+101"
   },
