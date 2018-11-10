@@ -52,12 +52,12 @@ let openConnection = () =>
 
 let insertTrack = (~uri, ~user) => {
   let spotifyId = Utils.spotifyId(uri);
-  let timestamp = Js.Math.abs_int(Js.Date.now() |> int_of_float);
 
   Js.Promise.(
     Spotify.getTrack(spotifyId)
     |> then_((track: Spotify.track) => {
          let conn = openConnection();
+         let timestamp = Js.Math.round(Js.Date.now() /. 1000.);
 
          let params =
            MySql2.Params.named(
@@ -65,7 +65,7 @@ let insertTrack = (~uri, ~user) => {
                object_([
                  ("uri", string(uri)),
                  ("user_id", string(user)),
-                 ("timestamp", int(timestamp)),
+                 ("timestamp", Json.Encode.float(timestamp)),
                  ("artist", string(Spotify.buildArtist(track.artists))),
                  ("duration", int(track.duration)),
                  ("name", string(track.name)),
