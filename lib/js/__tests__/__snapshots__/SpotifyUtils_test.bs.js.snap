@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpotifyUtils Tracks #Xmas xmasSongs 1`] = `
+Array [
+  Array [
+    "Justin Bieber - Mistletoe",
+    "7xapw9Oy21WpfEcib2ErSA",
+  ],
+  Array [
+    "Ariana Grande - Santa Tell Me",
+    "0lizgQ7Qw35od7CYaoMBZb",
+  ],
+  Array [
+    "Frank Sinatra - Let it Snow",
+    "7inXu0Eaeg02VsM8kHNvzM",
+  ],
+  Array [
+    "Mariah Carey - All I Want for Christmas Is You",
+    "0bYg9bo50gSsH3LtXe2SQn",
+  ],
+  Array [
+    "Wham! - Last Christmas",
+    "77nF1t4qesuOJRd8lbIzNX",
+  ],
+  Array [
+    "Daryl Hall & John Oates - Jingle Bell Rock",
+    "3y8Z2sOJrBt6yKEfsZG1NY",
+  ],
+  Array [
+    "Feliz Navidad",
+    "7xQmVmSfCt4LD9H2uFoWOO",
+  ],
+  Array [
+    "Mariah Carey - Santa Claus Is Comin' To Town",
+    "1f2lkuLldqRzvaFjJdjGXX",
+  ],
+]
+`;

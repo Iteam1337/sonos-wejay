@@ -37,6 +37,17 @@ describe("SpotifyUtils", () => {
       expect(Tracks.tequila)
       |> toEqual("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
     );
+
+    describe("#Xmas", () => {
+
+      test("xmasSongs", () => 
+        expect(Tracks.Xmas.xmasSongs) |> toMatchSnapshot 
+      );
+
+      test("getXmasSong should return spotify uri", () =>
+        expect(Tracks.Xmas.getXmasSong()) |> toContainString("spotify:track:")
+      );
+    })
   });
 
   describe("Playlists", () => {
