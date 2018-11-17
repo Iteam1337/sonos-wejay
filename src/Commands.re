@@ -1,7 +1,7 @@
 type emoji =
   | ThumbsDown
   | ThumbsUp
-  | Xmas;
+  | Santa;
 
 type egg =
   | FreeBird
@@ -48,7 +48,7 @@ let decodeCommand = text =>
   switch (parseCommand(text)) {
   | ":+1:" => Emoji(ThumbsUp)
   | ":-1:" => Emoji(ThumbsDown)
-  | ":santa:" => Emoji(Xmas)
+  | ":santa:" => Emoji(Santa)
   | "blame" => Blame
   | "classics" => EasterEgg(IteamClassics)
   | "clear" => Clear

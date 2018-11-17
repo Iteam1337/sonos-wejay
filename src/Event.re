@@ -16,13 +16,13 @@ let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
   };
 };
 
-let handleEmoji = (emoji: Commands.emoji, sendMessage) => {
+let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
   switch (emoji) {
   | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
   | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
-  | Xmas => SpotifyUtils.Tracks.Xmas.getXmasSong() -> Queue.asNext(None, sendMessage)
+  | Santa =>
+    SpotifyUtils.Tracks.Christmas.getSong()->Queue.asNext(None, sendMessage)
   };
-}
 
 let handleEventCallback = body => {
   let {event}: Decode.message = body |> Decode.message;

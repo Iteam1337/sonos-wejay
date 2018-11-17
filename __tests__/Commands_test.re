@@ -19,20 +19,19 @@ describe("Commands", () => {
   });
 
   describe("#decodeCommand", () => {
-
     describe("#Emoji", () => {
-      test(":+1:", () => 
-        expect(decodeCommand(":+1:")) |> toEqual(Emoji(ThumbsUp)) 
+      test(":+1:", () =>
+        expect(decodeCommand(":+1:")) |> toEqual(Emoji(ThumbsUp))
       );
 
-      test(":-1:", () => 
-        expect(decodeCommand(":-1:")) |> toEqual(Emoji(ThumbsDown)) 
+      test(":-1:", () =>
+        expect(decodeCommand(":-1:")) |> toEqual(Emoji(ThumbsDown))
       );
 
-      test(":santa:", () => 
-        expect(decodeCommand(":santa:")) |> toEqual(Emoji(Xmas)) 
+      test(":santa:", () =>
+        expect(decodeCommand(":santa:")) |> toEqual(Emoji(Santa))
       );
-    })
+    });
 
     test("clear", () =>
       expect(decodeCommand("clear")) |> toEqual(Clear)
@@ -140,7 +139,8 @@ describe("Commands", () => {
     );
 
     test("unknowncommand", () =>
-      expect(decodeCommand("unknowncommand")) |> toEqual(UnknownCommand("unknowncommand"))
+      expect(decodeCommand("unknowncommand"))
+      |> toEqual(UnknownCommand("unknowncommand"))
     );
 
     test("volume", () =>
