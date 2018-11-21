@@ -45,7 +45,7 @@ describe("SpotifyUtils", () => {
 
       test("getSong should return spotify uri", () =>
         expect(Tracks.Christmas.getSong())
-        |> toContainString("spotify:track:")
+        |> toMatchRe([%re "/^spotify:track:[a-z0-9]+$/ig"])
       );
     });
   });
