@@ -19,6 +19,20 @@ describe("Commands", () => {
   });
 
   describe("#decodeCommand", () => {
+    describe("#Emoji", () => {
+      test(":+1:", () =>
+        expect(decodeCommand(":+1:")) |> toEqual(Emoji(ThumbsUp))
+      );
+
+      test(":-1:", () =>
+        expect(decodeCommand(":-1:")) |> toEqual(Emoji(ThumbsDown))
+      );
+
+      test(":santa:", () =>
+        expect(decodeCommand(":santa:")) |> toEqual(Emoji(Santa))
+      );
+    });
+
     test("clear", () =>
       expect(decodeCommand("clear")) |> toEqual(Clear)
     );
@@ -124,12 +138,13 @@ describe("Commands", () => {
       expect(decodeCommand("unmute")) |> toEqual(Unmute)
     );
 
-    test("volume", () =>
-      expect(decodeCommand("volume")) |> toEqual(Volume)
+    test("unknowncommand", () =>
+      expect(decodeCommand("unknowncommand"))
+      |> toEqual(UnknownCommand("unknowncommand"))
     );
 
-    test("unknowncommand", () =>
-      expect(decodeCommand("unknowncommand")) |> toEqual(UnknownCommand("unknowncommand"))
+    test("volume", () =>
+      expect(decodeCommand("volume")) |> toEqual(Volume)
     );
   });
 });

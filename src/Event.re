@@ -20,6 +20,8 @@ let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
   switch (emoji) {
   | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
   | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
+  | Santa =>
+    SpotifyUtils.Tracks.Christmas.getSong()->Queue.asNext(None, sendMessage)
   };
 
 let handleEventCallback = body => {

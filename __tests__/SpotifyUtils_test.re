@@ -37,6 +37,17 @@ describe("SpotifyUtils", () => {
       expect(Tracks.tequila)
       |> toEqual("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
     );
+
+    describe("#Christmas", () => {
+      test("songs", () =>
+        expect(Tracks.Christmas.songs) |> toMatchSnapshot
+      );
+
+      test("getSong should return spotify uri", () =>
+        expect(Tracks.Christmas.getSong())
+        |> toMatchRe([%re "/^spotify:track:[a-z0-9]+$/ig"])
+      );
+    });
   });
 
   describe("Playlists", () => {
