@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.1] - 2018-11-22
+
+### Changed
+
+- Use multi stage Docker build, reduces image size from ~1.4GB to ~500MB #15
+
 ## [2.2.0] - 2018-11-22
 
 ### Added
