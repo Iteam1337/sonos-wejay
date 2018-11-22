@@ -26,6 +26,14 @@ module Tracks = {
         "Mariah Carey - Santa Claus Is Comin' To Town",
         "1f2lkuLldqRzvaFjJdjGXX",
       ),
+      (
+        "Michael Bublé - It's Beginning To Look A Lot Like Christmas",
+        "4Dgp0jxrJdpKrZfVmgxekz",
+      ),
+      (
+        "Andy Williams - It's the Most Wonderful Time of the Year",
+        "5hslUAKq9I9CG2bAulFkHN",
+      ),
     |];
 
     let getSong = () => {
