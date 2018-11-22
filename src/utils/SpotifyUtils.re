@@ -21,7 +21,7 @@ module Tracks = {
         "Daryl Hall & John Oates - Jingle Bell Rock",
         "3y8Z2sOJrBt6yKEfsZG1NY",
       ),
-      ("Feliz Navidad", "7xQmVmSfCt4LD9H2uFoWOO"),
+      ("José Feliciano - Feliz Navidad", "7xQmVmSfCt4LD9H2uFoWOO"),
       (
         "Mariah Carey - Santa Claus Is Comin' To Town",
         "1f2lkuLldqRzvaFjJdjGXX",
