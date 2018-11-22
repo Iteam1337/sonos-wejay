@@ -21,6 +21,15 @@ let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   |],
 };
 
+let parseSpotifyCopy = trackList =>
+  trackList
+  |> Js.String.replaceByRe([%re "/<|>/g"], "")
+  |> Js.String.replaceByRe(
+       [%re "/https:\\/\\/open.spotify.com\\/track\\//ig"],
+       "spotify:track:",
+     )
+  |> Js.String.split("\n");
+
 let handleError = (parent, err) => {
   Js.log(err);
   Js.Promise.reject(Js.Exn.raiseError("Something went wrong in " ++ parent));

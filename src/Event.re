@@ -45,6 +45,10 @@ let handleEventCallback = body => {
       | MostPlayed => Database.mostPlayed(sendMessage)
       | NowPlaying => nowPlaying(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
+      | SpotifyCopy(tracks) =>
+        tracks->Belt.Array.forEach(track =>
+          Queue.asLast(track, user, sendMessage)
+        )
       | Queue => Queue.asLast(q, user, sendMessage)
       | Time =>
         sendMessage(
@@ -72,6 +76,7 @@ let handleEventCallback = body => {
       | Unmute => Player.mute(false)
       | UnknownCommand(text) =>
         sendMessage(Utils.unknownCommand(text)) |> ignore
+      | UnhandledCommand => ()
       }
     | Bot => ()
     }

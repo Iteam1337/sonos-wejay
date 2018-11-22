@@ -70,7 +70,12 @@ let parseQuery = text =>
 let event = json =>
   Json.Decode.{
     channel: json |> field("channel", string),
-    command: json |> field("text", string) |> Commands.decodeCommand,
+    command:
+      Belt.Option.getWithDefault(
+        json |> optional(field("text", string)),
+        "",
+      )
+      |> Commands.decodeCommand,
     text:
       switch (json |> optional(field("text", string))) {
       | Some(text) => parseQuery(text)

@@ -77,6 +77,20 @@ describe("Utils", () => {
     );
   });
 
+  describe("#parseSpotifyCopy", () =>
+    test("should parse spotify copy/paste", () =>
+      expect(
+        parseSpotifyCopy(
+          "<https://open.spotify.com/track/2mPE346iPVnss0GoRgwGTK>\n<https://open.spotify.com/track/4LT7xQZgICM6FqUJkWI6aM>",
+        ),
+      )
+      |> toEqual([|
+           "spotify:track:2mPE346iPVnss0GoRgwGTK",
+           "spotify:track:4LT7xQZgICM6FqUJkWI6aM",
+         |])
+    )
+  );
+
   describe("#help", () =>
     test("returns help", () =>
       expect(help) |> toMatchSnapshot

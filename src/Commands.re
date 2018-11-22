@@ -30,8 +30,10 @@ type command =
   | Previous
   | Queue
   | Search
+  | SpotifyCopy(array(string))
   | Time
   | Toplist
+  | UnhandledCommand
   | UnknownCommand(string)
   | Unmute
   | Volume;
@@ -44,41 +46,50 @@ let parseCommand = text =>
   |> Js.Array.slice(~start=0, ~end_=1)
   |> (array => array[0]);
 
-let decodeCommand = text =>
-  switch (parseCommand(text)) {
-  | ":+1:" => Emoji(ThumbsUp)
-  | ":-1:" => Emoji(ThumbsDown)
-  | ":santa:" => Emoji(Santa)
-  | "blame" => Blame
-  | "classics" => EasterEgg(IteamClassics)
-  | "clear" => Clear
-  | "currentqueue"
-  | "getqueue" => CurrentQueue
-  | "freebird" => EasterEgg(FreeBird)
-  | "friday" => EasterEgg(Friday)
-  | "fullqueue" => FullQueue
-  | "help" => Help
-  | "l"
-  | "library" => Library
-  | "mute" => Mute
-  | "mostplayed" => MostPlayed
-  | "next" => Next
-  | "np"
-  | "nowplaying" => NowPlaying
-  | "pause" => Pause
-  | "play" => Play
-  | "playtrack" => PlayTrack
-  | "previous" => Previous
-  | "q"
-  | "queue" => Queue
-  | "s"
-  | "search" => Search
-  | "shoreline" => EasterEgg(Shoreline)
-  | "slowdance" => EasterEgg(Slowdance)
-  | "time" => Time
-  | "tequila" => EasterEgg(Tequila)
-  | "toplist" => Toplist
-  | "unmute" => Unmute
-  | "volume" => Volume
-  | text => UnknownCommand(text)
-  };
+let decodeCommand = text => {
+  let isSpotifyCopy =
+    Js.String.includes("https://open.spotify.com/track", text);
+
+  isSpotifyCopy ?
+    SpotifyCopy(Utils.parseSpotifyCopy(text)) :
+    (
+      switch (parseCommand(text)) {
+      | "" => UnhandledCommand
+      | ":+1:" => Emoji(ThumbsUp)
+      | ":-1:" => Emoji(ThumbsDown)
+      | ":santa:" => Emoji(Santa)
+      | "blame" => Blame
+      | "classics" => EasterEgg(IteamClassics)
+      | "clear" => Clear
+      | "currentqueue"
+      | "getqueue" => CurrentQueue
+      | "freebird" => EasterEgg(FreeBird)
+      | "friday" => EasterEgg(Friday)
+      | "fullqueue" => FullQueue
+      | "help" => Help
+      | "l"
+      | "library" => Library
+      | "mute" => Mute
+      | "mostplayed" => MostPlayed
+      | "next" => Next
+      | "np"
+      | "nowplaying" => NowPlaying
+      | "pause" => Pause
+      | "play" => Play
+      | "playtrack" => PlayTrack
+      | "previous" => Previous
+      | "q"
+      | "queue" => Queue
+      | "s"
+      | "search" => Search
+      | "shoreline" => EasterEgg(Shoreline)
+      | "slowdance" => EasterEgg(Slowdance)
+      | "time" => Time
+      | "tequila" => EasterEgg(Tequila)
+      | "toplist" => Toplist
+      | "unmute" => Unmute
+      | "volume" => Volume
+      | text => UnknownCommand(text)
+      }
+    );
+};
