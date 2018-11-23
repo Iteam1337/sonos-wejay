@@ -22,6 +22,17 @@
         "review",
         "test"
       ]
+    },
+    {
+      "login": "lessp",
+      "name": "Tom Ekander",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/17602389?v=4",
+      "profile": "https://github.com/lessp",
+      "contributions": [
+        "code",
+        "test",
+        "ideas"
+      ]
     }
   ]
 }
