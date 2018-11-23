@@ -1,28 +1,28 @@
 language: node_js
 cache:
   directories:
-    - '~/.npm'
+  - "~/.npm"
 node_js:
-  - '10'
+- '10'
 install:
-  - npm install --silent
+- npm install --silent
 script:
-  - npm run test:ci
+- npm run test:ci
 branches:
   only:
-    - master
+  - master
 env:
   global:
-    - COMMIT=${TRAVIS_COMMIT::8}
-    - secure: r6ytr9nmp8hawwQF5zQ6rnJyDLllWPjNvAqkvSAROA2bWbCCeVDtvp7HJyEGX0dL3HFHD2GUcQRlwIiKywtwSOL6Z9ZhOGPOANNSbuC5ByOA3cXVD5EKF7+VTxYxu8VDrhAXK28hYXt/LIf2Ji3RM8EjWcoC+3EHxcm/r2lWiu8qMURUgdyV2WcmbgPUF9orhMU9cMReQlYsbgaSw++hYLoORmcc35DTGjo3JdU4DRjw+CZeX6JZelmNYcJuSYldvIY0D/P1UDe1MwtYwswWXhwa8YmeAM6DjxucbWdLKOGXSJzmXMJqu89iE6MntpboVwHqa1CHpVBeirlw4jc02dsn8QNABVj7C5GXYKoJ3IbBEw10oqJOy282nWDtTWtog1ZjSK+gupBqbG86v7AyuLJBrlxaOobmp8nRCtUGrV9Wb28OqIlKbPOtYzUSAbu94Gv7UhffGfEwA5qTgQmfUj5BCvYu3m4/N2G5i6y0JzY2wQg2p8HEWDL8rewxNeK0lKMtlBZnzGlsgvHuIKM0SDLoV3173mgg7EuHHwnVv0OoJeU3Zwd5/QH6PoCgGG1rfmpjB8NxCfCc+oXyIlHHmPywMIt6cZYpMkiXj7AsZotesxKXcx1dS/2svm2HKV0iBzO+/YYbeuxZr23WHGOr6D/ZnGShSCN3Pp6AUKGLSjs=
-    - secure: ViLpMlQuDxLqbRLNL63WgJ8KT4jmSeM+1ly81u9CVSrsnguWXdNfQFhq2gq6wh6g3qpcz9gY+ta/UlLahmF4AkF0KGnKe0k3H+LApnZ9Ol7mj6KP5bxyUwYeoy1JekKnnEYjxheUPX5eW8kfdOMiwmCxNCr+dGCXYABjQyyYRu2slIEUzAJKLW8eXfgOD8+lUvAxMzEvFJ9LyEWN3p/eik95LJn2UlELYZtTPBReVJEt6qXtxZFGm3nvg3so6esvYTlNHx2dtBP+hkKUqqqCwtCHmKq1xhYZBs6uyPIErGVEEXrpmSa/Tc3bwighJKDt1qT12BM4nE7JEyie6M6QCEKBgeXuQVEYTCputPR+le30jAwO4ajEkbFRvBheBwLZX1DU3lXeSXl0bX2lgk6vh51UQ6+HtwPnH8ZPd/qS3rHvi3Ky94mTZi60URyP6stRoVrFiZERbYZ74a+jGBOgcOWT87f0ACoIQlmnLf10JEw6LXS+SBp2JaWrKfCZEXgVHJutgY/YILGhrB+HGxHi/uBeW2uT7UCVEhWGY3epXHkV4MRK0nLbu4tKxaY+wIlcpbcGF6sAjjCFHTuByasJHjyiLDwcLHC8xi/nmsyPRIkKWUrZ9pqApK+i2F/+ipGmkO/BuYShJBMQr1jGF/CwEKG4RkDn3W7cfoOT1co+xpI=
-    - secure: jz4X8rBKed+bmI2J/njmJHQrynQu31F2tpTGfQSaswNyA/mQIJFMnVitp3VqfXFITIL4mQuLJzveXJAfEcVa2eEaZpAjk0Kx0ORfe4xc61AjvUTReldj4b4xqb+6WaIhWDRHzp+QIwVJms2D7Wr2xWiVUTEqTIjWxNL4k/LPyahY/XpBOa9rdPHlXuJvxrceWpdQOgltRvYmbZbQnx7XK5mqM8BIBUDsbGMFFYtOcIOhajp9napzp2T08A+VQV6PWT6rRpP9RslM9EhNgyuHrCbeJFJlxUe1VsUu4cqIHnNtwp7wA1YOUOdi7x/s9dACosudBRXrpQlGgAfC7F27fI4t/kuSrELWfoyQPZ/1D3zWSOXfMoqgmW83IN0olc5fCerpDJWsQK2UA/cmCmjeQMj4TMFeLxJi7F2ye2iJG6GLbLX//3/ZBLHHfIX65h26JHfXrpODhPTWWGKDr/PyyWyfy4Z3z0pv1OIMCJHdiYV7nHxNFYsw2K9VJ+u8Cxb+4gjOrreUuUrX8bYodkrSwPxNSSVWSGMs2ooc0ha86liOyBcnupS8vHqbguIRoYMgGAXn7xur+ZCA25vIowMydHO0R4P+x0NuV4lTXwaiQjexZWEyMjF7FnZj8vHQrjwHv4BtNeNpQXar/oqF8nYbprNjrQJxheGTkPHmb5kCu2E=
+  - COMMIT=${TRAVIS_COMMIT::8}
+  - secure: WHslM8XiqZU9hQL40tFBIn+QU0ZB+DKi/r1vYTJ5QHR/QWoajEL2K8N/ZIUTPwJl+o47eox6Rhu7hDUxchdQm7tJwhLreNetfNC0Fm6XkU9Lph3uGLcpIUcykKPDXapiAjSe/WjrM1AcTIwkTBTKcuPt+DY40iNJDbmvwht2+jsQV6nxwshV4tenrjXFJ6NEpUc64SSD81xdrKI4Zfl/m5RvwV7iucGhlFTmA8uLOZ0oOmN0DD9nIEkS6tpzgizKPtIqbSbkKFiEv6lq3q63yLmAgXlGZ9VMQj04zvrs/RDhJAwcvh/9P93h3KutW9nc0UXyQ5Qhdvm/BWcHHIwc/3g3mqO6GOqUva60jkUoM9sLDIEOFItGbj8QQgO+1VO3RnMQcygVfgQbLJLeqR58pglbm/jt6X/v/gciuLAPvsI0nG/CSLcJvqy3FaNyd2UPSzexh2W77nXHL4pUnj92E7QBrdKrGeT9DMHAAtWSEXDkGSC9m+9fKNry2gjulRi0iW49YRY0NIbIaVJkN2e2WrulxWQ33zAtVi6HxJyNWL/HmPOzCFp7v3zoG8k5ysSRmiFPDR+R2JSXzHkAZMMX68ruU/K1/NS9k2S0Fvu27SjKkR9AO53W0U3Jjnqe5HaFmDTppOwMAVjVr/8O9I3RvxyoKMrAJRkmbsM1uprw4LA=
+  - secure: n0HQ13pwAn9Oc7DYgaZ0Ybz3lBgBlVMvmljI2p7ogrOFzpmXF4H9/t0Zvmckhtmr8wIwgEE4CYhtldkJixrpbzqTJZXLpBhfEJmsBU0bN1Tnwer5Yv+r7Z2hipPLK+V3XGI4UhYo/KCa50lLH4ggxHPr9FlIUTC17MFwzqmPpstKGmuk59i8tIwNSjgpJgKXaTpcVSSzYTYyLsPzag/CJs34WHC4TWg9GWRytiuIm5j1sW63yh7nZ1YSCWoAZk/nLosqRc7ytvOSaL3zD4HGhopeBQbkW/VxhKFBcRPhNj9LsbYCvLz3ivJMTCHv7osOOqcsJcXM+UcbBkm9k5sDqLnynqYcbzdA0E8avj20+zQGh0y1GKcpH0Fz7wjGSWCqAJQdYxeYrWrbZWz++UvZwFXpnIlO4astRjKQtvglr20MHc4P7lGtNx1Tm+BTVWF8OsIY39Nz4nz9XFrFoUjxPD1bOZ9Buv3r8T2R9SX3jxFi5slPyFaIr5RwaK+wf06kDVV7MUwOkPw/36T/p98TVmtV9TINljry/3CQVgt629O6HCeDSuRE0dnnEtQUzf3Mblk635H8CKwlz6WXQIbYO0r3n8sK+GE9SD2gjkOwYLaWK94FfxP6Q+xUKl0MhQu5vO6qVbS7u5fiTMCEkj+M+3Nm5LwON5lriMNsQVUraL0=
+  - secure: lNWW3l1+BdA+NCwfOQGEpSQ6HrieC9sjW596WQJvxjoZmerT+7bJZNJMcV7FhvWsSpCi6FRqOseE25i7jJAOUYvtCsQBPRXyfRuMAQdg3GUy7q5ihiitMYJ3Ltk9Jb6y9w265usjYxYUJ9zXVezyxjya99kCH/K6WMQeO+Kj5ECQkDoVHvbiPD2ujQ7OXlCzDHtp3v4+PNYcGMyLXkgHmp0+qpGGsyg7f7G/uS0gPHEmBLAOkhrcpq41q12mUzpKqlp1dvPv4P6koCU75zFKtDHv8+piGra4W1X4mNBnIBFCnE7iyOa1F1FR0Q6KFamEH7wXSeHVqEZazdwMqrW3KKzvSkJT6bZwP/T3HqZnUvDkM6mkOrLxF2DRLPN4cBLpU0l3RiBtkuckb/hq7pNvVglC5JoZ6yUTxueSoaim/zqMG7E05OeSIHB0YMjEfZPkWsicnPIKsdKPupbhTAQZ8XOIjc4Oi7FA7woYpVyphU4liKFNpcvzDxSU4Cyyzk9Po75SKOGaoMInIalf193XkjS8/mAfAm9S0319GzPZvKVmtAmCBfqOPoxLf1LoXNW0csVoKjyxN9is5Y//EBrtQyg4HdW7zxTK1x8ivXgrmQ2sJAHINoN0e703PolpZZsK1Nm8nVsgQ3gtGkeKCfzJXse73SO83IyClY5dpUSaMsA=
 after_success:
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - export REPO=iteam1337/sonos-wejay
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
-    ; fi`
-  - docker build -f Dockerfile -t $REPO:$COMMIT .
-  - docker tag $REPO:$COMMIT $REPO:$TAG
-  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- export REPO=iteam1337/sonos-wejay
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $REPO:$COMMIT .
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO
