@@ -42,6 +42,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "dubbelnisse",
+      "name": "Nils Nilsson",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3233182?v=4",
+      "profile": "http://nilssonnils.se",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ]
 }
