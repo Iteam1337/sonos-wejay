@@ -4,6 +4,8 @@
 
 Wejay is a music collaboration bot for Slack that can be used to add music to a local Sonos system. It needs to be started on the same network as your Sonos system in order to communicate with the speakers.
 
+![Demo of Wejay Slack bot](/docs/wejay.gif)
+
 ## Get started
 
 ### Prerequisites
@@ -38,6 +40,34 @@ This will compile the Reason code and start up the Express app.
 6. Go to _Event Subscriptions_ and enable it. In the request url use the same url as above but use the route `/event`
 7. Also on _Event Subscriptions_ add a "Bot User Event". The best one is `message.im`, which means you can send commands to the bot in private messages
 8. You should be able to send some commands to the bot in Slack now, try sending `help` to see all available commands
+
+## Available commands
+
+| Command                        | Shorthand                | Description                                                  |
+| ------------------------------ | ------------------------ | ------------------------------------------------------------ |
+| `blame`                        |                          | Who added the track?                                         |
+| `clear`                        |                          | Reset playlist                                               |
+| `currentqueue`                 | `getqueue`               | Display upcoming tracks                                      |
+| `fullqueue`                    |                          | Display all tracks currently in the queue                    |
+| `help`                         |                          | Display the help text                                        |
+| `library <your search string>` | `l <your search string>` | Search in music library                                      |
+| `mute`                         |                          | Mute                                                         |
+| `mostplayed`                   |                          | List the most played tracks (requires MySQL database)        |
+| `next`                         |                          | Skip one track forward                                       |
+| `nowplaying`                   | `np`                     | Display what's playing right now                             |
+| `pause`                        |                          | Pause                                                        |
+| `play`                         |                          | Play                                                         |
+| `playtrack <trackNumber>`      |                          | Play track number                                            |
+| `previous`                     |                          | Go back one track                                            |
+| `queue <Spotify URI>`          | `q <Spotify URI>`        | Queue a track using a Spotify URI                            |
+| `search <your search string>`  | `s <your search string>` | Search Spotify for a track                                   |
+| `toplist`                      |                          | List top Wejayers (requires MySQL database)                  |
+| `unmute`                       |                          | Unmute                                                       |
+| `volume <0-100>`               |                          | Set volume, if no number is provided displays current volume |
+
+### Copy and paste from Spotify
+
+You can also select a couple of tracks in Spotify, press `cmd+c` (Mac) / `ctrl+c` (Windows), paste the copied information to the Wejay bot and send the message. Wejay will add all of your tracks at the end of the queue! :tada:
 
 ## Database
 
