@@ -29,9 +29,8 @@ let asLast = (track, user, sendMessage) => {
 
             true |> resolve;
           })
-       |> catch(Utils.handleError("queue -> currentTrack"))
-       |> catch(Utils.handleError("queue"))
      )
+  |> catch(Utils.handleError("queueAsLast"))
   |> ignore;
 };
 
@@ -45,13 +44,11 @@ let asNext = (track, user, sendMessage) => {
 
   Services.getCurrentTrack()
   |> then_(({queuePosition}) =>
-       device->queue(
-         Utils.parsedTrack(track),
-         int_of_float(queuePosition) + 1,
-       )
+       device->queue(parsedTrack, int_of_float(queuePosition) + 1)
        |> then_(() =>
             sendMessage("Your track will play right after the current")
           )
+       |> catch(Utils.handleError("queueAsNext"))
      )
   |> ignore;
 };
