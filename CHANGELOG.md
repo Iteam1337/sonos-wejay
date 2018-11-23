@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.1] - 2018-11-23
+
+### Fixed
+
+- Fix broken easter egg emoji in help #22
+
+## [3.0.0] - 2018-11-23
+
+### Breaking
+
+- Use device IP from environment variable `WEJAY_IP` #21
+
+### Changed
+
+- Only build using Travis CI #19
+
 ## [2.2.1] - 2018-11-22
 
 ### Changed
