@@ -55,6 +55,8 @@ let handleEventCallback = event => {
         )
         |> ignore
       | Toplist => Database.toplist(sendMessage)
+      | UnknownCommand(text) =>
+        sendMessage(Utils.unknownCommand(text)) |> ignore
       | Volume =>
         switch (q) {
         | "" => Volume.currentVolume(sendMessage)
@@ -73,8 +75,6 @@ let handleEventCallback = event => {
       | Play => Player.play()
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
-      | UnknownCommand(text) =>
-        sendMessage(Utils.unknownCommand(text)) |> ignore
       | UnhandledCommand => ()
       }
     | Bot => ()
