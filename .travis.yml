@@ -1,13 +1,27 @@
 language: node_js
 cache:
   directories:
-    - ~/.npm
+    - '~/.npm'
 node_js:
   - '10'
-install :
+install:
   - npm install --silent
-script :
+script:
   - npm run test:ci
 branches:
   only:
     - master
+env:
+  global:
+    - secure: JYWjEyl3czlzAF8OUECyq01CKCgFtCLmBscys8lGuwhsmRt1wnAY9MV9MxXc8BCoeX7ZBdoZMNkzhbpvQMk6VFx42HbQM4/viHgGm5W7+IOyz09O2sUvDrc14hc06CWG0P3c3Zjlz7P4cwgsFe9soz0Cm23bV4Bw1POIR7BklUUcftUCwdIXtlwCsS0bnDeDm4T9bmygg0EatvqSBa5AZMDsYcijCUXDDiog508OsNJYwNv2V8mmI2RqcORMVEJ99WhlkCusRPdg+fztazv22KZiCjpYnmln7VD5GQT6VZ4BHBu18EjBV8IdB1igntQ3cSnN3wIX97Cz6eDowURJo97AyyTElAIdcuLyX99wENEn/FniFc1l5rHxKUyak0ZCcwFi1DHqu3yDxAomKOGUj4FknFbBeMxZNl/0erjnt5uFEnzbNDE0Ra0H3NGQ8boiiM3apbxEbbp6T1VMEtIZ6MZLmnIXysIW0ffhLhfaQrvSMUBlmrHHNA0Hm+aHVYu2NKusBEzHJ5WBOVcNJy3/K64LL7wXHzeuyNtY6uNjQwajCtONVjvevJzr/TK50+2Jx0QSjozTsXoswHrDVFehcvn0juVX6iSvMSh/SESE0j7xjbFERGX+v6sCfiE1MFozGJnmStz0GJbINdd9j4TWguR+c25UdMLc0fhuguCXrhI=
+    - secure: LXZztE0FqFNf1oKvUsonTNsx475nE8QIlvEj1MoLJbklK5aYt+FhpcVHN/0BVSR+loMSKVPO70OizLZ0tpBfcHR0OKJhYA4M4K6zEzKZ/L4xjL26lleMIeDfpv7RvFvugZEVOZxFk6fIT0r9Jl1Xf30PESxc75elyLyOFwTXSZXI/+9vDtZ9KnMFDB/Wa2nFSqfzJvkJC//QytA4UaH9/YC3jno3MT8XO1hE3s5MfjJZxSRIs007qh3/oufEW1/FV2fmsN7y67pjReUCkczWKtorgycZJU43XzVze3NvcE6UvyoNX22O1Onjl/vurZ2UJL0iv7zAu3cAuOV7en1TPO30FTp3hlNEc6L99vHAF6TXbvrhXEskBT6PgOqVHCxf8xdUG3UWEJjVRfSPP32q34ujsoCpuZ4Nu19kc+6F5lCaEWwSWn/BLz7BQISdbjM6B8tFEqYLMdT/ic+v19UcJGjllFK6txW9Nvh6hTB2QPFUfE2rjQYgOMjt8P7lwQIjNqAOgYRAbkGlrQ/tAsrjkISL0Ur/2igZDBhpJlMOSU+7fILkHjzacIb6ebfpMibCpOJezmxPKi3mAyeiH1V0eXmWgekFaW3qxyXKrknZ2tuCoossOrO1aY4vSfbDXPf0vxyQitK1L7aGefEZFfr3mkrTbOtizBEaMJJ/A80lWU0=
+    - secure: LNWqTpkk9ZtZhPdw91EKScTBcffIti4O5JEjggRkt5OIF5pSd96GUJhgGfaOKGsq2ivERQZjVahOMlE8cPIT/YO6sYVZU8pdljtfLp2enmuoVSMJT3AxsHjJwCetbrqXXwQ930Kj+tMGb6FmNVFMcaGOO0UALRLdj0ORZmsDKP83molRc9lAhiDfQsCcYN0xuw6euhZnDIjI4/Dt3p0xjTtJIdFFsZ5/gAQh67p7kd/iJ6Lwjne9ij3uKv/xrcR1aMP/gkgv3D+mS1Nz210p3Rlu6da4cHRQK071swtWEngKhpgwaFFrlB4vZPkiyGu7qcY+yPVXm+5F1P4uX0on1WkdbsWAZjGIznes+7uB5V17hOzLKacf8Gf+MzlMAxfqWG4AB04/2fz5R00jEGTf/HS1/whoPv4Vp6e6+BOHel1EnXvAKUJ/0mHsBBt6pmOnb8Xy8wz5HPbXPEFskvN7+bGxwAn6YMDL1vTg6ySoefO8xY2pKiqAr4NEKhO1sDLmbc/xPJYULun+Vr58CEQ92beVbmyIvVd5AWQssnE/zF7/7qOX7GymZJKi2ru76QcUTNDluD/bNQKo6eJpF9cEaun7mpL421RaJqyEODMlfxrt26iqFePgs8PWm0jen0A08F70uftQ4rTDR+tUwWfhjgMxraCalDNcQmPJZUnX9y4=
+    - COMMIT=${TRAVIS_COMMIT::8}
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=iteam1337/sonos-wejay
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
