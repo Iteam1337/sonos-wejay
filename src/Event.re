@@ -24,8 +24,7 @@ let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
     SpotifyUtils.Tracks.Christmas.getSong()->Queue.asNext(None, sendMessage)
   };
 
-let handleEventCallback = body => {
-  let {event}: Decode.message = body |> Decode.message;
+let handleEventCallback = event => {
   let {channel, text: q, subtype, command, user}: Decode.event = event;
   let sendMessage = Slack.sendSlackResponse(channel);
   let sendMessageWithAttachments = Slack.sendResponseWithAttachments(channel);

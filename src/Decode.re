@@ -10,8 +10,6 @@ type eventType =
   | EventCallback
   | UnknownEvent;
 
-type messageType = {eventType};
-
 type verification = {
   challenge: string,
   token: string,
@@ -25,7 +23,10 @@ type event = {
   user: option(string),
 };
 
-type message = {event};
+type eventPayload = {
+  event,
+  eventType,
+};
 
 type action = {value: string};
 type actions = array(action);
@@ -42,17 +43,6 @@ type actionPayload = {
   channel,
   user,
 };
-
-let type_ = json =>
-  Json.Decode.{
-    eventType:
-      switch (json |> field("type", string)) {
-      | "url_verification" => UrlVerification
-      | "app_mention"
-      | "event_callback" => EventCallback
-      | _ => UnknownEvent
-      },
-  };
 
 let verification = json =>
   Json.Decode.{
@@ -93,7 +83,17 @@ let event = json =>
     user: json |> optional(field("user", string)),
   };
 
-let message = json => Json.Decode.{event: json |> field("event", event)};
+let eventPayload = json =>
+  Json.Decode.{
+    eventType:
+      switch (json |> field("type", string)) {
+      | "url_verification" => UrlVerification
+      | "app_mention"
+      | "event_callback" => EventCallback
+      | _ => UnknownEvent
+      },
+    event: json |> field("event", event),
+  };
 
 let action = json => Json.Decode.{value: json |> field("value", string)};
 
