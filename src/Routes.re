@@ -11,7 +11,8 @@ let event =
     |> (
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {eventType, event}: Decode.eventPayload = Decode.eventPayload(body);
+        let {eventType, event}: Decode.eventPayload =
+          Decode.eventPayload(body);
 
         switch (eventType) {
         | UrlVerification => handleVerification(body)
