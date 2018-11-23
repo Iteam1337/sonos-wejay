@@ -72,3 +72,15 @@ You can also select a couple of tracks in Spotify, press `cmd+c` (Mac) / `ctrl+c
 ## Database
 
 Some of the commands, like `blame` and `toplist` requires that you have a MySQL database that the service can access. We've included a `docker-compose.yml` that you can use to spin up a database.
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars1.githubusercontent.com/u/1478102?v=4" width="100px;"/><br /><sub><b>Rickard Laurin</b></sub>](https://willcodefor.beer/)<br />[💻](https://github.com/Iteam1337/Sonos Wejay/commits?author=believer "Code") [🐛](https://github.com/Iteam1337/Sonos Wejay/issues?q=author%3Abeliever "Bug reports") [📖](https://github.com/Iteam1337/Sonos Wejay/commits?author=believer "Documentation") [🤔](#ideas-believer "Ideas, Planning, & Feedback") [👀](#review-believer "Reviewed Pull Requests") [⚠️](https://github.com/Iteam1337/Sonos Wejay/commits?author=believer "Tests") |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!

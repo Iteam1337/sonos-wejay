@@ -1,0 +1,27 @@
+{
+  "projectName": "Sonos Wejay",
+  "projectOwner": "Iteam1337",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "believer",
+      "name": "Rickard Laurin",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1478102?v=4",
+      "profile": "https://willcodefor.beer/",
+      "contributions": [
+        "code",
+        "bug",
+        "doc",
+        "ideas",
+        "review",
+        "test"
+      ]
+    }
+  ]
+}
