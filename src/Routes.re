@@ -11,12 +11,12 @@ let event =
     |> (
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {eventType}: Decode.messageType = Decode.type_(body);
+        let {eventType, event}: Decode.eventPayload = Decode.eventPayload(body);
 
         switch (eventType) {
         | UrlVerification => handleVerification(body)
         | EventCallback =>
-          Event.handleEventCallback(body);
+          Event.handleEventCallback(event);
           Response.sendStatus(Ok);
         | _ => Response.sendStatus(BadRequest)
         };
