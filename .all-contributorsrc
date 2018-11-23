@@ -1,5 +1,5 @@
 {
-  "projectName": "Sonos Wejay",
+  "projectName": "sonos-wejay",
   "projectOwner": "Iteam1337",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -21,26 +21,6 @@
         "ideas",
         "review",
         "test"
-      ]
-    },
-    {
-      "login": "lessp",
-      "name": "Tom Ekander",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/17602389?v=4",
-      "profile": "https://github.com/lessp",
-      "contributions": [
-        "code",
-        "test",
-        "ideas"
-      ]
-    },
-    {
-      "login": "Jimjardland",
-      "name": "Jimmy Jardland",
-      "avatar_url": "https://avatars0.githubusercontent.com/u/8521353?v=4",
-      "profile": "https://github.com/Jimjardland",
-      "contributions": [
-        "ideas"
       ]
     }
   ]
