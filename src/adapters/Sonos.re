@@ -32,7 +32,10 @@ type currentTrackResponse = {
   uri: string,
 };
 
-type currentPlayingState = Stopped | Playing | UnknownState;
+type currentPlayingState =
+  | Stopped
+  | Playing
+  | UnknownState;
 
 module SonosDecode = {
   open Json.Decode;
@@ -71,7 +74,7 @@ module SonosDecode = {
   };
 
   let currentPlayingState = currentState =>
-    switch currentState {
+    switch (currentState) {
     | "stopped" => Stopped
     | "playing" => Playing
     | _ => UnknownState
@@ -98,7 +101,8 @@ external queueAsLast: (sonosDevice, string) => Js.Promise.t('a) = "queue";
 [@bs.send] external pause: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external flush: (sonosDevice, unit) => Js.Promise.t(bool) = "";
 [@bs.send] external setVolume: (sonosDevice, float) => Js.Promise.t('a) = "";
-[@bs.send] external getCurrentState: (sonosDevice, unit) => Js.Promise.t(string) = "";
+[@bs.send]
+external getCurrentState: (sonosDevice, unit) => Js.Promise.t(string) = "";
 [@bs.send] external getQueue: (sonosDevice, unit) => Js.Promise.t('a) = "";
 [@bs.send] external setMuted: (sonosDevice, bool) => Js.Promise.t(bool) = "";
 [@bs.send] external next: (sonosDevice, unit) => Js.Promise.t(bool) = "";
@@ -111,4 +115,4 @@ external searchMusicLibrary: (sonosDevice, string, string) => Js.Promise.t('a) =
 [@bs.send]
 external selectTrack: (sonosDevice, int) => Js.Promise.t(bool) = "";
 
-let device = speaker(Devices.Iteam.lounge);
+let device = speaker(Config.wejayIp);

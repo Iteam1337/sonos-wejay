@@ -11,6 +11,7 @@ services:
       - SPOTIFY_ID=${SPOTIFY_ID}
       - SPOTIFY_SECRET=${SPOTIFY_SECRET}
       - SLACK_TOKEN=${SLACK_TOKEN}
+      - WEJAY_IP=${WEJAY_IP}
 
   mysql:
     image: mysql
