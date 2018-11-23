@@ -36,6 +36,14 @@ describe("Commands", () => {
     );
 
     describe("#Emoji", () => {
+      test(":thumbsup:", () =>
+        expect(decodeCommand(":thumbsup:")) |> toEqual(Emoji(ThumbsUp))
+      );
+
+      test(":thumbsdown:", () =>
+        expect(decodeCommand(":thumbsdown:")) |> toEqual(Emoji(ThumbsDown))
+      );
+
       test(":+1:", () =>
         expect(decodeCommand(":+1:")) |> toEqual(Emoji(ThumbsUp))
       );

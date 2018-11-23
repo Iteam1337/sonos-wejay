@@ -55,7 +55,9 @@ let decodeCommand = text => {
     (
       switch (parseCommand(text)) {
       | "" => UnhandledCommand
+      | ":thumbsup:"
       | ":+1:" => Emoji(ThumbsUp)
+      | ":thumbsdown:"
       | ":-1:" => Emoji(ThumbsDown)
       | ":santa:" => Emoji(Santa)
       | "blame" => Blame
