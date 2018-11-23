@@ -65,7 +65,7 @@ let help =
     "mostplayed ________ List the most played tracks",
     "toplist ___________ List top Wejayers",
     "```",
-    "\nThere's also some hidden easter eggs :hatching_chick",
+    "\nThere's also some hidden easter eggs :hatching_chick:",
   ]
   |> String.concat("\n");
 
