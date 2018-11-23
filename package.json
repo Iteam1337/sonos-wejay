@@ -1,6 +1,6 @@
 {
   "name": "wejay-sonos-r",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "scripts": {
     "dev": "nodemon lib/js/src/Server.bs.js",
     "server": "node lib/js/src/Server.bs.js",
