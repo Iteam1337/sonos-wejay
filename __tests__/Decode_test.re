@@ -17,13 +17,14 @@ describe("Decode", () => {
   describe("eventPayload", () =>
     test("parses eventPayload", () => {
       let mockEvent = {
-        event: {
-          subtype: Bot,
-          user: Some("UXXXXXXX"),
-          command: Commands.Help,
-          channel: "AA12345678",
-          text: "",
-        },
+        event:
+          Some({
+            subtype: Bot,
+            user: Some("UXXXXXXX"),
+            command: Commands.Help,
+            channel: "AA12345678",
+            text: "",
+          }),
         eventType: EventCallback,
       };
       let mockPayload =

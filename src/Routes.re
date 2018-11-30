@@ -17,8 +17,13 @@ let event =
         switch (eventType) {
         | UrlVerification => handleVerification(body)
         | EventCallback =>
-          Event.handleEventCallback(event);
-          Response.sendStatus(Ok);
+          switch (event) {
+          | Some(e) =>
+            Event.handleEventCallback(e);
+            Response.sendStatus(Ok);
+          | None => Response.sendStatus(BadRequest)
+          }
+
         | _ => Response.sendStatus(BadRequest)
         };
       | None => Response.sendStatus(BadRequest)
