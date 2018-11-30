@@ -24,7 +24,7 @@ type event = {
 };
 
 type eventPayload = {
-  event,
+  event: option(event),
   eventType,
 };
 
@@ -92,7 +92,7 @@ let eventPayload = json =>
       | "event_callback" => EventCallback
       | _ => UnknownEvent
       },
-    event: json |> field("event", event),
+    event: json |> optional(field("event", event)),
   };
 
 let action = json => Json.Decode.{value: json |> field("value", string)};
