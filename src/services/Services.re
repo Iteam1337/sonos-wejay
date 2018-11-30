@@ -5,12 +5,14 @@ device->setSpotifyRegion(regionEurope);
 
 let getCurrentTrack = () =>
   device->currentTrack()
-  |> then_(current => current |> SonosDecode.currentTrackResponse |> resolve)
+  |> then_(current => SonosDecode.currentTrackResponse(current)->resolve)
   |> catch(Utils.handleError("getCurrentTrack"));
 
 let getPlayingState = () =>
-  device->getCurrentState() 
-  |> then_(playState => playState |> SonosDecode.currentPlayingState |> resolve)
+  device->getCurrentState()
+  |> then_(playState =>
+       playState |> SonosDecode.currentPlayingState |> resolve
+     )
   |> catch(Utils.handleError("getPlayingState"));
 
 let nowPlaying = sendMessage =>
