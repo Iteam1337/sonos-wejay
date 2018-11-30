@@ -8,26 +8,39 @@ let justResolve = inputFunction =>
   |> ignore;
 
 let pause = () => device->pause()->justResolve;
-let play = () => device->play()->justResolve;
 let next = () => device->next()->justResolve;
 let previous = () => device->previous()->justResolve;
 let mute = isMuted => device->setMuted(isMuted)->justResolve;
+
+let play = sendMessage =>
+  Sonos.device->Sonos.getQueue()
+  |> then_(queue => {
+       if (queue == false) {
+         sendMessage("There's nothing in the queue, please add some tracks!")
+         |> ignore;
+       } else {
+         Sonos.device->Sonos.play() |> then_(_ => resolve(true)) |> ignore;
+       };
+
+       resolve(true);
+     })
+  |> ignore;
 
 let playTrackNumber = (trackNumber, sendMessage) =>
   device->selectTrack(trackNumber |> int_of_string)
   |> then_(_ =>
        Services.getCurrentTrack()
        |> then_(({artist, title}) => {
-
             Services.getPlayingState()
             |> then_(state => {
-              switch (state) {
-              | Stopped => play()
-              | Playing | UnknownState => ()
-              }
+                 switch (state) {
+                 | Stopped => play(sendMessage)
+                 | Playing
+                 | UnknownState => ()
+                 };
 
-              resolve(true)
-            })
+                 resolve(true);
+               })
             |> ignore;
 
             sendMessage(

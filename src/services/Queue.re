@@ -43,10 +43,13 @@ let asNext = (track, user, sendMessage) => {
   };
 
   Services.getCurrentTrack()
-  |> then_(({queuePosition}) =>
+  |> then_(({position, queuePosition}) =>
        device->queue(parsedTrack, int_of_float(queuePosition) + 1)
        |> then_(() =>
-            sendMessage("Your track will play right after the current")
+            switch (position, queuePosition) {
+            | (0., 0.) => sendMessage("Your track will play right now")
+            | _ => sendMessage("Your track will play right after the current")
+            }
           )
        |> catch(Utils.handleError("queueAsNext"))
      )

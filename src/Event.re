@@ -43,6 +43,7 @@ let handleEventCallback = event => {
       | Help => sendMessage(Utils.help) |> ignore
       | MostPlayed => Database.mostPlayed(sendMessage)
       | NowPlaying => nowPlaying(sendMessage)
+      | Play => Player.play(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | SpotifyCopy(tracks) =>
         tracks->Belt.Array.forEach(track =>
@@ -72,7 +73,6 @@ let handleEventCallback = event => {
       | Mute => Player.mute(true)
       | Next => Player.next()
       | Pause => Player.pause()
-      | Play => Player.play()
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
       | UnhandledCommand => ()

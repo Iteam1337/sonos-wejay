@@ -61,16 +61,20 @@ module SonosDecode = {
     items: json |> field("items", array(currentQueue)),
   };
 
+  let getWithDefault = field => Belt.Option.getWithDefault(field, "");
+
   let currentTrackResponse = json => {
     album: json |> optional(field("album", string)),
-    albumArtURI: json |> field("albumArtURI", string),
-    albumArtURL: json |> field("albumArtURL", string),
-    artist: json |> field("artist", string),
+    albumArtURI:
+      getWithDefault(json |> optional(field("albumArtURI", string))),
+    albumArtURL:
+      getWithDefault(json |> optional(field("albumArtURL", string))),
+    artist: getWithDefault(json |> optional(field("artist", string))),
     duration: json |> field("duration", Json.Decode.float),
     position: json |> field("position", Json.Decode.float),
     queuePosition: json |> field("queuePosition", Json.Decode.float),
-    title: json |> field("title", string),
-    uri: json |> field("uri", string),
+    title: getWithDefault(json |> optional(field("title", string))),
+    uri: getWithDefault(json |> optional(field("uri", string))),
   };
 
   let currentPlayingState = currentState =>
