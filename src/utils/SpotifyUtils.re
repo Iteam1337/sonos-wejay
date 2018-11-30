@@ -50,3 +50,33 @@ module Playlists = {
     playlist(~user="believer", ~id="445NQ4LkJFtBsHUOdr3LFI");
   let slowdance = playlist(~user="believer", ~id="5DQzhEf0U4Lji5kvXnPYSy");
 };
+
+type searchType =
+  | Album
+  | Artist
+  | Playlist
+  | Track;
+
+let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) => {
+  let q =
+    query
+    |> Js.String.replaceByRe([%re "/&amp;/g"], "&")
+    |> Js.Global.encodeURIComponent;
+
+  let sType =
+    switch (searchType) {
+    | Album => "album"
+    | Artist => "artist"
+    | Playlist => "playlist"
+    | Track => "track"
+    };
+
+  "https://api.spotify.com/v1/search?q="
+  ++ q
+  ++ "&type="
+  ++ sType
+  ++ "&limit="
+  ++ string_of_int(limit)
+  ++ "&market="
+  ++ market;
+};

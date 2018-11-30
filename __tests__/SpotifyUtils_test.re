@@ -61,4 +61,13 @@ describe("SpotifyUtils", () => {
       |> toEqual("spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy")
     );
   });
+
+  describe("#spotifySearchUrl", () =>
+    test("creates a search url that handles special characters", () =>
+      expect(spotifySearchUrl(~query="angels &amp; äirwaves", ()))
+      |> toEqual(
+           "https://api.spotify.com/v1/search?q=angels%20%26%20%C3%83%C2%A4irwaves&type=track&limit=5&market=SE",
+         )
+    )
+  );
 });

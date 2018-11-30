@@ -117,10 +117,7 @@ let searchTrack = (query: string) =>
   Js.Promise.(
     getToken()
     |> then_(token => {
-         let url =
-           "https://api.spotify.com/v1/search?q="
-           ++ (query |> Js.Global.encodeURIComponent)
-           ++ "&type=track&limit=5&market=SE";
+         let url = SpotifyUtils.spotifySearchUrl(~query, ());
 
          Axios.makeConfigWithUrl(
            ~url,
