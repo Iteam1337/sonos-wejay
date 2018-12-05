@@ -1,6 +1,9 @@
 open Sonos;
 open Js.Promise;
 
+let trackPosition = (~first, ~queueAt, ()) =>
+  int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
+
 let asLast = (track, user, sendMessage) => {
   let parsedTrack = Utils.parsedTrack(track);
 
@@ -16,14 +19,13 @@ let asLast = (track, user, sendMessage) => {
             let {firstTrackNumberEnqueued} =
               queuedTrack |> SonosDecode.queueResponse;
 
-            let queuedPosition =
-              int_of_string(firstTrackNumberEnqueued)
-              - int_of_float(queuePosition)
-              |> string_of_int;
-
             sendMessage(
               "Sweet! Your track is number *"
-              ++ queuedPosition
+              ++ trackPosition(
+                   ~first=firstTrackNumberEnqueued,
+                   ~queueAt=queuePosition,
+                   (),
+                 )
               ++ "* in the queue :musical_note:",
             );
 

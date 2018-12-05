@@ -1,9 +1,13 @@
 # Changelog
 
-## [3.0.2] - 2018-11-23
+## [3.0.2] - 2018-12-05
 
 ### Fixed
 
+- Queue numbering should be bumped by 1 to not start at 0
+- Play and queue when queue is empty #28
+- Handle special character `&amp;` #27
+- Event in JSON is optional
 - Handle :thumbsup: and :thumbsdown:
 
 ## [3.0.1] - 2018-11-23
