@@ -1,1 +1,1 @@
-[@bs.module "date-fns"] external format: (string, string) => string = "";
+[@bs.module "date-fns"] external format: (Js.Date.t, string) => string = "";

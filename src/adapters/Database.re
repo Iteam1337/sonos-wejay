@@ -2,7 +2,7 @@ type userRow = {
   id: int,
   uri: string,
   userId: string,
-  timestamp: int,
+  timestamp: float,
 };
 
 type toplistRow = {
@@ -24,7 +24,7 @@ module Decode = {
     id: json |> field("id", int),
     uri: json |> field("uri", string),
     userId: json |> field("user_id", string),
-    timestamp: json |> field("timestamp", int),
+    timestamp: float_of_int(json |> field("timestamp", int)),
   };
 
   let toplistRow = json => {
@@ -57,7 +57,7 @@ let insertTrack = (~uri, ~user) => {
     Spotify.getTrack(spotifyId)
     |> then_((track: Spotify.track) => {
          let conn = openConnection();
-         let timestamp = Js.Math.round(Js.Date.now() /. 1000.);
+         let timestamp = Js.Date.now();
 
          let params =
            MySql2.Params.named(
@@ -97,6 +97,11 @@ let insertTrack = (~uri, ~user) => {
   );
 };
 
+let formatTimestamp = timestamp => {
+  let date = Js.Date.fromFloat(timestamp);
+  DateFns.format(date, "YYYY-MM-DD");
+};
+
 let lastPlay = (uri, sendMessage) => {
   let conn = openConnection();
 
@@ -127,10 +132,7 @@ let lastPlay = (uri, sendMessage) => {
                 Utils.listNumber(i)
                 ++ Slack.userId(userId)
                 ++ " on "
-                ++ DateFns.format(
-                     timestamp |> string_of_int,
-                     "YYYY-MM-DD HH:mm",
-                   )
+                ++ formatTimestamp(timestamp)
               )
               |> Js.Array.joinWith("\n")
             )
