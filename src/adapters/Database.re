@@ -24,7 +24,7 @@ module Decode = {
     id: json |> field("id", int),
     uri: json |> field("uri", string),
     userId: json |> field("user_id", string),
-    timestamp: float_of_int(json |> field("timestamp", int)),
+    timestamp: json |> field("timestamp", Json.Decode.float),
   };
 
   let toplistRow = json => {
