@@ -1,5 +1,8 @@
-open Sonos;
+open Sonos.Methods;
+open Sonos.Decode;
 open Js.Promise;
+
+let device = Config.device;
 
 let justResolve = inputFunction =>
   inputFunction
@@ -13,13 +16,13 @@ let previous = () => device->previous()->justResolve;
 let mute = isMuted => device->setMuted(isMuted)->justResolve;
 
 let play = sendMessage =>
-  Sonos.device->Sonos.getQueue()
+  device->getQueue()
   |> then_(queue => {
        if (queue == false) {
          sendMessage("There's nothing in the queue, please add some tracks!")
          |> ignore;
        } else {
-         Sonos.device->Sonos.play() |> then_(_ => resolve(true)) |> ignore;
+         device->play() |> then_(_ => resolve(true)) |> ignore;
        };
 
        resolve(true);
@@ -59,7 +62,7 @@ let playTrackNumber = (trackNumber, sendMessage) =>
 
        device->getQueue()
        |> then_(queue => {
-            let {items} = queue |> SonosDecode.currentQueueResponse;
+            let {items} = queue->currentQueueResponse;
 
             items->Belt.Array.mapWithIndex((i, {artist, title}) =>
               Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)

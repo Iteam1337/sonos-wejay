@@ -1,7 +1,8 @@
 open Js.Promise;
+open Sonos.Methods;
 
 let currentVolume = sendMessage =>
-  Sonos.device->Sonos.getVolume()
+  Config.device->getVolume()
   |> then_(volume => {
        sendMessage("Current volume is " ++ (volume |> Utils.cleanFloat));
        volume |> resolve;
@@ -10,7 +11,7 @@ let currentVolume = sendMessage =>
   |> ignore;
 
 let updateVolume = (volume: string, sendMessage) =>
-  Sonos.device->Sonos.setVolume(volume |> float_of_string)
+  Config.device->setVolume(volume |> float_of_string)
   |> then_(_ => {
        sendMessage("Volume set to " ++ volume);
        volume |> resolve;
@@ -19,7 +20,7 @@ let updateVolume = (volume: string, sendMessage) =>
   |> ignore;
 
 let updateVolumeWithValue = (volumeValue, sendMessage) =>
-  Sonos.device->Sonos.getVolume()
+  Config.device->getVolume()
   |> then_(currentVolume => {
        let newVolume =
          switch (currentVolume, volumeValue) {
@@ -27,7 +28,7 @@ let updateVolumeWithValue = (volumeValue, sendMessage) =>
          | (c, v) => c +. v
          };
 
-       Sonos.device->Sonos.setVolume(newVolume)
+       Config.device->setVolume(newVolume)
        |> then_(_ => {
             sendMessage("Volume set to " ++ Utils.cleanFloat(newVolume));
             true |> resolve;

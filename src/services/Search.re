@@ -1,10 +1,11 @@
-open Sonos;
+open Sonos.Methods;
 open Js.Promise;
 
 let library = (q, sendMessageWithAttachments) =>
-  Sonos.device->searchMusicLibrary("tracks", q)
+  Config.device->searchMusicLibrary("tracks", q)
   |> then_(library => {
-       let {items} = library |> SonosDecode.currentQueueResponse;
+       let {items}: Sonos.Decode.currentQueueResponse =
+         library |> Sonos.Decode.currentQueueResponse;
 
        items->Belt.Array.map(({album, artist, title, uri}) => {
          let text =

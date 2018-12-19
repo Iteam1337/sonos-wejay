@@ -1,4 +1,4 @@
-open Sonos;
+open Sonos.Decode;
 open Js.Promise;
 
 let blame = sendMessage =>

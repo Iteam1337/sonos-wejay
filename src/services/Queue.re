@@ -1,5 +1,8 @@
-open Sonos;
+open Sonos.Methods;
+open Sonos.Decode;
 open Js.Promise;
+
+let device = Config.device;
 
 let trackPosition = (~first, ~queueAt, ()) =>
   int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
@@ -15,9 +18,9 @@ let asLast = (track, user, sendMessage) => {
   device->queueAsLast(parsedTrack)
   |> then_(queuedTrack =>
        Services.getCurrentTrack()
-       |> then_(({queuePosition}) => {
-            let {firstTrackNumberEnqueued} =
-              queuedTrack |> SonosDecode.queueResponse;
+       |> then_(({queuePosition}: currentTrackResponse) => {
+            let {firstTrackNumberEnqueued}: queueResponse =
+              queuedTrack->queueResponse;
 
             sendMessage(
               "Sweet! Your track is number *"
@@ -58,7 +61,7 @@ let asNext = (track, user, sendMessage) => {
   |> ignore;
 };
 
-let listTracks = (tracks: array(Sonos.currentQueue)) =>
+let listTracks = (tracks: array(currentQueue)) =>
   tracks->Belt.Array.mapWithIndex((i, {artist, title}) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
   );
@@ -68,7 +71,7 @@ let currentQueue = sendMessage =>
   |> then_(queue =>
        Services.getCurrentTrack()
        |> then_(({queuePosition}) => {
-            let {items} = queue |> SonosDecode.currentQueueResponse;
+            let {items} = queue->currentQueueResponse;
 
             let tracks =
               items
@@ -90,7 +93,7 @@ let currentQueue = sendMessage =>
 let getFullQueue = sendMessage =>
   device->getQueue()
   |> then_(queue => {
-       let {items} = queue |> SonosDecode.currentQueueResponse;
+       let {items} = queue->currentQueueResponse;
        let tracks = items->listTracks |> Js.Array.joinWith("\n");
        sendMessage(tracks);
      })
@@ -98,7 +101,7 @@ let getFullQueue = sendMessage =>
   |> ignore;
 
 let clearQueue = sendMessage =>
-  device->Sonos.flush()
+  device->Sonos.Methods.flush()
   |> then_(value => {
        sendMessage("Cleared queue");
        value |> resolve;

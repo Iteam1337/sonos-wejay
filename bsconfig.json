@@ -16,6 +16,7 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
+    "bs-sonos",
     "bs-axios",
     "bs-express",
     "@glennsl/bs-json",

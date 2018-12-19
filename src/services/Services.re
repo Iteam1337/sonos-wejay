@@ -1,22 +1,26 @@
-open Sonos;
+open Sonos.Methods;
 open Js.Promise;
+
+let device = Sonos.Methods.device(Config.wejayIp);
 
 device->setSpotifyRegion(regionEurope);
 
 let getCurrentTrack = () =>
   device->currentTrack()
-  |> then_(current => SonosDecode.currentTrackResponse(current)->resolve)
+  |> then_(current => Sonos.Decode.currentTrackResponse(current)->resolve)
   |> catch(Utils.handleError("getCurrentTrack"));
 
 let getPlayingState = () =>
   device->getCurrentState()
   |> then_(playState =>
-       playState |> SonosDecode.currentPlayingState |> resolve
+       playState |> Sonos.Decode.currentPlayingState |> resolve
      )
   |> catch(Utils.handleError("getPlayingState"));
 
 let nowPlayingData =
-    ({artist, title, album, position, duration, queuePosition}) =>
+    (
+      {artist, title, album, position, duration, queuePosition}: Sonos.Decode.currentTrackResponse,
+    ) =>
   switch (queuePosition) {
   | 0. => "Nothing is currently playing, add a track using `search <your track>`"
   | _ =>

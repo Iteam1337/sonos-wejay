@@ -14,3 +14,5 @@ let wejayIp = Js.Dict.unsafeGet(env, "WEJAY_IP");
 let spotifyAuth =
   fromStringWithEncoding(spotifyId ++ ":" ++ spotifySecret)
   ->toString("base64");
+
+let device = Sonos.Methods.device(wejayIp);
