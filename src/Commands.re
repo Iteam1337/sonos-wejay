@@ -63,10 +63,13 @@ let decodeCommand = text => {
       | "blame" => Blame
       | "classics" => EasterEgg(IteamClassics)
       | "clear" => Clear
+      | "cq"
       | "currentqueue"
+      | "gq"
       | "getqueue" => CurrentQueue
       | "freebird" => EasterEgg(FreeBird)
       | "friday" => EasterEgg(Friday)
+      | "fq"
       | "fullqueue" => FullQueue
       | "help" => Help
       | "l"
