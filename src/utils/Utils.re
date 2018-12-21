@@ -39,8 +39,8 @@ let help =
   [
     "*Queue and search*\n",
     "```",
-    "currentqueue|getqueue _______________ Display upcoming tracks",
-    "fullqueue ___________________________ Display all tracks currently in the queue",
+    "currentqueue|getqueue|cq|gq _________ Display upcoming tracks",
+    "fullqueue|fq ________________________ Display all tracks currently in the queue",
     "nowplaying|np _______________________ Display what's playing right now",
     "queue|q <Spotify URI> _______________ Queue a track using a Spotify URI",
     "search|s <your search string> _______ Search Spotify for a track",
