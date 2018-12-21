@@ -66,23 +66,43 @@ let listTracks = (tracks: array(currentQueue)) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
   );
 
-let currentQueue = sendMessage =>
+let queueWithFallback = () => {
   device->getQueue()
   |> then_(queue =>
+       (
+         switch (Js.Types.classify(queue)) {
+         | JSFalse =>
+           {|{ "returned": "0", "total": "0", "items": [] }|}
+           |> Json.parseOrRaise
+         | _ => queue
+         }
+       )
+       |> currentQueueResponse
+       |> resolve
+     );
+};
+
+let currentQueue = sendMessage =>
+  queueWithFallback()
+  |> then_(({items}) =>
        Services.getCurrentTrack()
        |> then_(({queuePosition}) => {
-            let {items} = queue->currentQueueResponse;
+            switch (items->Belt.Array.length) {
+            | 0
+            | 1 => sendMessage(Messages.emptyQueue)
+            | _ =>
+              let tracks =
+                items
+                ->Belt.Array.slice(
+                    ~offset=queuePosition |> int_of_float,
+                    ~len=Belt.Array.length(items),
+                  )
+                ->listTracks
+                |> Js.Array.joinWith("\n");
 
-            let tracks =
-              items
-              ->Belt.Array.slice(
-                  ~offset=queuePosition |> int_of_float,
-                  ~len=Belt.Array.length(items),
-                )
-              ->listTracks
-              |> Js.Array.joinWith("\n");
+              sendMessage("*Upcoming tracks*\n" ++ tracks);
+            };
 
-            sendMessage("*Upcoming tracks*\n" ++ tracks);
             queue |> resolve;
           })
        |> catch(Utils.handleError("currentQueue -> currentTrack"))
@@ -91,12 +111,15 @@ let currentQueue = sendMessage =>
   |> ignore;
 
 let getFullQueue = sendMessage =>
-  device->getQueue()
-  |> then_(queue => {
-       let {items} = queue->currentQueueResponse;
-       let tracks = items->listTracks |> Js.Array.joinWith("\n");
-       sendMessage(tracks);
-     })
+  queueWithFallback()
+  |> then_(({items}) =>
+       switch (items->Belt.Array.length) {
+       | 0 => sendMessage(Messages.emptyQueue)
+       | _ =>
+         let tracks = items->listTracks |> Js.Array.joinWith("\n");
+         sendMessage("*Here's the full queue*\n" ++ tracks);
+       }
+     )
   |> catch(Utils.handleError("getFullQueue"))
   |> ignore;
 

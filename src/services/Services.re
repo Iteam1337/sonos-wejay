@@ -20,7 +20,7 @@ let nowPlayingData =
       {artist, title, album, position, duration, queuePosition}: Sonos.Decode.currentTrackResponse,
     ) =>
   switch (queuePosition) {
-  | 0. => "Nothing is currently playing, add a track using `search <your track>`"
+  | 0. => Messages.nothingIsPlaying
   | _ =>
     let track =
       Utils.artistAndTitle(~artist, ~title)

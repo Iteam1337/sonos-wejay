@@ -16,13 +16,13 @@ let previous = () => device->previous()->justResolve;
 let mute = isMuted => device->setMuted(isMuted)->justResolve;
 
 let play = sendMessage =>
-  device->getQueue()
-  |> then_(queue => {
-       if (queue == false) {
-         sendMessage("There's nothing in the queue, please add some tracks!")
-         |> ignore;
-       } else {
+  Queue.queueWithFallback()
+  |> then_(({items}) => {
+       switch (items->Belt.Array.length) {
+       | 0 => sendMessage(Messages.emptyQueue)
+       | _ =>
          device->play() |> then_(_ => resolve(true)) |> ignore;
+         sendMessage("Start playing!");
        };
 
        resolve(true);
@@ -55,20 +55,31 @@ let playTrackNumber = (trackNumber, sendMessage) =>
           })
      )
   |> catch(_ => {
-       sendMessage(
-         "*Cannot play track " ++ trackNumber ++ ". Here's the whole queue*",
-       )
-       |> ignore;
-
-       device->getQueue()
-       |> then_(queue => {
-            let {items} = queue->currentQueueResponse;
-
-            items->Belt.Array.mapWithIndex((i, {artist, title}) =>
-              Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
-            )
-            |> Js.Array.joinWith("\n")
-            |> sendMessage;
+       Queue.queueWithFallback()
+       |> then_(({items}) => {
+            switch (items->Belt.Array.length) {
+            | 0 =>
+              sendMessage(
+                "*Cannot play track "
+                ++ trackNumber
+                ++ "*\n"
+                ++ Messages.emptyQueue,
+              )
+            | _ =>
+              items->Belt.Array.mapWithIndex((i, {artist, title}) =>
+                Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
+              )
+              |> Js.Array.joinWith("\n")
+              |> (
+                tracks =>
+                  sendMessage(
+                    "*Cannot play track "
+                    ++ trackNumber
+                    ++ ". Here's the whole queue*\n"
+                    ++ tracks,
+                  )
+              )
+            };
 
             resolve(true);
           })
