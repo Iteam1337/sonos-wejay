@@ -20,9 +20,9 @@ let updateVolume = (volume: string, sendMessage) =>
   |> ignore;
 
 let updateGroupVolume = (volume: string, sendMessage) =>
-  Sonos.groupRenderingControl(Config.wejayIp)##_request(
+  groupRenderingControl(Config.wejayIp)##_request(
     "SetGroupVolume",
-    Sonos.groupReqArgs(~instanceId=0, ~volume),
+    groupReqArgs(~instanceId=0, ~volume),
   )
   |> then_(_status => {
        sendMessage("Volume set to " ++ volume);
