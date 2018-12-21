@@ -30,7 +30,7 @@
   "license": "MIT",
   "devDependencies": {
     "@ahrefs/bs-dotenv": "1.0.3",
-    "@glennsl/bs-jest": "0.4.5",
+    "@glennsl/bs-jest": "0.4.6",
     "@glennsl/bs-json": "3.0.0",
     "all-contributors-cli": "5.4.1",
     "bs-axios": "0.0.39",

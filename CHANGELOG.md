@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.1] - 2018-12-21
+
+### Fixed
+
+- Add Spotify region EU to device in config. If the region doesn't exist Sonos will throw 800 (unable to play item)
+
 ## [3.1.0] - 2018-12-21
 
 ### Added

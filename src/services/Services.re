@@ -1,9 +1,7 @@
 open Sonos.Methods;
 open Js.Promise;
 
-let device = Sonos.Methods.device(Config.wejayIp);
-
-device->setSpotifyRegion(regionEurope);
+let device = Config.device;
 
 let getCurrentTrack = () =>
   device->currentTrack()

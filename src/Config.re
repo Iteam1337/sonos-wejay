@@ -16,3 +16,5 @@ let spotifyAuth =
   ->toString("base64");
 
 let device = Sonos.Methods.device(wejayIp);
+
+device->Sonos.Methods.setSpotifyRegion(Sonos.Methods.regionEurope);
