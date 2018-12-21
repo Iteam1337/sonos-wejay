@@ -61,7 +61,7 @@ let handleEventCallback = event => {
       | Volume =>
         switch (q) {
         | "" => Volume.currentVolume(sendMessage)
-        | _ => Volume.updateVolume(q, sendMessage)
+        | _ => Volume.updateGroupVolume(q, sendMessage)
         }
 
       /* Send message with attachments */
