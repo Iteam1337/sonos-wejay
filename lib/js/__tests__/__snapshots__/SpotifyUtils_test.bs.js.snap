@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpotifyUtils Tracks #Christmas songs 1`] = `
+Array [
+  Array [
+    "Justin Bieber - Mistletoe",
+    "7xapw9Oy21WpfEcib2ErSA",
+  ],
+  Array [
+    "Ariana Grande - Santa Tell Me",
+    "0lizgQ7Qw35od7CYaoMBZb",
+  ],
+  Array [
+    "Frank Sinatra - Let it Snow",
+    "7inXu0Eaeg02VsM8kHNvzM",
+  ],
+  Array [
+    "Triad - TÃ¤nd ett ljus",
+    "7ogTJKHkj8IMxjhItiFKRC",
+  ],
+  Array [
+    "JosÃ© Feliciano - Feliz Navidad",
+    "7xQmVmSfCt4LD9H2uFoWOO",
+  ],
+  Array [
+    "Wham! - Last Christmas",
+    "77nF1t4qesuOJRd8lbIzNX",
+  ],
+  Array [
+    "Mariah Carey - All I Want for Christmas Is You",
+    "0bYg9bo50gSsH3LtXe2SQn",
+  ],
+  Array [
+    "Daryl Hall & John Oates - Jingle Bell Rock",
+    "3y8Z2sOJrBt6yKEfsZG1NY",
+  ],
+  Array [
+    "Mariah Carey - Santa Claus Is Comin' To Town",
+    "1f2lkuLldqRzvaFjJdjGXX",
+  ],
+  Array [
+    "Michael BublÃ© - It's Beginning To Look A Lot Like Christmas",
+    "4Dgp0jxrJdpKrZfVmgxekz",
+  ],
+  Array [
+    "Andy Williams - It's the Most Wonderful Time of the Year",
+    "5hslUAKq9I9CG2bAulFkHN",
+  ],
+]
+`;
