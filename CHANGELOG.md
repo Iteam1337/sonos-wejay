@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.1.0] - 2018-12-21
+
+### Added
+
+- Add shorthand commands for `getqueue`, `currentqueue` and `fullqueue` #36
+- Helpful message when trying to find now playing of empty queue #30
+
+### Changed
+
+- Move Sonos bindings to a separate npm package, [bs-sonos](https://www.npmjs.com/package/bs-sonos) #37
+
+### Fixed
+
+- Invalid dates in the database #31
+- Update group volume #32
+
 ## [3.0.2] - 2018-12-05
 
 ### Fixed
