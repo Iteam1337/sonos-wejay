@@ -88,6 +88,25 @@ module SonosDecode = {
 [@bs.new] [@bs.module "sonos"]
 external speaker: string => sonosDevice = "Sonos";
 
+/* Group Control */
+[@bs.deriving abstract]
+type groupReqArgs = {
+  [@bs.as "InstanceID"]
+  instanceId: int,
+  [@bs.as "DesiredVolume"]
+  volume: string,
+};
+
+type sonosGroup = {
+  .
+  [@bs.meth] "_request": (string, groupReqArgs) => Js.Promise.t(Js.Json.t),
+};
+
+[@bs.new] [@bs.module "sonos"] [@bs.scope "Services"]
+external groupRenderingControl: string => sonosGroup = "GroupRenderingControl";
+
+/* Methods */
+
 [@bs.module "sonos"] [@bs.scope "SpotifyRegion"]
 external regionEurope: string = "EU";
 
