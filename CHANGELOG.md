@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.0] - 2018-12-21
+
+### Added
+
+- Helpful messages when the queue is empty #38
+
 ## [3.1.1] - 2018-12-21
 
 ### Fixed
