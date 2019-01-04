@@ -37,19 +37,17 @@ let event =
   );
 
 let action =
-  Middleware.from((_next, req, res) =>
-    res
-    |> (
+  PromiseMiddleware.from((_next, req, res) =>
+    Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let response = body |> Decode.parseAction;
-        let payload = response##payload |> Decode.actionPayload;
+        let response = body->Decode.parseAction;
+        let {actions, user}: Decode.actionPayload =
+          response##payload->Decode.actionPayload;
 
-        Slack.sendSlackResponse(payload.channel.id)
-        |> Queue.asLast(payload.actions[0].value, Some(payload.user.id));
-
-        Response.sendStatus(Ok);
-      | None => Response.sendStatus(BadRequest)
+        Queue.asLast(~track=actions[0].value, ~user=Some(user.id), ())
+        |> then_(message => res |> Response.sendString(message) |> resolve);
+      | None => res |> Response.sendStatus(BadRequest) |> resolve
       }
     )
   );

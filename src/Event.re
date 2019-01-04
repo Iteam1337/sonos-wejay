@@ -1,5 +1,6 @@
 let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
-  let qAsLast = uri => uri->Queue.asLast(user, sendMessage);
+  let qAsLast = track =>
+    Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore;
   let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
 
   switch (egg) {
@@ -47,9 +48,9 @@ let handleEventCallback = event => {
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | SpotifyCopy(tracks) =>
         tracks->Belt.Array.forEach(track =>
-          Queue.asLast(track, user, sendMessage)
+          Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore
         )
-      | Queue => Queue.asLast(q, user, sendMessage)
+      | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
       | Time =>
         sendMessage(
           "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif",

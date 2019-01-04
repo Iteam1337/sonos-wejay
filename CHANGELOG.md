@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.3.0] - 2019-01-04
+
+### Added
+
+- Welcome message at `/`
+
+## Changed
+
+- Remove `OK` status code when queuing a track from search results. Return the message here instead.
+
 ## [3.2.0] - 2018-12-21
 
 ### Added

@@ -7,7 +7,7 @@ let device = Config.device;
 let trackPosition = (~first, ~queueAt, ()) =>
   int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
 
-let asLast = (track, user, sendMessage) => {
+let asLast = (~track, ~user, ~sendMessage=?, ()) => {
   let parsedTrack = Utils.parsedTrack(track);
 
   switch (user) {
@@ -22,21 +22,24 @@ let asLast = (track, user, sendMessage) => {
             let {firstTrackNumberEnqueued}: queueResponse =
               queuedTrack->queueResponse;
 
-            sendMessage(
+            let message =
               "Sweet! Your track is number *"
               ++ trackPosition(
                    ~first=firstTrackNumberEnqueued,
                    ~queueAt=queuePosition,
                    (),
                  )
-              ++ "* in the queue :musical_note:",
-            );
+              ++ "* in the queue :musical_note:";
 
-            true |> resolve;
+            switch (sendMessage) {
+            | Some(sendMsg) => sendMsg(message)
+            | _ => ()
+            };
+
+            resolve(message);
           })
      )
-  |> catch(Utils.handleError("queueAsLast"))
-  |> ignore;
+  |> catch(Utils.handleError("queueAsLast"));
 };
 
 let asNext = (track, user, sendMessage) => {
@@ -50,12 +53,14 @@ let asNext = (track, user, sendMessage) => {
   Services.getCurrentTrack()
   |> then_(({position, queuePosition}) =>
        device->queue(parsedTrack, int_of_float(queuePosition) + 1)
-       |> then_(() =>
+       |> then_(() => {
             switch (position, queuePosition) {
             | (0., 0.) => sendMessage("Your track will play right now")
             | _ => sendMessage("Your track will play right after the current")
-            }
-          )
+            };
+
+            resolve(true);
+          })
        |> catch(Utils.handleError("queueAsNext"))
      )
   |> ignore;
@@ -112,14 +117,16 @@ let currentQueue = sendMessage =>
 
 let getFullQueue = sendMessage =>
   queueWithFallback()
-  |> then_(({items}) =>
+  |> then_(({items}) => {
        switch (items->Belt.Array.length) {
        | 0 => sendMessage(Messages.emptyQueue)
        | _ =>
          let tracks = items->listTracks |> Js.Array.joinWith("\n");
          sendMessage("*Here's the full queue*\n" ++ tracks);
-       }
-     )
+       };
+
+       resolve(true);
+     })
   |> catch(Utils.handleError("getFullQueue"))
   |> ignore;
 
