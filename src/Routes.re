@@ -5,6 +5,11 @@ let handleVerification = body => {
   Response.sendString(challenge);
 };
 
+let index =
+  Middleware.from((_next, _req, res) =>
+    res |> Response.sendString("Welcome to Wejay!")
+  );
+
 let event =
   Middleware.from((_next, req, res) =>
     res
