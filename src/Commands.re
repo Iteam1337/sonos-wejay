@@ -48,7 +48,8 @@ let parseCommand = text =>
 
 let decodeCommand = text => {
   let isSpotifyCopy =
-    Js.String.includes("https://open.spotify.com/track", text);
+    Js.String.includes("https://open.spotify.com/track", text)
+    || Js.String.includes("https://open.spotify.com/user/", text);
 
   isSpotifyCopy ?
     SpotifyCopy(Utils.parseSpotifyCopy(text)) :

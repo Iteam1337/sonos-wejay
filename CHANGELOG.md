@@ -5,6 +5,7 @@
 ### Added
 
 - Welcome message at `/`
+- Ability to paste a Spotify playlist link and queue the entire playlist
 
 ## Changed
 

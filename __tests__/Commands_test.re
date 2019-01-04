@@ -17,7 +17,7 @@ describe("parseCommand", () => {
 });
 
 describe("#decodeCommand", () => {
-  describe("SpotifyCopy", () =>
+  describe("SpotifyCopy", () => {
     test("should add spotify copy and paste", () =>
       expect(
         decodeCommand(
@@ -30,8 +30,21 @@ describe("#decodeCommand", () => {
              "spotify:track:4LT7xQZgICM6FqUJkWI6aM",
            |]),
          )
-    )
-  );
+    );
+
+    test("should add spotify playlists from copied link", () =>
+      expect(
+        decodeCommand(
+          "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+        ),
+      )
+      |> toEqual(
+           SpotifyCopy([|
+             "spotify:user:believer:playlist:77ffhasgb5saaregvpnxwd",
+           |]),
+         )
+    );
+  });
 
   describe("#Emoji", () => {
     test(":thumbsup:", () =>

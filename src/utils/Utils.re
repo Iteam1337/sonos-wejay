@@ -1,3 +1,8 @@
+let spotifyTrack = [%re "/https:\\/\\/open.spotify.com\\/track\\//ig"];
+let spotifyPlaylist = [%re
+  "/https:\\/\\/open.spotify.com\\/user\\/(\\w+)\\/playlist\\/(\\w+)/"
+];
+
 let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
 
 let listNumber = number => string_of_int(number + 1) ++ ". ";
@@ -21,14 +26,23 @@ let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   |],
 };
 
-let parseSpotifyCopy = trackList =>
-  trackList
+let parseTrackCopy = track =>
+  track
   |> Js.String.replaceByRe([%re "/<|>/g"], "")
-  |> Js.String.replaceByRe(
-       [%re "/https:\\/\\/open.spotify.com\\/track\\//ig"],
-       "spotify:track:",
-     )
+  |> Js.String.replaceByRe(spotifyTrack, "spotify:track:")
   |> Js.String.split("\n");
+
+let parsePlaylistCopy = track =>
+  switch (Js.String.match(spotifyPlaylist, track)) {
+  | Some(matches) => [|
+      "spotify:user:" ++ matches[1] ++ ":playlist:" ++ matches[2],
+    |]
+  | _ => [||]
+  };
+
+let parseSpotifyCopy = track =>
+  Js.String.includes("track", track) ?
+    parseTrackCopy(track) : parsePlaylistCopy(track);
 
 let handleError = (parent, err) => {
   Js.log(err);

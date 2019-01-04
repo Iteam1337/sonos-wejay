@@ -77,7 +77,7 @@ describe("Utils", () => {
     );
   });
 
-  describe("#parseSpotifyCopy", () =>
+  describe("#parseSpotifyCopy", () => {
     test("should parse spotify copy/paste", () =>
       expect(
         parseSpotifyCopy(
@@ -88,8 +88,17 @@ describe("Utils", () => {
            "spotify:track:2mPE346iPVnss0GoRgwGTK",
            "spotify:track:4LT7xQZgICM6FqUJkWI6aM",
          |])
-    )
-  );
+    );
+
+    test("should parse spotify playlist links", () =>
+      expect(
+        parseSpotifyCopy(
+          "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+        ),
+      )
+      |> toEqual([|"spotify:user:believer:playlist:77ffhasgb5saaregvpnxwd"|])
+    );
+  });
 
   describe("#help", () =>
     test("returns help", () =>
