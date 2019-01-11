@@ -4,6 +4,7 @@ type images = {url: string};
 type album = {
   images: array(images),
   name: string,
+  releaseDate: string,
 };
 type artist = {name: string};
 
@@ -34,6 +35,7 @@ module Decode = {
   let album = json => {
     images: json |> field("images", array(images)),
     name: json |> field("name", string),
+    releaseDate: json |> field("release_date", string),
   };
 
   let artist = json => {name: json |> field("name", string)};
@@ -77,20 +79,6 @@ let buildArtist = artists =>
   |> Array.map((artist: artist) => artist.name)
   |> Js.Array.joinWith(", ");
 
-let displayTracks = item =>
-  Utils.createAttachment(
-    ~text=
-      "*"
-      ++ buildArtist(item.artists)
-      ++ " - "
-      ++ item.name
-      ++ "*\n"
-      ++ item.album.name,
-    ~thumbUrl=item.album.images[0].url,
-    ~uri=item.uri,
-    (),
-  );
-
 let getTrack = (uri: string) =>
   Js.Promise.(
     getToken()
@@ -113,7 +101,7 @@ let getTrack = (uri: string) =>
        })
   );
 
-let searchTrack = (query: string) =>
+let spotifySearch = (query: string) =>
   Js.Promise.(
     getToken()
     |> then_(token => {
@@ -135,9 +123,28 @@ let searchTrack = (query: string) =>
        })
   );
 
-let searchTrackWithMessage = (query: string, sendMessageWithAttachments) =>
+let createAttachment = track => {
+  "color": "#efb560",
+  "callback_id": "queue",
+  "thumb_url": track.album.images[0].url,
+  "fields": [|
+    {"title": "Artist", "value": buildArtist(track.artists), "short": true},
+    {"title": "Title", "value": track.name, "short": true},
+    {"title": "Album", "value": track.album.name, "short": true},
+    {
+      "title": "Duration",
+      "value": Utils.parseDuration(float_of_int(track.duration / 1000)),
+      "short": true,
+    },
+  |],
+  "actions": [|
+    {"name": "track", "text": "Queue", "type": "button", "value": track.uri},
+  |],
+};
+
+let searchTrack = (query: string, sendMessageWithAttachments) =>
   Js.Promise.(
-    searchTrack(query)
+    spotifySearch(query)
     |> then_(tracks => {
          let message =
            switch (Belt.Array.length(tracks.items)) {
@@ -145,7 +152,7 @@ let searchTrackWithMessage = (query: string, sendMessageWithAttachments) =>
            | _ => "Here are the results for *" ++ query ++ "*"
            };
 
-         tracks.items->Belt.Array.map(displayTracks)
+         tracks.items->Belt.Array.map(createAttachment)
          |> sendMessageWithAttachments(message);
 
          tracks |> resolve;

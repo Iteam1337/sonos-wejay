@@ -89,3 +89,5 @@ let unknownCommand = command =>
     "Type *\"help\"* in order to get all available commands! :face_with_monocle:",
   ]
   |> String.concat("\n");
+
+let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif";

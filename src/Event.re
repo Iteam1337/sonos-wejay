@@ -3,19 +3,21 @@ let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
     Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore;
   let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
 
-  switch (egg) {
-  | IteamClassics => SpotifyUtils.Playlists.iteamClassics->qAsLast
-  | FreeBird => SpotifyUtils.Tracks.freeBird->qAsNext
-  | Friday =>
-    switch (Js.Date.make() |> Js.Date.getDay) {
-    | 5. => SpotifyUtils.Tracks.friday->qAsNext
-    | _ => sendMessage("Sorry, it's not Friday") |> ignore
+  SpotifyUtils.(
+    switch (egg) {
+    | IteamClassics => Playlists.iteamClassics->qAsLast
+    | FreeBird => Tracks.freeBird->qAsNext
+    | Friday =>
+      switch (Js.Date.make() |> Js.Date.getDay) {
+      | 5. => Tracks.friday->qAsNext
+      | _ => sendMessage("Sorry, it's not Friday") |> ignore
+      }
+    | Shoreline => Tracks.shoreline->qAsNext
+    | Slowdance => Playlists.slowdance->qAsLast
+    | Tequila => Tracks.tequila->qAsNext
+    | WWW => Tracks.worldwideweb->qAsNext
     }
-  | Shoreline => SpotifyUtils.Tracks.shoreline->qAsNext
-  | Slowdance => SpotifyUtils.Playlists.slowdance->qAsLast
-  | Tequila => SpotifyUtils.Tracks.tequila->qAsNext
-  | WWW => SpotifyUtils.Tracks.worldwideweb->qAsNext
-  };
+  );
 };
 
 let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
@@ -30,6 +32,7 @@ let handleEventCallback = event => {
   let {channel, text: q, subtype, command, user}: Decode.event = event;
   let sendMessage = Slack.sendSlackResponse(channel);
   let sendMessageWithAttachments = Slack.sendResponseWithAttachments(channel);
+  let sendSearchResponse = Slack.sendSearchResponse(channel);
 
   Services.(
     switch (subtype) {
@@ -42,35 +45,21 @@ let handleEventCallback = event => {
       | EasterEgg(egg) => handleEasterEgg(egg, user, sendMessage)
       | Emoji(emoji) => handleEmoji(emoji, sendMessage)
       | FullQueue => Queue.getFullQueue(sendMessage)
-      | Help => sendMessage(Utils.help) |> ignore
+      | Help => Utils.help->sendMessage
       | MostPlayed => Database.mostPlayed(sendMessage)
       | NowPlaying => nowPlaying(sendMessage)
       | Play => Player.play(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
-      | SpotifyCopy(tracks) =>
-        tracks
-        ->Belt.Array.forEach(track =>
-            Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore
-          )
+      | SpotifyCopy(t) => Queue.addMultipleTracks(t, user, sendMessage)
       | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
-      | Time =>
-        sendMessage(
-          "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif",
-        )
-        |> ignore
+      | Time => Utils.thisIsWejay->sendMessage
       | Toplist => Database.toplist(sendMessage)
-      | UnknownCommand(text) =>
-        sendMessage(Utils.unknownCommand(text)) |> ignore
-      | Volume =>
-        switch (q) {
-        | "" => Volume.currentVolume(sendMessage)
-        | _ => Volume.updateGroupVolume(q, sendMessage)
-        }
+      | UnknownCommand(text) => Utils.unknownCommand(text)->sendMessage
+      | Volume => Volume.controlVolume(q, sendMessage)
 
       /* Send message with attachments */
       | Library => Search.library(q, sendMessageWithAttachments)
-      | Search =>
-        Spotify.searchTrackWithMessage(q, sendMessageWithAttachments)
+      | Search => Spotify.searchTrack(q, sendSearchResponse)
 
       /* Don't send a message */
       | Mute => Player.mute(true)

@@ -8,8 +8,19 @@ let sendPayload = payload => {
       (),
     );
 
-  Js.Promise.(Axios.request(request) |> then_(posted => posted |> resolve)) |> ignore;
+  Js.Promise.(Axios.request(request) |> then_(posted => posted |> resolve))
+  |> ignore;
 };
+
+let sendSearchResponse = (channel, message, attachments) =>
+  {
+    "channel": channel,
+    "username": "Wejay",
+    "text": message,
+    "attachments": attachments,
+    "mrkdwn": true,
+  }
+  |> sendPayload;
 
 let sendResponseWithAttachments =
     (channel: string, message: string, attachments) =>

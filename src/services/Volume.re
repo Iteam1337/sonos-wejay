@@ -47,3 +47,9 @@ let updateVolumeWithValue = (volumeValue, sendMessage) =>
      })
   |> catch(Utils.handleError("updateVolumeWithValue"))
   |> ignore;
+
+let controlVolume = (query, sendMessage) =>
+  switch (query) {
+  | "" => currentVolume(sendMessage)
+  | _ => updateGroupVolume(query, sendMessage)
+  };
