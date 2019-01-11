@@ -3,6 +3,11 @@ let spotifyPlaylist = [%re
   "/https:\\/\\/open.spotify.com\\/user\\/(\\w+)\\/playlist\\/(\\w+)/"
 ];
 
+let formatTimestamp = timestamp => {
+  let date = Js.Date.fromFloat(timestamp);
+  DateFns.format(date, "YYYY-MM-DD");
+};
+
 let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
 
 let listNumber = number => string_of_int(number + 1) ++ ". ";

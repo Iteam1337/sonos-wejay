@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Utils #help returns help 1`] = `
+exports[`#help returns help 1`] = `
 "*Queue and search*
 
 \`\`\`
@@ -36,7 +36,7 @@ toplist ___________ List top Wejayers
 There's also some hidden easter eggs :hatching_chick:"
 `;
 
-exports[`Utils #unknownCommand returns unknownCommand 1`] = `
+exports[`#unknownCommand returns unknownCommand 1`] = `
 "Sorry, the command: *\\"some_command_that_should_not_exist\\"* is not available.
 Type *\\"help\\"* in order to get all available commands! :face_with_monocle:"
 `;

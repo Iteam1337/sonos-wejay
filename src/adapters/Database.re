@@ -50,13 +50,18 @@ let openConnection = () =>
     (),
   );
 
+let runQuery = (~query, ~params=None, ~callback, ()) => {
+  let conn = openConnection();
+
+  conn->MySql2.execute(query, params, res => res->callback(conn));
+};
+
 let insertTrack = (~uri, ~user) => {
   let spotifyId = Utils.spotifyId(uri);
 
   Js.Promise.(
     Spotify.getTrack(spotifyId)
     |> then_((track: Spotify.track) => {
-         let conn = openConnection();
          let timestamp = Js.Date.now();
 
          let params =
@@ -76,19 +81,21 @@ let insertTrack = (~uri, ~user) => {
              ),
            );
 
-         MySql2.execute(
-           conn,
-           "INSERT INTO users (uri, user_id, timestamp, artist, duration, name, spotify_id, album, cover) VALUES (:uri, :user_id, :timestamp, :artist, :duration, :name, :spotify_id, :album, :cover)",
-           Some(params),
-           res => {
-             switch (res) {
-             | `Error(e) => Js.log2("ERROR: ", e)
-             | `Select(select) => Js.log2("SELECT: ", select)
-             | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
-             };
+         runQuery(
+           ~query=
+             "INSERT INTO users (uri, user_id, timestamp, artist, duration, name, spotify_id, album, cover) VALUES (:uri, :user_id, :timestamp, :artist, :duration, :name, :spotify_id, :album, :cover)",
+           ~params=Some(params),
+           ~callback=
+             (res, conn) => {
+               switch (res) {
+               | `Error(e) => Js.log2("ERROR: ", e)
+               | `Select(select) => Js.log2("SELECT: ", select)
+               | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+               };
 
-             MySql2.Connection.close(conn);
-           },
+               MySql2.Connection.close(conn);
+             },
+           (),
          );
 
          resolve(true);
@@ -97,147 +104,141 @@ let insertTrack = (~uri, ~user) => {
   );
 };
 
-let formatTimestamp = timestamp => {
-  let date = Js.Date.fromFloat(timestamp);
-  DateFns.format(date, "YYYY-MM-DD");
-};
-
 let lastPlay = (uri, sendMessage) => {
-  let conn = openConnection();
-
   let params =
     MySql2.Params.named(Json.Encode.(object_([("uri", string(uri))])));
 
-  MySql2.execute(
-    conn,
-    "SELECT * FROM users WHERE uri=:uri ORDER BY timestamp DESC",
-    Some(params),
-    res => {
-      switch (res) {
-      | `Error(e) => Js.log2("ERROR: ", e)
-      | `Select(select) =>
-        let rows =
-          select
-          ->MySql2.Select.rows
-          ->Belt.Array.map(item => item |> Decode.userRow);
+  runQuery(
+    ~query="SELECT * FROM users WHERE uri=:uri ORDER BY timestamp DESC",
+    ~params=Some(params),
+    ~callback=
+      (res, conn) => {
+        switch (res) {
+        | `Error(e) => Js.log2("ERROR: ", e)
+        | `Select(select) =>
+          let rows =
+            select
+            ->MySql2.Select.rows
+            ->Belt.Array.map(item => item |> Decode.userRow);
 
-        (
-          switch (Belt.Array.length(rows)) {
-          | 0 => "Sorry, I don't know who added this track"
-          | 1 => Slack.userId(rows[0].userId) ++ " added this awesome track!"
-          | _ =>
-            "*This track has been added by*\n"
-            ++ (
-              rows->Belt.Array.mapWithIndex((i, {timestamp, userId}) =>
-                Utils.listNumber(i)
-                ++ Slack.userId(userId)
-                ++ " on "
-                ++ formatTimestamp(timestamp)
+          (
+            switch (Belt.Array.length(rows)) {
+            | 0 => "Sorry, I don't know who added this track"
+            | 1 =>
+              Slack.userId(rows[0].userId) ++ " added this awesome track!"
+            | _ =>
+              "*This track has been added by*\n"
+              ++ (
+                rows
+                ->Belt.Array.mapWithIndex((i, {timestamp, userId}) =>
+                    Utils.listNumber(i)
+                    ++ Slack.userId(userId)
+                    ++ " on "
+                    ++ Utils.formatTimestamp(timestamp)
+                  )
+                |> Js.Array.joinWith("\n")
               )
-              |> Js.Array.joinWith("\n")
-            )
-          }
-        )
-        |> sendMessage;
+            }
+          )
+          |> sendMessage;
 
-        ();
-      | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
-      };
-      MySql2.Connection.close(conn);
-    },
+          ();
+        | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+        };
+        MySql2.Connection.close(conn);
+      },
+    (),
   );
 };
 
-let mostPlayed = sendMessage => {
-  let conn = openConnection();
+let mostPlayed = sendMessage =>
+  runQuery(
+    ~query=
+      "SELECT DISTINCT artist, uri, name, COUNT(*) as count FROM users GROUP BY artist, name, uri ORDER BY count DESC LIMIT 10",
+    ~callback=
+      (res, conn) => {
+        switch (res) {
+        | `Error(e) => Js.log2("ERROR: ", e)
+        | `Select(select) =>
+          let rows =
+            select
+            ->MySql2.Select.rows
+            ->Belt.Array.map(item => item |> Decode.mostPlayedRow);
 
-  MySql2.execute(
-    conn,
-    "SELECT DISTINCT artist, uri, name, COUNT(*) as count FROM users GROUP BY artist, name, uri ORDER BY count DESC LIMIT 10",
-    None,
-    res => {
-      switch (res) {
-      | `Error(e) => Js.log2("ERROR: ", e)
-      | `Select(select) =>
-        let rows =
-          select
-          ->MySql2.Select.rows
-          ->Belt.Array.map(item => item |> Decode.mostPlayedRow);
-
-        (
-          switch (Belt.Array.length(rows)) {
-          | 0 => "No plays :sad_panda:"
-          | _ =>
-            "*Most played*\n"
-            ++ (
-              rows->Belt.Array.mapWithIndex((i, {artist, count, name, uri}) =>
-                Utils.listNumber(i)
-                ++ (
-                  switch (artist) {
-                  | Some(a) => a ++ " - "
-                  | None => ""
-                  }
-                )
-                ++ Belt.Option.getWithDefault(name, uri)
-                ++ " ("
-                ++ string_of_int(count)
-                ++ ")"
+          (
+            switch (Belt.Array.length(rows)) {
+            | 0 => "No plays :sad_panda:"
+            | _ =>
+              "*Most played*\n"
+              ++ (
+                rows
+                ->Belt.Array.mapWithIndex((i, {artist, count, name, uri}) =>
+                    Utils.listNumber(i)
+                    ++ (
+                      switch (artist) {
+                      | Some(a) => a ++ " - "
+                      | None => ""
+                      }
+                    )
+                    ++ Belt.Option.getWithDefault(name, uri)
+                    ++ " ("
+                    ++ string_of_int(count)
+                    ++ ")"
+                  )
+                |> Js.Array.joinWith("\n")
               )
-              |> Js.Array.joinWith("\n")
-            )
-          }
-        )
-        |> sendMessage;
+            }
+          )
+          |> sendMessage;
 
-        ();
-      | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
-      };
+          ();
+        | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+        };
 
-      MySql2.Connection.close(conn);
-    },
+        MySql2.Connection.close(conn);
+      },
+    (),
   );
-};
 
-let toplist = sendMessage => {
-  let conn = openConnection();
+let toplist = sendMessage =>
+  runQuery(
+    ~query=
+      "SELECT user_id, count(*) as count FROM users GROUP BY user_id ORDER BY count(*) DESC",
+    ~callback=
+      (res, conn) => {
+        switch (res) {
+        | `Error(e) => Js.log2("ERROR: ", e)
+        | `Select(select) =>
+          let rows =
+            select
+            ->MySql2.Select.rows
+            ->Belt.Array.map(item => item |> Decode.toplistRow);
 
-  MySql2.execute(
-    conn,
-    "SELECT user_id, count(*) as count FROM users GROUP BY user_id ORDER BY count(*) DESC",
-    None,
-    res => {
-      switch (res) {
-      | `Error(e) => Js.log2("ERROR: ", e)
-      | `Select(select) =>
-        let rows =
-          select
-          ->MySql2.Select.rows
-          ->Belt.Array.map(item => item |> Decode.toplistRow);
-
-        (
-          switch (Belt.Array.length(rows)) {
-          | 0 => "No plays :sad_panda:"
-          | _ =>
-            "*Toplist*\n"
-            ++ (
-              rows->Belt.Array.mapWithIndex((i, {userId, count}) =>
-                Utils.listNumber(i)
-                ++ Slack.userId(userId)
-                ++ " ("
-                ++ string_of_int(count)
-                ++ ")"
+          (
+            switch (Belt.Array.length(rows)) {
+            | 0 => "No plays :sad_panda:"
+            | _ =>
+              "*Toplist*\n"
+              ++ (
+                rows
+                ->Belt.Array.mapWithIndex((i, {userId, count}) =>
+                    Utils.listNumber(i)
+                    ++ Slack.userId(userId)
+                    ++ " ("
+                    ++ string_of_int(count)
+                    ++ ")"
+                  )
+                |> Js.Array.joinWith("\n")
               )
-              |> Js.Array.joinWith("\n")
-            )
-          }
-        )
-        |> sendMessage;
+            }
+          )
+          |> sendMessage;
 
-        ();
-      | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
-      };
+          ();
+        | `Mutation(mutation) => Js.log2("MUTATION: ", mutation)
+        };
 
-      MySql2.Connection.close(conn);
-    },
+        MySql2.Connection.close(conn);
+      },
+    (),
   );
-};
