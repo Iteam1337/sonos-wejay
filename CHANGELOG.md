@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.4.0] - 2019-01-11
+
+### Added
+
+- New easter egg
+
+### Changed
+
+- Updated styling of search results
+
 ## [3.3.0] - 2019-01-04
 
 ### Added
