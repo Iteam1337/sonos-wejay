@@ -14,6 +14,7 @@ let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
   | Shoreline => SpotifyUtils.Tracks.shoreline->qAsNext
   | Slowdance => SpotifyUtils.Playlists.slowdance->qAsLast
   | Tequila => SpotifyUtils.Tracks.tequila->qAsNext
+  | WWW => SpotifyUtils.Tracks.worldwideweb->qAsNext
   };
 };
 
@@ -47,9 +48,10 @@ let handleEventCallback = event => {
       | Play => Player.play(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | SpotifyCopy(tracks) =>
-        tracks->Belt.Array.forEach(track =>
-          Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore
-        )
+        tracks
+        ->Belt.Array.forEach(track =>
+            Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore
+          )
       | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
       | Time =>
         sendMessage(

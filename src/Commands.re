@@ -9,7 +9,8 @@ type egg =
   | IteamClassics
   | Shoreline
   | Slowdance
-  | Tequila;
+  | Tequila
+  | WWW;
 
 type command =
   | Blame
@@ -95,6 +96,8 @@ let decodeCommand = text => {
       | "toplist" => Toplist
       | "unmute" => Unmute
       | "volume" => Volume
+      | "www"
+      | "worldwideweb" => EasterEgg(WWW)
       | text => UnknownCommand(text)
       }
     );

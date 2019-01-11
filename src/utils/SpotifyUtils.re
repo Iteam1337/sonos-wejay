@@ -6,6 +6,7 @@ module Tracks = {
   let friday = track("4fK6E2UywZTJIa5kWnCD6x");
   let shoreline = track("77jVczOFXfbdugN4djsIqs");
   let tequila = track("5gJKsGij5oGt5H5RSFYXPa");
+  let worldwideweb = track("597NerobfkV9DhKCySXXWF");
 
   module Christmas = {
     let songs = [|

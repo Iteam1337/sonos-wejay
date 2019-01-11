@@ -38,6 +38,11 @@ describe("SpotifyUtils", () => {
       |> toEqual("spotify:track:5gJKsGij5oGt5H5RSFYXPa")
     );
 
+    test("Nick Borgen - World Wide Web", () =>
+      expect(Tracks.worldwideweb)
+      |> toEqual("spotify:track:597NerobfkV9DhKCySXXWF")
+    );
+
     describe("#Christmas", () => {
       test("songs", () =>
         expect(Tracks.Christmas.songs) |> toMatchSnapshot

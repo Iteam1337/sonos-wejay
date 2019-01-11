@@ -192,4 +192,12 @@ describe("#decodeCommand", () => {
   test("volume", () =>
     expect(decodeCommand("volume")) |> toEqual(Volume)
   );
+
+  test("www", () =>
+    expect(decodeCommand("www")) |> toEqual(EasterEgg(WWW))
+  );
+
+  test("worldwideweb", () =>
+    expect(decodeCommand("worldwideweb")) |> toEqual(EasterEgg(WWW))
+  );
 });
