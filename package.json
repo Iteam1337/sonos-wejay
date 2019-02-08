@@ -31,11 +31,11 @@
   "license": "MIT",
   "devDependencies": {
     "@ahrefs/bs-dotenv": "1.0.3",
-    "@glennsl/bs-jest": "0.4.6",
+    "@glennsl/bs-jest": "0.4.7",
     "@glennsl/bs-json": "3.0.0",
-    "all-contributors-cli": "5.7.0",
+    "all-contributors-cli": "6.1.0",
     "bs-axios": "0.0.39",
-    "bs-express": "0.9.0",
+    "bs-express": "0.10.0",
     "bs-platform": "4.0.18",
     "is-ci-cli": "1.1.1",
     "nodemon": "1.18.9"
@@ -48,6 +48,6 @@
     "dotenv": "6.2.0",
     "express": "4.16.4",
     "query-string": "6.2.0",
-    "sonos": "1.8.1"
+    "sonos": "^1.9.0"
   }
 }
