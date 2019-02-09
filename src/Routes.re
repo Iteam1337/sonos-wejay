@@ -42,11 +42,21 @@ let action =
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
         let response = body->Decode.parseAction;
-        let {actions, user}: Decode.actionPayload =
+        let {actions, user, channel}: Decode.actionPayload =
           response##payload->Decode.actionPayload;
 
         Queue.asLast(~track=actions[0].value, ~user=Some(user.id), ())
-        |> then_(message => res |> Response.sendString(message) |> resolve);
+        |> then_(message => {
+             Elastic.log({
+               channel: channel.id,
+               command: Commands.Queue,
+               user: Some(user.id),
+               text: actions[0].value,
+               subtype: Decode.Human,
+             });
+
+             res |> Response.sendString(message) |> resolve;
+           });
       | None => res |> Response.sendStatus(BadRequest) |> resolve
       }
     )

@@ -68,7 +68,9 @@ let handleEventCallback = event => {
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
       | UnhandledCommand => ()
-      }
+      };
+
+      Elastic.log(event);
     | Bot => ()
     }
   );
