@@ -96,3 +96,11 @@ let unknownCommand = command =>
   |> String.concat("\n");
 
 let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif";
+
+let isFriday =
+  switch (Js.Date.make() |> Js.Date.getDay) {
+  | 5. => true
+  | _ => false
+  };
+
+let joinWithNewline = arr => arr |> Js.Array.joinWith("\n");

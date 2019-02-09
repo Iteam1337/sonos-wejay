@@ -16,7 +16,8 @@ let blame = sendMessage =>
          | _ => ""
          };
 
-       sendMessage |> Database.lastPlay(uri);
-       true |> resolve;
+       DbService.handleLastPlayed(sendMessage) |> Database.lastPlay(uri);
+
+       resolve(true);
      })
   |> ignore;

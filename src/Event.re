@@ -8,10 +8,9 @@ let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
     | IteamClassics => Playlists.iteamClassics->qAsLast
     | FreeBird => Tracks.freeBird->qAsNext
     | Friday =>
-      switch (Js.Date.make() |> Js.Date.getDay) {
-      | 5. => Tracks.friday->qAsNext
-      | _ => sendMessage("Sorry, it's not Friday") |> ignore
-      }
+      Utils.isFriday ?
+        Tracks.friday->qAsNext :
+        sendMessage("Sorry, it's not Friday") |> ignore
     | Shoreline => Tracks.shoreline->qAsNext
     | Slowdance => Playlists.slowdance->qAsLast
     | Tequila => Tracks.tequila->qAsNext
@@ -46,14 +45,15 @@ let handleEventCallback = event => {
       | Emoji(emoji) => handleEmoji(emoji, sendMessage)
       | FullQueue => Queue.getFullQueue(sendMessage)
       | Help => Utils.help->sendMessage
-      | MostPlayed => Database.mostPlayed(sendMessage)
+      | MostPlayed =>
+        DbService.handleMostPlayed(sendMessage)->Database.mostPlayed
       | NowPlaying => nowPlaying(sendMessage)
       | Play => Player.play(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | SpotifyCopy(t) => Queue.addMultipleTracks(t, user, sendMessage)
       | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
       | Time => Utils.thisIsWejay->sendMessage
-      | Toplist => Database.toplist(sendMessage)
+      | Toplist => DbService.handleToplist(sendMessage)->Database.toplist
       | UnknownCommand(text) => Utils.unknownCommand(text)->sendMessage
       | Volume => Volume.controlVolume(q, sendMessage)
 

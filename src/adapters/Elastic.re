@@ -1,44 +1,3 @@
-let commandToString = (command: Commands.command) =>
-  switch (command) {
-  | Blame => "blame"
-  | Clear => "clear"
-  | CurrentQueue => "current-queue"
-  | EasterEgg(egg) =>
-    "easteregg-"
-    ++ (
-      switch (egg) {
-      | IteamClassics => "classics"
-      | FreeBird => "freebird"
-      | Friday => "friday"
-      | Shoreline => "shoreline"
-      | Slowdance => "slowdance"
-      | Tequila => "tequila"
-      | WWW => "world-wide-web"
-      }
-    )
-  | Emoji(_) => "emoji"
-  | FullQueue => "full-queue"
-  | Help => "help"
-  | Library => "library"
-  | MostPlayed => "most-played"
-  | Mute => "playback-mute"
-  | Next => "playback-next"
-  | NowPlaying => "now-playing"
-  | Pause => "playback-pause"
-  | Play => "playback-play"
-  | PlayTrack => "playback-playtrack"
-  | Previous => "playback-previous"
-  | Queue => "queue"
-  | SpotifyCopy(_) => "spotify-copy"
-  | Search => "search"
-  | Time => "time"
-  | Toplist => "toplist"
-  | UnknownCommand(c) => "unknown-command" ++ c
-  | UnhandledCommand => "unhandled-command"
-  | Unmute => "playback-unmute"
-  | Volume => "volume"
-  };
-
 let sendLog = data => {
   Js.Promise.(
     Axios.makeConfigWithUrl(
@@ -63,7 +22,7 @@ let log = (event: Decode.event) => {
   | _ =>
     {
       "sender": event.user,
-      "command": commandToString(event.command),
+      "command": Commands.commandToString(event.command),
       "args":
         Js.String.length(event.text) > 0 ?
           [|event.text |> Js.String.replaceByRe([%re "/<|>/g"], "")|] : [||],

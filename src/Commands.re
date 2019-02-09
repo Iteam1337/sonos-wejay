@@ -102,3 +102,44 @@ let decodeCommand = text => {
       }
     );
 };
+
+let commandToString = command =>
+  switch (command) {
+  | Blame => "blame"
+  | Clear => "clear"
+  | CurrentQueue => "current-queue"
+  | EasterEgg(egg) =>
+    "easteregg-"
+    ++ (
+      switch (egg) {
+      | IteamClassics => "classics"
+      | FreeBird => "freebird"
+      | Friday => "friday"
+      | Shoreline => "shoreline"
+      | Slowdance => "slowdance"
+      | Tequila => "tequila"
+      | WWW => "world-wide-web"
+      }
+    )
+  | Emoji(_) => "emoji"
+  | FullQueue => "full-queue"
+  | Help => "help"
+  | Library => "library"
+  | MostPlayed => "most-played"
+  | Mute => "playback-mute"
+  | Next => "playback-next"
+  | NowPlaying => "now-playing"
+  | Pause => "playback-pause"
+  | Play => "playback-play"
+  | PlayTrack => "playback-playtrack"
+  | Previous => "playback-previous"
+  | Queue => "queue"
+  | SpotifyCopy(_) => "spotify-copy"
+  | Search => "search"
+  | Time => "time"
+  | Toplist => "toplist"
+  | UnknownCommand(c) => "unknown-command" ++ c
+  | UnhandledCommand => "unhandled-command"
+  | Unmute => "playback-unmute"
+  | Volume => "volume"
+  };
