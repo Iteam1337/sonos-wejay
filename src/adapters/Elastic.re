@@ -58,17 +58,7 @@ let log = (event: Decode.event) => {
   switch (event.command) {
   | UnhandledCommand => ()
   | SpotifyCopy(copiedTracks) =>
-    {
-      "sender": event.user,
-      "command": "spotify-copy",
-      "args":
-        copiedTracks->Belt.Array.map(t =>
-          t
-          |> Js.String.split(" ")
-          |> Js.Array.sliceFrom(1)
-          |> Js.Array.joinWith("")
-        ),
-    }
+    {"sender": event.user, "command": "spotify-copy", "args": copiedTracks}
     |> sendLog
   | _ =>
     {
