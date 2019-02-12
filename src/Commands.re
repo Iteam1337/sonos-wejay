@@ -1,23 +1,9 @@
-type emoji =
-  | ThumbsDown
-  | ThumbsUp
-  | Santa;
-
-type egg =
-  | FreeBird
-  | Friday
-  | IteamClassics
-  | Shoreline
-  | Slowdance
-  | Tequila
-  | WWW;
-
-type command =
+type t =
   | Blame
   | Clear
   | CurrentQueue
-  | EasterEgg(egg)
-  | Emoji(emoji)
+  | EasterEgg(EasterEgg.t)
+  | Emoji(Emoji.t)
   | FullQueue
   | Help
   | Library

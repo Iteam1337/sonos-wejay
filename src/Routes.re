@@ -52,7 +52,7 @@ let action =
                command: Commands.Queue,
                user: Some(user.id),
                text: actions[0].value,
-               subtype: Decode.Human,
+               subtype: Decode.Requester.Human,
              });
 
              res |> Response.sendString(message) |> resolve;

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SpotifyUtils Tracks #Christmas songs 1`] = `
+exports[`Tracks #Christmas songs 1`] = `
 Array [
   Array [
     "Justin Bieber - Mistletoe",

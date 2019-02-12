@@ -5,7 +5,7 @@ let currentVolume = sendMessage =>
   Config.device->getVolume()
   |> then_(volume => {
        sendMessage("Current volume is " ++ (volume |> Utils.cleanFloat));
-       volume |> resolve;
+       resolve(volume);
      })
   |> catch(Utils.handleError("currentVolume"))
   |> ignore;
@@ -14,7 +14,7 @@ let updateVolume = (volume: string, sendMessage) =>
   Config.device->setVolume(volume |> float_of_string)
   |> then_(_ => {
        sendMessage("Volume set to " ++ volume);
-       volume |> resolve;
+       resolve(volume);
      })
   |> catch(Utils.handleError("updateVolume"))
   |> ignore;
@@ -42,7 +42,7 @@ let updateVolumeWithValue = (volumeValue, sendMessage) =>
        Config.device->setVolume(newVolume)
        |> then_(_ => {
             sendMessage("Volume set to " ++ Utils.cleanFloat(newVolume));
-            true |> resolve;
+            resolve(true);
           });
      })
   |> catch(Utils.handleError("updateVolumeWithValue"))

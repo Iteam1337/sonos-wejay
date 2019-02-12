@@ -1,32 +1,3 @@
-let handleEasterEgg = (egg: Commands.egg, user, sendMessage) => {
-  let qAsLast = track =>
-    Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore;
-  let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
-
-  SpotifyUtils.(
-    switch (egg) {
-    | IteamClassics => Playlists.iteamClassics->qAsLast
-    | FreeBird => Tracks.freeBird->qAsNext
-    | Friday =>
-      Utils.isFriday ?
-        Tracks.friday->qAsNext :
-        sendMessage("Sorry, it's not Friday") |> ignore
-    | Shoreline => Tracks.shoreline->qAsNext
-    | Slowdance => Playlists.slowdance->qAsLast
-    | Tequila => Tracks.tequila->qAsNext
-    | WWW => Tracks.worldwideweb->qAsNext
-    }
-  );
-};
-
-let handleEmoji = (emoji: Commands.emoji, sendMessage) =>
-  switch (emoji) {
-  | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
-  | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
-  | Santa =>
-    SpotifyUtils.Tracks.Christmas.getSong()->Queue.asNext(None, sendMessage)
-  };
-
 let handleEventCallback = event => {
   let {channel, text: q, subtype, command, user}: Decode.event = event;
   let sendMessage = Slack.sendSlackResponse(channel);
@@ -41,8 +12,8 @@ let handleEventCallback = event => {
       | Blame => Misc.blame(sendMessage)
       | Clear => Queue.clearQueue(sendMessage)
       | CurrentQueue => Queue.currentQueue(sendMessage)
-      | EasterEgg(egg) => handleEasterEgg(egg, user, sendMessage)
-      | Emoji(emoji) => handleEmoji(emoji, sendMessage)
+      | EasterEgg(egg) => EasterEgg.handleEasterEgg(egg, user, sendMessage)
+      | Emoji(emoji) => Emoji.handleEmoji(emoji, sendMessage)
       | FullQueue => Queue.getFullQueue(sendMessage)
       | Help => Utils.help->sendMessage
       | MostPlayed =>
@@ -70,6 +41,7 @@ let handleEventCallback = event => {
       | UnhandledCommand => ()
       };
 
+      /* Log all Human events to Elastic */
       Elastic.log(event);
     | Bot => ()
     }

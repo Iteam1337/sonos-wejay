@@ -1,6 +1,8 @@
-type subType =
-  | Bot
-  | Human;
+module Requester = {
+  type t =
+    | Bot
+    | Human;
+};
 
 type eventType =
   | UrlVerification
@@ -13,9 +15,9 @@ type verification = {
 };
 
 type event = {
-  command: Commands.command,
+  command: Commands.t,
   channel: string,
-  subtype: subType,
+  subtype: Requester.t,
   text: string,
   user: option(string),
 };
