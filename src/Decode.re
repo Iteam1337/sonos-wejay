@@ -1,6 +1,3 @@
-[@bs.scope "JSON"] [@bs.val]
-external parseToJson: string => Js.Json.t = "parse";
-
 type subType =
   | Bot
   | Human;
@@ -113,4 +110,6 @@ let actionPayload = json =>
   };
 
 let parseAction = json =>
-  Json.Decode.{"payload": json |> field("payload", string) |> parseToJson};
+  Json.Decode.{
+    "payload": json |> field("payload", string) |> Js.Json.parseExn,
+  };
