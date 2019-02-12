@@ -124,7 +124,7 @@ let commandToString = command =>
   | Search => "search"
   | Time => "time"
   | Toplist => "toplist"
-  | UnknownCommand(c) => "unknown-command" ++ c
+  | UnknownCommand(_) => "unknown-command"
   | UnhandledCommand => "unhandled-command"
   | Unmute => "playback-unmute"
   | Volume => "volume"
