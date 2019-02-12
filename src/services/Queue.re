@@ -67,10 +67,9 @@ let asNext = (track, user, sendMessage) => {
 };
 
 let listTracks = (tracks: array(currentQueue)) =>
-  tracks
-  ->Belt.Array.mapWithIndex((i, {artist, title}) =>
-      Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
-    );
+  tracks->Belt.Array.mapWithIndex((i, {artist, title}) =>
+    Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
+  );
 
 let queueWithFallback = () =>
   device->getQueue()
@@ -92,9 +91,12 @@ let currentQueue = sendMessage =>
   |> then_(({items}) =>
        Services.getCurrentTrack()
        |> then_(({queuePosition}) => {
-            switch (items->Belt.Array.length) {
-            | 0
-            | 1 => sendMessage(Messages.emptyQueue)
+            let numberOfTracks = items->Belt.Array.length;
+
+            switch (numberOfTracks, queuePosition) {
+            | (0, _) => sendMessage(Messages.emptyQueue)
+            | (nt, qp) when int_of_float(qp) == nt =>
+              sendMessage(Messages.emptyQueue)
             | _ =>
               let tracks =
                 items
@@ -140,7 +142,6 @@ let clearQueue = sendMessage =>
   |> ignore;
 
 let addMultipleTracks = (tracks, user, sendMessage) =>
-  tracks
-  ->Belt.Array.forEach(track =>
-      asLast(~track, ~user, ~sendMessage, ()) |> ignore
-    );
+  tracks->Belt.Array.forEach(track =>
+    asLast(~track, ~user, ~sendMessage, ()) |> ignore
+  );

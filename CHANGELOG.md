@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.4.1] - 2019-02-12
+
+### Fixed
+
+- Handle end of current queue #40
+
 ## [3.4.0] - 2019-01-11
 
 ### Added
