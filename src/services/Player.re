@@ -66,19 +66,21 @@ let playTrackNumber = (trackNumber, sendMessage) =>
                 ++ Messages.emptyQueue,
               )
             | _ =>
-              items->Belt.Array.mapWithIndex((i, {artist, title}) =>
-                Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
-              )
-              |> Js.Array.joinWith("\n")
-              |> (
-                tracks =>
-                  sendMessage(
-                    "*Cannot play track "
-                    ++ trackNumber
-                    ++ ". Here's the whole queue*\n"
-                    ++ tracks,
-                  )
-              )
+              items
+              ->Belt.Array.mapWithIndex((i, {artist, title}) =>
+                  Utils.listNumber(i)
+                  ++ Utils.artistAndTitle(~artist, ~title)
+                )
+              ->Utils.joinWithNewline
+              ->(
+                  tracks =>
+                    sendMessage(
+                      "*Cannot play track "
+                      ++ trackNumber
+                      ++ ". Here's the whole queue*\n"
+                      ++ tracks,
+                    )
+                )
             };
 
             resolve(true);

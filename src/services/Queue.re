@@ -105,7 +105,7 @@ let currentQueue = sendMessage =>
                     ~len=Belt.Array.length(items),
                   )
                 ->listTracks
-                |> Js.Array.joinWith("\n");
+                ->Utils.joinWithNewline;
 
               sendMessage("*Upcoming tracks*\n" ++ tracks);
             };
@@ -123,7 +123,7 @@ let getFullQueue = sendMessage =>
        switch (items->Belt.Array.length) {
        | 0 => sendMessage(Messages.emptyQueue)
        | _ =>
-         let tracks = items->listTracks |> Js.Array.joinWith("\n");
+         let tracks = items->listTracks->Utils.joinWithNewline;
          sendMessage("*Here's the full queue*\n" ++ tracks);
        };
 
