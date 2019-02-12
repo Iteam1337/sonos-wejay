@@ -24,8 +24,13 @@ let log = (event: Decode.event) => {
       "sender": event.user,
       "command": Commands.commandToString(event.command),
       "args":
-        Js.String.length(event.text) > 0 ?
-          [|event.text |> Js.String.replaceByRe([%re "/<|>/g"], "")|] : [||],
+        switch (event.command) {
+        | UnknownCommand(c) => [|c|]
+        | _ =>
+          Js.String.length(event.text) > 0 ?
+            [|event.text |> Js.String.replaceByRe([%re "/<|>/g"], "")|] :
+            [||]
+        },
     }
     |> sendLog
   };

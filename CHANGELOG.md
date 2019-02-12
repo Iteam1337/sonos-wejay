@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.4.2] - 2019-02-12
+
+### Changed
+
+- Refactor a bunch of types and created more concise modules
+- Use built in json parse
+- Use new line helper
+
+### Fixed
+
+- Add command from unknown command logging to `args` instead of the command string. Because we'll get a bunch of unique command values otherwise.
+
 ## [3.4.1] - 2019-02-12
 
 ### Fixed
