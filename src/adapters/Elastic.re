@@ -13,23 +13,21 @@ let sendLog = data => {
   |> ignore;
 };
 
-let log = (event: Decode.event) => {
-  switch (event.command) {
+let log = ({command, user, text}: Decode.event) => {
+  switch (command) {
   | UnhandledCommand => ()
   | SpotifyCopy(copiedTracks) =>
-    {"sender": event.user, "command": "spotify-copy", "args": copiedTracks}
+    {"sender": user, "command": "spotify-copy", "args": copiedTracks}
     |> sendLog
   | _ =>
     {
-      "sender": event.user,
-      "command": Commands.commandToString(event.command),
+      "sender": user,
+      "command": Commands.commandToString(command),
       "args":
-        switch (event.command) {
+        switch (command) {
         | UnknownCommand(c) => [|c|]
         | _ =>
-          Js.String.length(event.text) > 0 ?
-            [|event.text |> Js.String.replaceByRe([%re "/<|>/g"], "")|] :
-            [||]
+          Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
         },
     }
     |> sendLog

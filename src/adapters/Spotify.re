@@ -79,12 +79,10 @@ let buildArtist = artists =>
   |> Array.map((artist: artist) => artist.name)
   |> Js.Array.joinWith(", ");
 
-let getTrack = (uri: string) =>
+let spotifyRequest = url =>
   Js.Promise.(
     getToken()
-    |> then_(token => {
-         let url = "https://api.spotify.com/v1/tracks/" ++ uri;
-
+    |> then_(token =>
          Axios.makeConfigWithUrl(
            ~url,
            ~_method="GET",
@@ -92,53 +90,53 @@ let getTrack = (uri: string) =>
            (),
          )
          |> Axios.request
-         |> then_(posted => {
-              let track = posted##data |> Decode.track;
-
-              track |> resolve;
-            })
-         |> catch(Utils.handleError("spotifyGetTrack"));
-       })
+         |> then_(response => resolve(response))
+       )
   );
 
-let spotifySearch = (query: string) =>
+let getTrack = (uri: string) => {
+  let url = "https://api.spotify.com/v1/tracks/" ++ uri;
+
   Js.Promise.(
-    getToken()
-    |> then_(token => {
-         let url = SpotifyUtils.spotifySearchUrl(~query, ());
-
-         Axios.makeConfigWithUrl(
-           ~url,
-           ~_method="GET",
-           ~headers={"Authorization": "Bearer " ++ token.accessToken},
-           (),
-         )
-         |> Axios.request
-         |> then_(posted => {
-              let {tracks} = posted##data |> Decode.data;
-
-              tracks |> resolve;
-            })
-         |> catch(Utils.handleError("spotifySearchTrack"));
-       })
+    spotifyRequest(url)
+    |> then_(posted => resolve(posted##data |> Decode.track))
+    |> catch(Utils.handleError("spotifyGetTrack"))
   );
+};
 
-let createAttachment = track => {
+let spotifySearch = (query: string) => {
+  let url = SpotifyUtils.spotifySearchUrl(~query, ());
+
+  Js.Promise.(
+    spotifyRequest(url)
+    |> then_(posted => {
+         let {tracks} = posted##data |> Decode.data;
+         resolve(tracks);
+       })
+    |> catch(Utils.handleError("spotifySearchTrack"))
+  );
+};
+
+let attachmentField = (~title, ~value, ~short=true, ()) => {
+  {"title": title, "value": value, "short": short};
+};
+
+let createAttachment = ({album, artists, duration, name, uri}) => {
   "color": "#efb560",
   "callback_id": "queue",
-  "thumb_url": track.album.images[0].url,
+  "thumb_url": album.images[0].url,
   "fields": [|
-    {"title": "Artist", "value": buildArtist(track.artists), "short": true},
-    {"title": "Title", "value": track.name, "short": true},
-    {"title": "Album", "value": track.album.name, "short": true},
-    {
-      "title": "Duration",
-      "value": Utils.parseDuration(float_of_int(track.duration / 1000)),
-      "short": true,
-    },
+    attachmentField(~title="Artist", ~value=buildArtist(artists), ()),
+    attachmentField(~title="Title", ~value=name, ()),
+    attachmentField(~title="Album", ~value=album.name, ()),
+    attachmentField(
+      ~title="Duration",
+      ~value=Utils.parseDuration(float_of_int(duration / 1000)),
+      (),
+    ),
   |],
   "actions": [|
-    {"name": "track", "text": "Queue", "type": "button", "value": track.uri},
+    {"name": "track", "text": "Queue", "type": "button", "value": uri},
   |],
 };
 

@@ -15,7 +15,7 @@ let handleEventCallback = event => {
       | EasterEgg(egg) => EasterEgg.handleEasterEgg(egg, user, sendMessage)
       | Emoji(emoji) => Emoji.handleEmoji(emoji, sendMessage)
       | FullQueue => Queue.getFullQueue(sendMessage)
-      | Help => Utils.help->sendMessage
+      | Help => sendMessage(Messages.help)
       | MostPlayed =>
         DbService.handleMostPlayed(sendMessage)->Database.mostPlayed
       | NowPlaying => nowPlaying(sendMessage)
@@ -23,9 +23,10 @@ let handleEventCallback = event => {
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
       | SpotifyCopy(t) => Queue.addMultipleTracks(t, user, sendMessage)
       | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
-      | Time => Utils.thisIsWejay->sendMessage
+      | Time => sendMessage(Messages.thisIsWejay)
       | Toplist => DbService.handleToplist(sendMessage)->Database.toplist
-      | UnknownCommand(text) => Utils.unknownCommand(text)->sendMessage
+      | UnknownCommand(command) =>
+        sendMessage(Messages.unknownCommand(command))
       | Volume => Volume.controlVolume(q, sendMessage)
 
       /* Send message with attachments */
