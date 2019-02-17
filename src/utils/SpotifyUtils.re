@@ -30,3 +30,7 @@ let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) =
   ++ "&market="
   ++ market;
 };
+
+let isSpotifyCopy = text =>
+  Js.String.includes("https://open.spotify.com/track", text)
+  || Js.String.includes("https://open.spotify.com/user/", text);

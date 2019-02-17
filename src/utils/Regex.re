@@ -6,6 +6,9 @@ module Patterns = {
 
   let removeSlackCommandBrackets = [%re "/(<|>)/g"];
   let removeSlackUser = [%re "/<@\\w+>\\s/g"];
+
+  let isEmoji = [%re "/^:[\\w+-:]+:$/"];
+  let skinTone = [%re "/:skin-tone-\\d+:/"];
 };
 
 let replaceByRe = (str, regex, replaceBy) =>

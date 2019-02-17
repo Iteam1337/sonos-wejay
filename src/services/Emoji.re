@@ -1,7 +1,8 @@
 type t =
   | ThumbsDown
   | ThumbsUp
-  | Santa;
+  | Santa
+  | UnhandledEmoji(string);
 
 module Christmas = {
   open SpotifyUtils;
@@ -38,9 +39,29 @@ module Christmas = {
   };
 };
 
+let emojiCommand = text => {
+  let cleanEmoji = text->Regex.replaceByRe(Regex.Patterns.skinTone, "");
+
+  switch (cleanEmoji) {
+  | ":thumbsup:"
+  | ":+1:" => ThumbsUp
+  | ":thumbsdown:"
+  | ":-1:" => ThumbsDown
+  | ":santa:" => Santa
+  | emoji => UnhandledEmoji(emoji)
+  };
+};
+
 let handleEmoji = (emoji, sendMessage) =>
   switch (emoji) {
   | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
   | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
   | Santa => Christmas.randomTrack()->Queue.asNext(None, sendMessage)
+  | UnhandledEmoji(emoji) => sendMessage(Messages.unknownCommand(emoji))
+  };
+
+let isEmoji = command =>
+  switch (Js.String.match(Regex.Patterns.isEmoji, command)) {
+  | None => false
+  | Some(_) => true
   };

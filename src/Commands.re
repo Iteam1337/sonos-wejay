@@ -34,59 +34,51 @@ let parseCommand = text =>
   |> (array => array[0]);
 
 let decodeCommand = text => {
-  let isSpotifyCopy =
-    Js.String.includes("https://open.spotify.com/track", text)
-    || Js.String.includes("https://open.spotify.com/user/", text);
-
-  isSpotifyCopy ?
-    SpotifyCopy(Utils.parseSpotifyCopy(text)) :
-    (
-      switch (parseCommand(text)) {
-      | "" => UnhandledCommand
-      | ":thumbsup:"
-      | ":+1:" => Emoji(ThumbsUp)
-      | ":thumbsdown:"
-      | ":-1:" => Emoji(ThumbsDown)
-      | ":santa:" => Emoji(Santa)
-      | "blame" => Blame
-      | "classics" => EasterEgg(IteamClassics)
-      | "clear" => Clear
-      | "cq"
-      | "currentqueue"
-      | "gq"
-      | "getqueue" => CurrentQueue
-      | "freebird" => EasterEgg(FreeBird)
-      | "friday" => EasterEgg(Friday)
-      | "fq"
-      | "fullqueue" => FullQueue
-      | "help" => Help
-      | "l"
-      | "library" => Library
-      | "mute" => Mute
-      | "mostplayed" => MostPlayed
-      | "next" => Next
-      | "np"
-      | "nowplaying" => NowPlaying
-      | "pause" => Pause
-      | "play" => Play
-      | "playtrack" => PlayTrack
-      | "previous" => Previous
-      | "q"
-      | "queue" => Queue
-      | "s"
-      | "search" => Search
-      | "shoreline" => EasterEgg(Shoreline)
-      | "slowdance" => EasterEgg(Slowdance)
-      | "time" => Time
-      | "tequila" => EasterEgg(Tequila)
-      | "toplist" => Toplist
-      | "unmute" => Unmute
-      | "volume" => Volume
-      | "www"
-      | "worldwideweb" => EasterEgg(WWW)
-      | text => UnknownCommand(text)
-      }
-    );
+  switch (SpotifyUtils.isSpotifyCopy(text), Emoji.isEmoji(text)) {
+  | (true, _) => SpotifyCopy(Utils.parseSpotifyCopy(text))
+  | (_, true) => Emoji(Emoji.emojiCommand(text))
+  | (_, _) =>
+    switch (parseCommand(text)) {
+    | "" => UnhandledCommand
+    | "classics" => EasterEgg(IteamClassics)
+    | "blame" => Blame
+    | "clear" => Clear
+    | "cq"
+    | "currentqueue"
+    | "gq"
+    | "getqueue" => CurrentQueue
+    | "freebird" => EasterEgg(FreeBird)
+    | "friday" => EasterEgg(Friday)
+    | "fq"
+    | "fullqueue" => FullQueue
+    | "help" => Help
+    | "l"
+    | "library" => Library
+    | "mute" => Mute
+    | "mostplayed" => MostPlayed
+    | "next" => Next
+    | "np"
+    | "nowplaying" => NowPlaying
+    | "pause" => Pause
+    | "play" => Play
+    | "playtrack" => PlayTrack
+    | "previous" => Previous
+    | "q"
+    | "queue" => Queue
+    | "s"
+    | "search" => Search
+    | "shoreline" => EasterEgg(Shoreline)
+    | "slowdance" => EasterEgg(Slowdance)
+    | "time" => Time
+    | "tequila" => EasterEgg(Tequila)
+    | "toplist" => Toplist
+    | "unmute" => Unmute
+    | "volume" => Volume
+    | "www"
+    | "worldwideweb" => EasterEgg(WWW)
+    | text => UnknownCommand(text)
+    }
+  };
 };
 
 let commandToString = command =>
@@ -107,7 +99,16 @@ let commandToString = command =>
       | WWW => "world-wide-web"
       }
     )
-  | Emoji(_) => "emoji"
+  | Emoji(emoji) =>
+    "emoji-"
+    ++ (
+      switch (emoji) {
+      | ThumbsUp => "volume-up"
+      | ThumbsDown => "volume-down"
+      | Santa => "santa"
+      | _ => "unknown"
+      }
+    )
   | FullQueue => "full-queue"
   | Help => "help"
   | Library => "library"

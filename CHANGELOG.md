@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.4.3] - 2019-02-17
+
+### Fixed
+
+- Handle skin tone emojis #41
+
 ## [3.4.2] - 2019-02-12
 
 ### Changed
