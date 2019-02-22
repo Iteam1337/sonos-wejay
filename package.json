@@ -1,6 +1,6 @@
 {
   "name": "sonos-wejay",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "Wejay is a music collaboration bot for Slack that can be used to add music to a local Sonos system. It needs to be started on the same network as your Sonos system in order to communicate with the speakers.",
   "scripts": {
     "dev": "nodemon lib/js/src/Server.bs.js",
