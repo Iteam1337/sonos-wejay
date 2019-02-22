@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.4.4] - 2019-02-22
+
+### Fixed
+
+- Fix bug with friday easter egg
+
 ## [3.4.3] - 2019-02-17
 
 ### Fixed
