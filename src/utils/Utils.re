@@ -42,15 +42,15 @@ let parsePlaylistCopy = track =>
   };
 
 let parseSpotifyCopy = track =>
-  Js.String.includes("track", track) ?
-    parseTrackCopy(track) : parsePlaylistCopy(track);
+  Js.String.includes("track", track)
+    ? parseTrackCopy(track) : parsePlaylistCopy(track);
 
 let handleError = (parent, err) => {
   Js.log(err);
   Js.Promise.reject(Js.Exn.raiseError("Something went wrong in " ++ parent));
 };
 
-let isFriday =
+let isFriday = () =>
   switch (Js.Date.make() |> Js.Date.getDay) {
   | 5. => true
   | _ => false

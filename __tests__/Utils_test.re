@@ -103,3 +103,7 @@ describe("#parseSpotifyCopy", () => {
     |> toEqual([|"spotify:user:believer:playlist:77ffhasgb5saaregvpnxwd"|])
   );
 });
+
+test("is it friday", () =>
+  expect(isFriday()) |> toEqual(true)
+);

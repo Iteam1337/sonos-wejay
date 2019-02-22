@@ -34,8 +34,9 @@ let handleEasterEgg = (egg, user, sendMessage) => {
   | IteamClassics => Playlist.iteamClassics->qAsLast
   | FreeBird => Track.freeBird->qAsNext
   | Friday =>
-    Utils.isFriday ?
-      Track.friday->qAsNext : sendMessage("Sorry, it's not Friday") |> ignore
+    Utils.isFriday()
+      ? Track.friday->qAsNext
+      : sendMessage("Sorry, it's not Friday") |> ignore
   | Shoreline => Track.shoreline->qAsNext
   | Slowdance => Playlist.slowdance->qAsLast
   | Tequila => Track.tequila->qAsNext
