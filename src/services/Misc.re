@@ -1,12 +1,12 @@
 open Sonos.Decode;
 open Js.Promise;
 
-let blame = sendMessage =>
+let blameCurrent = () => {
   Services.getCurrentTrack()
   |> then_(({uri}) => {
        let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
 
-       let uri =
+       (
          switch (
            Js.String.includes("x-file", uri),
            uri |> Js.String.match(spotifyUri),
@@ -14,8 +14,15 @@ let blame = sendMessage =>
          | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
          | (true, None) => uri
          | _ => ""
-         };
+         }
+       )
+       |> resolve;
+     });
+};
 
+let blame = sendMessage =>
+  blameCurrent()
+  |> then_(uri => {
        DbService.handleLastPlayed(sendMessage) |> Database.lastPlay(uri);
 
        resolve(true);

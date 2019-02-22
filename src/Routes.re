@@ -62,12 +62,32 @@ let action =
     )
   );
 
-let cli =
-  Middleware.from((_next, req, res) => {
-    switch (Request.bodyJSON(req)) {
-    | Some(body) => Js.log(body)
-    | None => ()
-    };
+module DecodeCli = {
+  type t = {command: string};
 
-    res |> Response.sendString("Hej");
-  });
+  let parseCli = json =>
+    Json.Decode.{command: json |> field("command", string)};
+};
+
+let cli =
+  PromiseMiddleware.from((_next, req, res) =>
+    switch (Request.bodyJSON(req)) {
+    | Some(body) =>
+      let message = body |> DecodeCli.parseCli;
+      let command = Commands.decodeCommand(message.command);
+      let args = Decode.parseQuery(message.command);
+
+      Js.log2(command, args);
+
+      switch (command) {
+      | Blame =>
+        Js.Promise.(
+          Misc.blameCurrent()
+          |> then_(uri =>
+               res |> Response.sendString |> Database.lastPlay(uri)
+             )
+        )
+      };
+    | None => res |> Response.sendStatus(BadRequest)
+    }
+  );
