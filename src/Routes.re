@@ -61,3 +61,13 @@ let action =
       }
     )
   );
+
+let cli =
+  Middleware.from((_next, req, res) => {
+    switch (Request.bodyJSON(req)) {
+    | Some(body) => Js.log(body)
+    | None => ()
+    };
+
+    res |> Response.sendString("Hej");
+  });
