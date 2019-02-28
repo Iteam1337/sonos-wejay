@@ -2,6 +2,11 @@ open Jest;
 open Utils;
 open Expect;
 
+[@bs.module "jest-date-mock"] external clear: unit => unit = "";
+[@bs.module "jest-date-mock"] external advanceTo: float => unit = "";
+
+afterAll(clear);
+
 describe("#formatTimestamp", () =>
   test("should format a timestamp", () =>
     expect(formatTimestamp(1544185210000.)) |> toEqual("2018-12-07")
@@ -104,6 +109,14 @@ describe("#parseSpotifyCopy", () => {
   );
 });
 
-test("is it friday", () =>
-  expect(isFriday()) |> toEqual(true)
-);
+test("is it friday", () => {
+  advanceTo(1550790372000.0);
+
+  expect(isFriday()) |> toEqual(true);
+});
+
+test("is it not friday", () => {
+  advanceTo(1551335810448.0);
+
+  expect(isFriday()) |> toEqual(false);
+});
