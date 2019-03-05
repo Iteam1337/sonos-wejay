@@ -9,7 +9,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "test": "is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "npm run build && jest",
+    "test:ci": "jest",
     "test:watch": "jest --watch",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"

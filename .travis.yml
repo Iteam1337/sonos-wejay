@@ -3,11 +3,11 @@ cache:
   directories:
     - '~/.npm'
 node_js:
-  - '10'
+  - 10
 install:
   - npm install --silent
 script:
-  - npm run test:ci
+  - npm test
 branches:
   only:
     - master
