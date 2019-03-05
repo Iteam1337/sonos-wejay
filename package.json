@@ -8,6 +8,7 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
+    "prepare": "npm run build",
     "test": "is-ci \"test:ci\" \"test:watch\"",
     "test:ci": "jest",
     "test:watch": "jest --watch",
