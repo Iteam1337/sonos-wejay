@@ -5,7 +5,7 @@ open Expect;
 [@bs.module "jest-date-mock"] external clear: unit => unit = "";
 [@bs.module "jest-date-mock"] external advanceTo: float => unit = "";
 
-afterAll(clear);
+afterEach(clear);
 
 describe("#formatTimestamp", () =>
   test("should format a timestamp", () =>
@@ -110,13 +110,13 @@ describe("#parseSpotifyCopy", () => {
 });
 
 test("is it friday", () => {
-  advanceTo(1550790372000.0);
+  advanceTo(1550839500000.0);
 
   expect(isFriday()) |> toEqual(true);
 });
 
 test("is it not friday", () => {
-  advanceTo(1551335810448.0);
+  advanceTo(1551335810449.0);
 
   expect(isFriday()) |> toEqual(false);
 });
