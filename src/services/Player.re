@@ -37,6 +37,7 @@ let playTrackNumber = (trackNumber, sendMessage) =>
             Services.getPlayingState()
             |> then_(state => {
                  switch (state) {
+                 | Paused
                  | Stopped => play(sendMessage)
                  | Playing
                  | UnknownState => ()
