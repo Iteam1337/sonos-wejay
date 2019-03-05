@@ -28,8 +28,7 @@ let event =
             Response.sendStatus(Ok);
           | None => Response.sendStatus(BadRequest)
           }
-
-        | _ => Response.sendStatus(BadRequest)
+        | UnknownEvent => Response.sendStatus(BadRequest)
         };
       | None => Response.sendStatus(BadRequest)
       }

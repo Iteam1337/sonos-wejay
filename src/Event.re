@@ -9,36 +9,38 @@ let handleEventCallback = event => {
     | Human =>
       switch (command) {
       /* Send string message */
-      | Blame => Misc.blame(sendMessage)
+      | Blame => Misc.blame(sendMessage) |> ignore
       | Clear => Queue.clearQueue(sendMessage)
       | CurrentQueue => Queue.currentQueue(sendMessage)
-      | EasterEgg(egg) => EasterEgg.handleEasterEgg(egg, user, sendMessage)
-      | Emoji(emoji) => Emoji.handleEmoji(emoji, sendMessage)
       | FullQueue => Queue.getFullQueue(sendMessage)
       | Help => sendMessage(Messages.help)
-      | MostPlayed =>
-        DbService.handleMostPlayed(sendMessage)->Database.mostPlayed
       | NowPlaying => nowPlaying(sendMessage)
       | Play => Player.play(sendMessage)
       | PlayTrack => Player.playTrackNumber(q, sendMessage)
-      | SpotifyCopy(t) => Queue.addMultipleTracks(t, user, sendMessage)
-      | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
       | Time => sendMessage(Messages.thisIsWejay)
-      | Toplist => DbService.handleToplist(sendMessage)->Database.toplist
-      | UnknownCommand(command) =>
-        sendMessage(Messages.unknownCommand(command))
-      | Volume => Volume.controlVolume(q, sendMessage)
-
-      /* Send message with attachments */
-      | Library => Search.library(q, sendMessageWithAttachments)
-      | Search => Spotify.searchTrack(q, sendSearchResponse)
-
-      /* Don't send a message */
       | Mute => Player.mute(true)
       | Next => Player.next()
       | Pause => Player.pause()
       | Previous => Player.previous()
       | Unmute => Player.mute(false)
+      | UnknownCommand(command) =>
+        sendMessage(Messages.unknownCommand(command))
+      | EasterEgg(egg) => EasterEgg.handleEasterEgg(egg, user, sendMessage)
+      | Queue => Queue.asLast(~track=q, ~user, ~sendMessage, ()) |> ignore
+      | Volume => Volume.controlVolume(q, sendMessage)
+
+      /* Unhandled below */
+      | Emoji(emoji) => Emoji.handleEmoji(emoji, sendMessage)
+      | SpotifyCopy(t) => Queue.addMultipleTracks(t, user, sendMessage)
+      | Library => Search.library(q, sendMessageWithAttachments)
+      | Search => Spotify.searchTrack(q, sendSearchResponse)
+
+      /* DB */
+      | MostPlayed =>
+        DbService.handleMostPlayed(sendMessage)->Database.mostPlayed
+      | Toplist => DbService.handleToplist(sendMessage)->Database.toplist
+
+      /* Don't send a message */
       | UnhandledCommand => ()
       };
 
@@ -47,4 +49,42 @@ let handleEventCallback = event => {
     | Bot => ()
     }
   );
+};
+
+let response = (command, args, user) => {
+  let cmd = command |> Commands.decodeCommand;
+
+  Elastic.logNew(cmd, args, user) |> ignore;
+
+  switch (cmd) {
+  | Blame => Blame.run()
+  | NowPlaying => NowPlaying.run()
+
+  /* Queue control */
+  | Clear => Queue.clear()
+  | CurrentQueue => Queue.current()
+  | FullQueue => Queue.full()
+  | Queue => Queue.last(args)
+
+  /* Player control */
+  | Play => PlayerControl.play()
+  | PlayTrack => PlayerControl.playTrack(args)
+  | Pause => PlayerControl.pause()
+  | Next => PlayerControl.next()
+  | Previous => PlayerControl.previous()
+  | Mute => PlayerControl.mute(true)
+  | Unmute => PlayerControl.mute(false)
+  | Volume => Volume.control(args)
+
+  /* Misc */
+  | EasterEgg(egg) => EasterEgg.run(egg)
+  | Help => Js.Promise.resolve(`Ok(Messages.help))
+  | Time => Js.Promise.resolve(`Ok(Messages.thisIsWejay))
+  | UnknownCommand(command) =>
+    Js.Promise.resolve(`Ok(Messages.unknownCommand(command)))
+
+  /* Anything else */
+  | _ =>
+    Js.Promise.resolve(`Ok("This is not the command you are looking for"))
+  };
 };

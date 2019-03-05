@@ -11,7 +11,10 @@ let parseDuration = duration => duration *. 1000. |> Duration.parse;
 let cleanFloat = value => value |> int_of_float |> string_of_int;
 
 let parsedTrack = track =>
-  track->Regex.replaceByRe(Regex.Patterns.removeSlackCommandBrackets, "");
+  track
+  ->Regex.replaceByRe(Regex.Patterns.removeSlackCommandBrackets, "")
+  ->Regex.replaceByRe(Regex.Patterns.queryParams, "")
+  ->Regex.replaceByRe(Regex.Patterns.spotifyTrackURL, "spotify:track:");
 
 let removeUser = text =>
   text->Regex.replaceByRe(Regex.Patterns.removeSlackUser, "");
@@ -27,11 +30,7 @@ let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   |],
 };
 
-let parseTrackCopy = track =>
-  track
-  ->parsedTrack
-  ->Regex.replaceByRe(Regex.Patterns.spotifyTrackURL, "spotify:track:")
-  ->splitBy("\n");
+let parseTrackCopy = track => track->parsedTrack->splitBy("\n");
 
 let parsePlaylistCopy = track =>
   switch (Js.String.match(Regex.Patterns.spotifyPlaylistURL, track)) {

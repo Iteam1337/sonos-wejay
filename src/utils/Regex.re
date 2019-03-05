@@ -4,6 +4,8 @@ module Patterns = {
     "/https:\\/\\/open.spotify.com\\/user\\/(\\w+)\\/playlist\\/(\\w+)/"
   ];
 
+  let queryParams = [%re "/\\?si=([^&]*)/"];
+
   let removeSlackCommandBrackets = [%re "/(<|>)/g"];
   let removeSlackUser = [%re "/<@\\w+>\\s/g"];
 

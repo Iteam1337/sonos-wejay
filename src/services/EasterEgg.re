@@ -43,3 +43,21 @@ let handleEasterEgg = (egg, user, sendMessage) => {
   | WWW => Track.worldwideweb->qAsNext
   };
 };
+
+let run = egg => {
+  let qAsLast = track => Queue.last(track);
+  let qAsNext = track => Queue.next(track);
+
+  switch (egg) {
+  | IteamClassics => Playlist.iteamClassics->qAsLast
+  | FreeBird => Track.freeBird->qAsNext
+  | Friday =>
+    Utils.isFriday()
+      ? Track.friday->qAsNext
+      : Js.Promise.resolve(`Ok("Sorry, it's not Friday"))
+  | Shoreline => Track.shoreline->qAsNext
+  | Slowdance => Playlist.slowdance->qAsLast
+  | Tequila => Track.tequila->qAsNext
+  | WWW => Track.worldwideweb->qAsNext
+  };
+};

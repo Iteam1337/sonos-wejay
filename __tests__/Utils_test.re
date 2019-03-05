@@ -37,6 +37,27 @@ describe("#parseDuration", () =>
   )
 );
 
+describe("#parsedTrack", () => {
+  test("parses Spotify URI", () =>
+    expect(parsedTrack("spotify:track:4UQLQJu3DNvVkMVglwElU2"))
+    |> toEqual("spotify:track:4UQLQJu3DNvVkMVglwElU2")
+  );
+
+  test("parses Spotify URI with Slack brackets", () =>
+    expect(parsedTrack("<spotify:track:4UQLQJu3DNvVkMVglwElU2>"))
+    |> toEqual("spotify:track:4UQLQJu3DNvVkMVglwElU2")
+  );
+
+  test("parses Spotify URL", () =>
+    expect(
+      parsedTrack(
+        "https://open.spotify.com/track/6DUdjPhPTpE3zMTA9jdCex?si=pufHMXrGTpC89VBP88CAow",
+      ),
+    )
+    |> toEqual("spotify:track:6DUdjPhPTpE3zMTA9jdCex")
+  );
+});
+
 describe("#cleanFloat", () =>
   test("cleans up a float to string", () =>
     expect(cleanFloat(50.)) |> toEqual("50")
