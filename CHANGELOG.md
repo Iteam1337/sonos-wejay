@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.0] - 2019-03-08
+
+**BREAKING CHANGES**: Removed MySQL, only use Elasticsearch.
+
+### Changed
+
+- Major rewrite to return replies and handle them at the top level. This will
+  make other integrations waaay easier as we can use the service as an API as
+  well.
+
 ## [3.4.4] - 2019-02-22
 
 ### Fixed

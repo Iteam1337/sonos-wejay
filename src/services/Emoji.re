@@ -52,12 +52,13 @@ let emojiCommand = text => {
   };
 };
 
-let handleEmoji = (emoji, sendMessage) =>
+let handleEmoji = emoji =>
   switch (emoji) {
-  | ThumbsDown => Volume.updateVolumeWithValue(-10., sendMessage)
-  | ThumbsUp => Volume.updateVolumeWithValue(10., sendMessage)
-  | Santa => Christmas.randomTrack()->Queue.asNext(None, sendMessage)
-  | UnhandledEmoji(emoji) => sendMessage(Messages.unknownCommand(emoji))
+  | ThumbsDown => Volume.update("-10")
+  | ThumbsUp => Volume.update("10")
+  | Santa => Christmas.randomTrack()->Queue.next
+  | UnhandledEmoji(emoji) =>
+    Js.Promise.resolve(`Ok(Messages.unknownCommand(emoji)))
   };
 
 let isEmoji = command =>

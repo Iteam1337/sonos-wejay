@@ -53,3 +53,32 @@ let controlVolume = (query, sendMessage) =>
   | "" => currentVolume(sendMessage)
   | _ => updateGroupVolume(query, sendMessage)
   };
+
+let current = () =>
+  Config.device->getVolume()
+  |> then_(volume =>
+       `Ok("Current volume is " ++ (volume |> Utils.cleanFloat)) |> resolve
+     )
+  |> catch(_ => `Failed("Cannot get current volume") |> resolve);
+
+let update = volumeValue =>
+  Config.device->getVolume()
+  |> then_(currentVolume => {
+       let newVolume =
+         switch (currentVolume, float_of_string(volumeValue)) {
+         | (0., v) when v < 0. => 0.
+         | (c, v) => c +. v
+         };
+
+       Config.device->setVolume(newVolume)
+       |> then_(_ =>
+            `Ok("Volume set to " ++ Utils.cleanFloat(newVolume)) |> resolve
+          );
+     })
+  |> catch(_ => `Failed("Cannot update volume") |> resolve);
+
+let control = volume =>
+  switch (volume) {
+  | "" => current()
+  | _ => update(volume)
+  };

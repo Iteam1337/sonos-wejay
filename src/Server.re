@@ -9,6 +9,7 @@ App.use(app, Middleware.urlencoded(~extended=false, ()));
 App.get(app, ~path="/") @@ Routes.index;
 App.post(app, ~path="/event") @@ Routes.event;
 App.post(app, ~path="/action") @@ Routes.action;
+App.post(app, ~path="/cli") @@ CLI.route;
 
 let onListen = e =>
   switch (e) {

@@ -10,28 +10,52 @@ let index =
     res |> Response.sendString("Welcome to Wejay!")
   );
 
+let globalEvent = ({subtype, channel, command, text, user}: Decode.event) => {
+  let sendMessage = Slack.sendSlackResponse(channel);
+
+  Js.Promise.(
+    Event.response(command, text, user, subtype)
+    |> then_(response => {
+         switch (response) {
+         | `Ok(r) => sendMessage(r)
+         | `Failed(_) => ()
+         };
+         resolve(true);
+       })
+    |> ignore
+  );
+};
+
+let eventCallback = (event: Decode.event) => {
+  switch (event.command) {
+  | Library
+  | Search => Event.handleEventCallback(event)
+  | _ => globalEvent(event)
+  };
+};
+
+let failed = Response.sendStatus(BadRequest);
+
 let event =
-  Middleware.from((_next, req, res) =>
-    res
-    |> (
+  PromiseMiddleware.from((_next, req, res) =>
+    Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
         let {eventType, event}: Decode.eventPayload =
           Decode.eventPayload(body);
 
         switch (eventType) {
-        | UrlVerification => handleVerification(body)
+        | UrlVerification => res |> handleVerification(body) |> resolve
         | EventCallback =>
           switch (event) {
           | Some(e) =>
-            Event.handleEventCallback(e);
-            Response.sendStatus(Ok);
-          | None => Response.sendStatus(BadRequest)
+            eventCallback(e);
+            res |> Response.sendStatus(Ok) |> resolve;
+          | None => res |> failed |> resolve
           }
-
-        | _ => Response.sendStatus(BadRequest)
+        | UnknownEvent => res |> failed |> resolve
         };
-      | None => Response.sendStatus(BadRequest)
+      | None => res |> failed |> resolve
       }
     )
   );
@@ -42,22 +66,20 @@ let action =
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
         let response = body->Decode.parseAction;
-        let {actions, user, channel}: Decode.actionPayload =
+        let {actions, user}: Decode.actionPayload =
           response##payload->Decode.actionPayload;
+        let track = actions[0].value;
 
-        Queue.asLast(~track=actions[0].value, ~user=Some(user.id), ())
+        Queue.last(track)
         |> then_(message => {
-             Elastic.log({
-               channel: channel.id,
-               command: Commands.Queue,
-               user: Some(user.id),
-               text: actions[0].value,
-               subtype: Decode.Requester.Human,
-             });
+             Elastic.logNew(Commands.Queue, track, Some(user.id));
 
-             res |> Response.sendString(message) |> resolve;
+             switch (message) {
+             | `Ok(m) => res |> Response.sendString(m) |> resolve
+             | `Failed(_) => res |> failed |> resolve
+             };
            });
-      | None => res |> Response.sendStatus(BadRequest) |> resolve
+      | None => res |> failed |> resolve
       }
     )
   );
