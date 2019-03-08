@@ -7,65 +7,6 @@ let device = Config.device;
 let trackPosition = (~first, ~queueAt, ()) =>
   int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
 
-let asLast = (~track, ~user, ~sendMessage=?, ()) => {
-  let parsedTrack = Utils.parsedTrack(track);
-
-  switch (user) {
-  | Some(u) => Database.insertTrack(~uri=parsedTrack, ~user=u)
-  | None => ()
-  };
-
-  device->queueAsLast(parsedTrack)
-  |> then_(queuedTrack =>
-       Services.getCurrentTrack()
-       |> then_(({queuePosition}: currentTrackResponse) => {
-            let {firstTrackNumberEnqueued}: queueResponse =
-              queuedTrack->queueResponse;
-
-            let message =
-              "Sweet! Your track is number *"
-              ++ trackPosition(
-                   ~first=firstTrackNumberEnqueued,
-                   ~queueAt=queuePosition,
-                   (),
-                 )
-              ++ "* in the queue :musical_note:";
-
-            switch (sendMessage) {
-            | Some(sendMsg) => sendMsg(message)
-            | _ => ()
-            };
-
-            resolve(message);
-          })
-     )
-  |> catch(Utils.handleError("queueAsLast"));
-};
-
-let asNext = (track, user, sendMessage) => {
-  let parsedTrack = Utils.parsedTrack(track);
-
-  switch (user) {
-  | Some(u) => Database.insertTrack(~uri=parsedTrack, ~user=u)
-  | None => ()
-  };
-
-  Services.getCurrentTrack()
-  |> then_(({position, queuePosition}) =>
-       device->queue(parsedTrack, int_of_float(queuePosition) + 1)
-       |> then_(() => {
-            switch (position, queuePosition) {
-            | (0., 0.) => sendMessage("Your track will play right now")
-            | _ => sendMessage("Your track will play right after the current")
-            };
-
-            resolve(true);
-          })
-       |> catch(Utils.handleError("queueAsNext"))
-     )
-  |> ignore;
-};
-
 let listTracks = (tracks: array(currentQueue)) =>
   tracks->Belt.Array.mapWithIndex((i, {artist, title}) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
@@ -140,11 +81,6 @@ let clearQueue = sendMessage =>
      })
   |> catch(Utils.handleError("clearPlaylist"))
   |> ignore;
-
-let addMultipleTracks = (tracks, user, sendMessage) =>
-  tracks->Belt.Array.forEach(track =>
-    asLast(~track, ~user, ~sendMessage, ()) |> ignore
-  );
 
 /* CLI style */
 let clear = () =>
@@ -239,4 +175,10 @@ let next = track => {
           })
        |> catch(_ => `Failed("Failed to queue track") |> resolve)
      );
+};
+
+let multiple = tracks => {
+  tracks->Belt.Array.forEach(track => last(track) |> ignore);
+
+  Js.Promise.resolve(`Ok("Your tracks have been queued!"));
 };

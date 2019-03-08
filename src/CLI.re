@@ -1,16 +1,16 @@
 open Express;
 
 type t = {
-  command: string,
+  command: Commands.t,
   args: string,
-  user: string,
+  user: option(string),
 };
 
 let decode = json =>
   Json.Decode.{
-    command: json |> field("command", string),
+    command: json |> field("command", string) |> Commands.decodeCommand,
     args: json |> field("args", string),
-    user: json |> field("user", string),
+    user: json |> optional(field("user", string)),
   };
 
 let route =
@@ -20,7 +20,7 @@ let route =
       | Some(body) =>
         let {command, args, user} = body |> decode;
 
-        Event.response(command, args, user)
+        Event.response(command, args, user, Decode.Requester.Human)
         |> then_(response =>
              switch (response) {
              | `Ok(r) => res |> Response.sendString(r) |> resolve

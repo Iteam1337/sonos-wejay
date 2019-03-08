@@ -14,6 +14,46 @@ let run = () =>
            | _ => ""
            };
 
-         resolve(`Ok(uri));
+         let lastPlayedBy =
+           {j|{
+              "body": {
+                "sort": [
+                  {
+                    "timestamp": {
+                      "order": "desc"
+                    }
+                  }
+                ],
+                  "query": {
+                "match": {
+                  "args.keyword": "$uri"
+                }
+              }
+              }
+            }|j}
+           |> Json.parseOrRaise;
+
+         Elastic.query(lastPlayedBy)
+         |> then_((hits: array(Elastic.Search.hit)) => {
+              let message =
+                switch (Belt.Array.length(hits)) {
+                | 0 => "Sorry, I don't know who added this track"
+                | 1 =>
+                  Slack.userId(hits[0]._source.sender)
+                  ++ " added this awesome track!"
+                | _ =>
+                  "*This track has been added by*\n"
+                  ++ hits
+                     ->Belt.Array.mapWithIndex((i, {_source}) =>
+                         Utils.listNumber(i)
+                         ++ Slack.userId(_source.sender)
+                         ++ " on "
+                         ++ Utils.formatDate(_source.timestamp)
+                       )
+                     ->Utils.joinWithNewline
+                };
+
+              resolve(`Ok(message));
+            });
        })
   );

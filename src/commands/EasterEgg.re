@@ -25,25 +25,6 @@ module Playlist = {
   let slowdance = playlist(~user="believer", ~id="5DQzhEf0U4Lji5kvXnPYSy");
 };
 
-let handleEasterEgg = (egg, user, sendMessage) => {
-  let qAsLast = track =>
-    Queue.asLast(~track, ~user, ~sendMessage, ()) |> ignore;
-  let qAsNext = uri => uri->Queue.asNext(user, sendMessage);
-
-  switch (egg) {
-  | IteamClassics => Playlist.iteamClassics->qAsLast
-  | FreeBird => Track.freeBird->qAsNext
-  | Friday =>
-    Utils.isFriday()
-      ? Track.friday->qAsNext
-      : sendMessage("Sorry, it's not Friday") |> ignore
-  | Shoreline => Track.shoreline->qAsNext
-  | Slowdance => Playlist.slowdance->qAsLast
-  | Tequila => Track.tequila->qAsNext
-  | WWW => Track.worldwideweb->qAsNext
-  };
-};
-
 let run = egg => {
   let qAsLast = track => Queue.last(track);
   let qAsNext = track => Queue.next(track);

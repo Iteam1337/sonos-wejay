@@ -1,6 +1,8 @@
+let formatDate = dateString => DateFns.formatString(dateString, "YYYY-MM-DD");
+
 let formatTimestamp = timestamp => {
   let date = Js.Date.fromFloat(timestamp);
-  DateFns.format(date, "YYYY-MM-DD");
+  DateFns.formatDate(date, "YYYY-MM-DD");
 };
 
 let splitBy = (str, split) => str |> Js.String.split(split);
@@ -11,10 +13,12 @@ let parseDuration = duration => duration *. 1000. |> Duration.parse;
 let cleanFloat = value => value |> int_of_float |> string_of_int;
 
 let parsedTrack = track =>
-  track
-  ->Regex.replaceByRe(Regex.Patterns.removeSlackCommandBrackets, "")
-  ->Regex.replaceByRe(Regex.Patterns.queryParams, "")
-  ->Regex.replaceByRe(Regex.Patterns.spotifyTrackURL, "spotify:track:");
+  Regex.(
+    track
+    ->replaceByRe(Patterns.removeSlackCommandBrackets, "")
+    ->replaceByRe(Patterns.queryParams, "")
+    ->replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
+  );
 
 let removeUser = text =>
   text->Regex.replaceByRe(Regex.Patterns.removeSlackUser, "");
