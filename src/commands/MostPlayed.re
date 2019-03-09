@@ -1,6 +1,5 @@
-let run = () => {
-  let mostPlayed =
-    {j|{
+let query =
+  {j|{
       "body": {
         "size": 0,
         "query":{
@@ -31,36 +30,38 @@ let run = () => {
         }
       }
     }|j}
-    |> Json.parseOrRaise;
+  |> Json.parseOrRaise;
 
+let message =
+    (tracks: array(Spotify.Track.t), hits: array(Elastic.Aggregate.t)) =>
+  "*Most played*\n"
+  ++ tracks
+     ->Belt.Array.mapWithIndex((i, {artists, name}) =>
+         Utils.listNumber(i)
+         ++ Spotify.buildArtist(artists)
+         ++ " - "
+         ++ name
+         ++ " ("
+         ++ string_of_int(hits[i].count)
+         ++ ")"
+       )
+     ->Utils.joinWithNewline;
+
+let run = () => {
   Js.Promise.(
-    Elastic.aggregate("most_played", mostPlayed)
+    Elastic.aggregate("most_played", query)
     |> then_((hits: array(Elastic.Aggregate.t)) =>
-         switch (Belt.Array.length(hits)) {
-         | 0 => resolve(`Ok("No plays :sad_panda:"))
-         | _ =>
-           hits
-           ->Belt.Array.map(({key}) => key->Utils.spotifyId)
-           ->Belt.Array.map(id => Spotify.getTrack(id))
-           |> all
-           |> then_((tracks: array(Spotify.track)) => {
-                let message =
-                  "*Most played*\n"
-                  ++ tracks
-                     ->Belt.Array.mapWithIndex((i, {artists, name}) =>
-                         Utils.listNumber(i)
-                         ++ Spotify.buildArtist(artists)
-                         ++ " - "
-                         ++ name
-                         ++ " ("
-                         ++ string_of_int(hits[i].count)
-                         ++ ")"
-                       )
-                     ->Utils.joinWithNewline;
-
-                resolve(`Ok(message));
-              })
-         }
+         Belt.Array.(
+           switch (length(hits)) {
+           | 0 => resolve(`Ok("No plays :sad_panda:"))
+           | _ =>
+             hits
+             ->map(({key}) => key->SpotifyUtils.trackId)
+             ->map(Spotify.getTrack)
+             |> all
+             |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)
+           }
+         )
        )
   );
 };

@@ -23,8 +23,6 @@ let parsedTrack = track =>
 let removeUser = text =>
   text->Regex.replaceByRe(Regex.Patterns.removeSlackUser, "");
 
-let spotifyId = uri => uri->splitBy(":") |> (items => items[2]);
-
 let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
   "text": text,
   "callback_id": "queue",

@@ -1,24 +1,54 @@
 [@bs.module "query-string"] external stringify: 'a => 'a = "";
 
-type images = {url: string};
-type album = {
-  images: array(images),
-  name: string,
-  releaseDate: string,
+module Album = {
+  type images = {url: string};
+  type t = {
+    images: array(images),
+    name: string,
+    releaseDate: string,
+  };
+
+  let images = json => Json.Decode.{url: json |> field("url", string)};
+
+  let decode = json =>
+    Json.Decode.{
+      images: json |> field("images", array(images)),
+      name: json |> field("name", string),
+      releaseDate: json |> field("release_date", string),
+    };
 };
-type artist = {name: string};
 
-type track = {
-  album,
-  artists: array(artist),
-  duration: int,
-  name: string,
-  uri: string,
+module Artist = {
+  type t = {name: string};
+
+  let decode = json => Json.Decode.{name: json |> field("name", string)};
 };
 
-type tracks = {items: array(track)};
+module Track = {
+  type t = {
+    album: Album.t,
+    artists: array(Artist.t),
+    duration: int,
+    name: string,
+    uri: string,
+  };
 
-type data = {tracks};
+  type tracks = {items: array(t)};
+
+  let track = json =>
+    Json.Decode.{
+      album: json |> field("album", Album.decode),
+      artists: json |> field("artists", array(Artist.decode)),
+      duration: json |> field("duration_ms", int),
+      name: json |> field("name", string),
+      uri: json |> field("uri", string),
+    };
+
+  let decode = json =>
+    Json.Decode.{items: json |> field("items", array(track))};
+};
+
+type data = {tracks: Track.tracks};
 
 type token = {
   accessToken: string,
@@ -30,27 +60,7 @@ type token = {
 module Decode = {
   open Json.Decode;
 
-  let images = json => {url: json |> field("url", string)};
-
-  let album = json => {
-    images: json |> field("images", array(images)),
-    name: json |> field("name", string),
-    releaseDate: json |> field("release_date", string),
-  };
-
-  let artist = json => {name: json |> field("name", string)};
-
-  let track = json => {
-    album: json |> field("album", album),
-    artists: json |> field("artists", array(artist)),
-    duration: json |> field("duration_ms", int),
-    name: json |> field("name", string),
-    uri: json |> field("uri", string),
-  };
-
-  let tracks = json => {items: json |> field("items", array(track))};
-
-  let data = json => {tracks: json |> field("tracks", tracks)};
+  let data = json => {tracks: json |> field("tracks", Track.decode)};
 
   let token = json => {
     accessToken: json |> field("access_token", string),
@@ -76,7 +86,7 @@ let getToken = () =>
 
 let buildArtist = artists =>
   artists
-  |> Array.map((artist: artist) => artist.name)
+  |> Array.map((artist: Artist.t) => artist.name)
   |> Js.Array.joinWith(", ");
 
 let spotifyRequest = url =>
@@ -99,7 +109,7 @@ let getTrack = (uri: string) => {
 
   Js.Promise.(
     spotifyRequest(url)
-    |> then_(posted => resolve(posted##data |> Decode.track))
+    |> then_(posted => resolve(posted##data |> Track.track))
     |> catch(Utils.handleError("spotifyGetTrack"))
   );
 };
@@ -121,7 +131,7 @@ let attachmentField = (~title, ~value, ~short=true, ()) => {
   {"title": title, "value": value, "short": short};
 };
 
-let createAttachment = ({album, artists, duration, name, uri}) => {
+let createAttachment = ({album, artists, duration, name, uri}: Track.t) => {
   "color": "#efb560",
   "callback_id": "queue",
   "thumb_url": album.images[0].url,
@@ -143,7 +153,7 @@ let createAttachment = ({album, artists, duration, name, uri}) => {
 let searchTrack = (query: string, sendMessageWithAttachments) =>
   Js.Promise.(
     spotifySearch(query)
-    |> then_(tracks => {
+    |> then_((tracks: Track.tracks) => {
          let message =
            switch (Belt.Array.length(tracks.items)) {
            | 0 => "Sorry, I couldn't find anything with *" ++ query ++ "*"

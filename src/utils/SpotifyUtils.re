@@ -1,5 +1,7 @@
-let playlist = (~user, ~id) => "spotify:user:" ++ user ++ ":playlist:" ++ id;
-let track = id => "spotify:track:" ++ id;
+let toPlaylistUri = (~user, ~id) =>
+  "spotify:user:" ++ user ++ ":playlist:" ++ id;
+let toUri = id => "spotify:track:" ++ id;
+let trackId = uri => uri->Utils.splitBy(":") |> (items => items[2]);
 
 type searchType =
   | Album

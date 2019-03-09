@@ -5,8 +5,6 @@ type t =
   | UnhandledEmoji(string);
 
 module Christmas = {
-  open SpotifyUtils;
-
   let songs = [|
     /* Andy Williams - It's the Most Wonderful Time of the Year */
     "5hslUAKq9I9CG2bAulFkHN",
@@ -35,7 +33,7 @@ module Christmas = {
   let randomTrack = () => {
     let randomSongIndex = Random.int(Belt.Array.length(songs));
     let songId = songs[randomSongIndex];
-    track(songId);
+    SpotifyUtils.toUri(songId);
   };
 };
 
