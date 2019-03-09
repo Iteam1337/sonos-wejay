@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#nowPlayingData current track 1`] = `
+"*Currently playing*
+30 Seconds to Mars - Echelon (30 Seconds to Mars)
+Position in queue 1 - 2:00/6:00"
+`;
+
+exports[`#nowPlayingData nothing is playing 1`] = `"Nothing is currently playing, add a track using \`search <your track>\`"`;

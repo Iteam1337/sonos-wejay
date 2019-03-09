@@ -3,7 +3,7 @@ let nothingIsPlaying = "Nothing is currently playing, add a track using `search 
 let emptyQueue = "The queue is empty, add a track using `search <your track>`";
 
 let help =
-  [
+  [|
     "*Queue and search*\n",
     "```",
     "currentqueue|getqueue|cq|gq _________ Display upcoming tracks",
@@ -33,14 +33,14 @@ let help =
     "toplist ___________ List top Wejayers",
     "```",
     "\nThere's also some hidden easter eggs :hatching_chick:",
-  ]
-  |> String.concat("\n");
+  |]
+  ->Utils.joinWithNewline;
 
 let unknownCommand = command =>
-  [
-    "Sorry, the command: *\"" ++ command ++ "\"* is not available.",
+  [|
+    {j|Sorry, the command: *"$command"* is not available.|j},
     "Type *\"help\"* in order to get all available commands! :face_with_monocle:",
-  ]
-  |> String.concat("\n");
+  |]
+  ->Utils.joinWithNewline;
 
 let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif";

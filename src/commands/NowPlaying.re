@@ -1,32 +1,22 @@
-let nowPlayingData =
+let message =
     (
       {artist, title, album, position, duration, queuePosition}: Sonos.Decode.currentTrackResponse,
     ) =>
   switch (queuePosition) {
   | 0. => Messages.nothingIsPlaying
   | _ =>
-    let track =
-      Utils.artistAndTitle(~artist, ~title)
-      ++ " ("
-      ++ Belt.Option.getWithDefault(album, "N/A")
-      ++ ")";
+    let q = queuePosition |> Utils.cleanFloat;
+    let track = Utils.artistAndTitle(~artist, ~title);
+    let album = Belt.Option.getWithDefault(album, "N/A");
+    let p = position |> Utils.parseDuration;
+    let d = duration |> Utils.parseDuration;
 
-    let position =
-      (position |> Utils.parseDuration)
-      ++ "/"
-      ++ (duration |> Utils.parseDuration);
-
-    "*Currently playing*\n"
-    ++ track
-    ++ "\nPosition in queue "
-    ++ (queuePosition |> Utils.cleanFloat)
-    ++ " - "
-    ++ position;
+    {j|*Currently playing*\n$track ($album)\nPosition in queue $q - $p/$d|j};
   };
 
 let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
-    |> then_(track => `Ok(track |> nowPlayingData) |> resolve)
+    |> then_(track => `Ok(track |> message) |> resolve)
     |> catch(_ => `Failed("Now playing failed") |> resolve)
   );

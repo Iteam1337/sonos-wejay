@@ -36,15 +36,13 @@ let message =
     (tracks: array(Spotify.Track.t), hits: array(Elastic.Aggregate.t)) =>
   "*Most played*\n"
   ++ tracks
-     ->Belt.Array.mapWithIndex((i, {artists, name}) =>
-         Utils.listNumber(i)
-         ++ Spotify.buildArtist(artists)
-         ++ " - "
-         ++ name
-         ++ " ("
-         ++ string_of_int(hits[i].count)
-         ++ ")"
-       )
+     ->Belt.Array.mapWithIndex((i, {artists, name}) => {
+         let artist = Spotify.buildArtist(artists);
+         let n = Utils.listNumber(i);
+         let count = hits[i].count;
+
+         {j|$n$artist - $name ($count)|j};
+       })
      ->Utils.joinWithNewline;
 
 let run = () => {

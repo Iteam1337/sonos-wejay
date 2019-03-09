@@ -1,6 +1,5 @@
-let toPlaylistUri = (~user, ~id) =>
-  "spotify:user:" ++ user ++ ":playlist:" ++ id;
-let toUri = id => "spotify:track:" ++ id;
+let toPlaylistUri = (~user, ~id) => {j|spotify:user:$user:playlist:$id|j};
+let toUri = id => {j|spotify:track:$id|j};
 let trackId = uri => uri->Utils.splitBy(":") |> (items => items[2]);
 
 type searchType =
@@ -10,6 +9,7 @@ type searchType =
   | Track;
 
 let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) => {
+  let l = limit->string_of_int;
   let q =
     query
     |> Js.String.replaceByRe([%re "/&amp;/g"], "&")
@@ -23,14 +23,7 @@ let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) =
     | Track => "track"
     };
 
-  "https://api.spotify.com/v1/search?q="
-  ++ q
-  ++ "&type="
-  ++ sType
-  ++ "&limit="
-  ++ string_of_int(limit)
-  ++ "&market="
-  ++ market;
+  {j|https://api.spotify.com/v1/search?q=$q&type=$sType&limit=$l&market=$market|j};
 };
 
 let isSpotifyCopy = text =>

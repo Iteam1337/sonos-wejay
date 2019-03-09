@@ -105,7 +105,7 @@ let spotifyRequest = url =>
   );
 
 let getTrack = (uri: string) => {
-  let url = "https://api.spotify.com/v1/tracks/" ++ uri;
+  let url = {j|https://api.spotify.com/v1/tracks/$uri|j};
 
   Js.Promise.(
     spotifyRequest(url)
@@ -156,8 +156,8 @@ let searchTrack = (query: string, sendMessageWithAttachments) =>
     |> then_((tracks: Track.tracks) => {
          let message =
            switch (Belt.Array.length(tracks.items)) {
-           | 0 => "Sorry, I couldn't find anything with *" ++ query ++ "*"
-           | _ => "Here are the results for *" ++ query ++ "*"
+           | 0 => {j|Sorry, I couldn't find anything with *$query*|j}
+           | _ => {j|Here are the results for *$query*|j}
            };
 
          tracks.items->Belt.Array.map(createAttachment)
