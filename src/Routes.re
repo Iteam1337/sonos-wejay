@@ -83,3 +83,35 @@ let action =
       }
     )
   );
+
+let slackAuth =
+  Middleware.from((_next, _req, res) =>
+    res
+    |> Response.redirectCode(
+         301,
+         "https://slack.com/oauth/authorize?scope=identity.basic&client_id="
+         ++ Config.slackClientId,
+       )
+  );
+
+let slackToken =
+  PromiseMiddleware.from((_next, req, res) => {
+    let query = Request.query(req);
+
+    let code =
+      switch (Js.Dict.get(query, "code")) {
+      | Some(json) => Js.Json.decodeString(json)
+      | _ => None
+      };
+
+    switch (code) {
+    | Some(c) =>
+      Js.Promise.(
+        Slack.makeAuthCallback(c)
+        |> then_(response =>
+             resolve(Response.sendString(response##data##access_token, res))
+           )
+      )
+    | None => Js.Promise.resolve(Response.sendStatus(BadRequest, res))
+    };
+  });
