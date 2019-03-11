@@ -13,10 +13,10 @@ let decode = json =>
 
 let getToken = req => {
   let headers =
-    switch (Js.Dict.get(Request.asJsonObject(req), "headers")) {
-    | Some(h) => h
-    | None => Js.Json.null
-    };
+    Belt.Option.getWithDefault(
+      Js.Dict.get(Request.asJsonObject(req), "headers"),
+      Js.Json.Null,
+    );
 
   Json.Decode.(headers |> field("access_token", string));
 };
@@ -26,19 +26,19 @@ let route =
     Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let token = getToken(req);
+        let token = req |> getToken;
 
-        Slack.getUser(token)
+        token
+        |> Slack.getUser
         |> then_(user => {
              let {command, args} = body |> decode;
 
-             let userId =
-               switch (Js.Nullable.toOption(user)) {
-               | None => None
-               | Some(userId) => userId
-               };
-
-             Event.response(command, args, userId, Decode.Requester.Human)
+             Event.response(
+               command,
+               args,
+               Some(user),
+               Decode.Requester.Human,
+             )
              |> then_(response =>
                   switch (response) {
                   | `Ok(r) => res |> Response.sendString(r) |> resolve

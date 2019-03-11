@@ -25,7 +25,10 @@ let getUser = token => {
     );
 
   Js.Promise.(
-    Axios.request(request) |> then_(user => user##data##user_id |> resolve)
+    Axios.request(request)
+    |> then_(user =>
+         Belt.Option.getWithDefault(user##data##user_id, "") |> resolve
+       )
   );
 };
 
