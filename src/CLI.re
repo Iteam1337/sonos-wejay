@@ -15,7 +15,7 @@ let getToken = req => {
   let headers =
     Belt.Option.getWithDefault(
       Js.Dict.get(Request.asJsonObject(req), "headers"),
-      Js.Json.Null,
+      Js.Json.null,
     );
 
   Json.Decode.(headers |> field("access_token", string));
