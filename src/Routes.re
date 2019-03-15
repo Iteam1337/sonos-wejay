@@ -109,7 +109,12 @@ let slackToken =
       Js.Promise.(
         Slack.makeAuthCallback(c)
         |> then_(response =>
-             resolve(Response.sendString(response##data##access_token, res))
+             resolve(
+               Response.sendString(
+                 Belt.Option.getWithDefault(response##data##access_token, ""),
+                 res,
+               ),
+             )
            )
       )
     | None => Js.Promise.resolve(Response.sendStatus(BadRequest, res))
