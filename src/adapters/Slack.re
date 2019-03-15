@@ -12,6 +12,36 @@ let sendPayload = payload => {
   |> ignore;
 };
 
+let getUser = token => {
+  let payload = {"token": token};
+
+  let request =
+    Axios.makeConfigWithUrl(
+      ~url="https://slack.com/api/auth.test",
+      ~_method="POST",
+      ~data=payload,
+      ~headers={"Authorization": "Bearer " ++ token},
+      (),
+    );
+
+  Js.Promise.(
+    Axios.request(request)
+    |> then_(user =>
+         Belt.Option.getWithDefault(user##data##user_id, "") |> resolve
+       )
+  );
+};
+
+let makeAuthCallback = code =>
+  Axios.get(
+    "https://slack.com/api/oauth.access?client_id="
+    ++ Config.slackClientId
+    ++ "&client_secret="
+    ++ Config.slackClientSecret
+    ++ "&code="
+    ++ code,
+  );
+
 let sendSearchResponse = (channel, message, attachments) =>
   {
     "channel": channel,
