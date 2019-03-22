@@ -1,36 +1,8 @@
 let run = () => {
-  let toplist =
-    {j|{
-      "body": {
-        "size": 0,
-          "query": {
-          "bool": {
-            "must_not": [
-              {
-                "match": {
-                  "sender.keyword": ""
-                }
-              }
-            ]
-          }
-        },
-        "aggs": {
-          "toplist": {
-            "terms": {
-              "field": "sender.keyword",
-              "order": {
-                "_count": "desc"
-              }
-            }
-          }
-        }
-      }
-    }|j}
-    |> Json.parseOrRaise;
-
   Js.Promise.(
-    Elastic.aggregate("toplist", toplist)
-    |> then_((hits: array(Elastic.Aggregate.t)) =>
+    API.createRequest(~url=Config.toplistUrl, ())
+    |> then_(response => {
+         let hits = Elastic.Aggregate.make(response##data);
          (
            switch (Belt.Array.length(hits)) {
            | 0 => `Ok("No plays :sad_panda:")
@@ -50,7 +22,7 @@ let run = () => {
              `Ok(message);
            }
          )
-         |> resolve
-       )
+         |> resolve;
+       })
   );
 };

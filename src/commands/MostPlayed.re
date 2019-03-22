@@ -1,37 +1,3 @@
-let query =
-  {j|{
-      "body": {
-        "size": 0,
-        "query":{
-          "bool": {
-            "should": [
-              {
-                "match": {
-                  "command.keyword": "queue"
-                }
-              },
-              {
-                "match": {
-                  "command.keyword": "spotify-copy"
-                }
-              }
-            ]
-          }
-        },
-        "aggs": {
-          "most_played": {
-            "terms": {
-              "field": "args.keyword",
-              "order": {
-                "_count": "desc"
-              }
-            }
-          }
-        }
-      }
-    }|j}
-  |> Json.parseOrRaise;
-
 let message =
     (tracks: array(Spotify.Track.t), hits: array(Elastic.Aggregate.t)) =>
   "*Most played*\n"
@@ -47,8 +13,10 @@ let message =
 
 let run = () => {
   Js.Promise.(
-    Elastic.aggregate("most_played", query)
-    |> then_((hits: array(Elastic.Aggregate.t)) =>
+    API.createRequest(~url=Config.mostPlayedUrl, ())
+    |> then_(response => {
+         let hits = Elastic.Aggregate.make(response##data);
+
          Belt.Array.(
            switch (length(hits)) {
            | 0 => resolve(`Ok("No plays :sad_panda:"))
@@ -59,7 +27,7 @@ let run = () => {
              |> all
              |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)
            }
-         )
-       )
+         );
+       })
   );
 };

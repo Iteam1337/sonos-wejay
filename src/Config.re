@@ -14,6 +14,9 @@ let slackClientSecret = Js.Dict.unsafeGet(env, "SLACK_CLIENT_SECRET");
 let wejayIp = Js.Dict.unsafeGet(env, "WEJAY_IP");
 let elasticUrl = Js.Dict.unsafeGet(env, "ELASTIC_URL");
 let elasticLogUrl = Js.Dict.unsafeGet(env, "ELASTIC_LOG_URL");
+let mostPlayedUrl = Js.Dict.unsafeGet(env, "MOST_PLAYED_URL");
+let toplistUrl = Js.Dict.unsafeGet(env, "TOPLIST_URL");
+let blameUrl = Js.Dict.unsafeGet(env, "BLAME_URL");
 
 let spotifyAuth =
   fromStringWithEncoding(spotifyId ++ ":" ++ spotifySecret)
