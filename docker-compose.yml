@@ -13,19 +13,6 @@ services:
       - SLACK_TOKEN=${SLACK_TOKEN}
       - WEJAY_IP=${WEJAY_IP}
 
-  mysql:
-    image: mysql
-    ports:
-      - 3306:3306
-    networks:
-      - wejay
-    environment:
-      - MYSQL_DATABASE=wejay
-      - MYSQL_USER=wejay
-      - MYSQL_PASSWORD=test
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
-
 networks:
   wejay:
     external: true
