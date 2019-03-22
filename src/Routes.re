@@ -18,7 +18,7 @@ let globalEvent = ({subtype, channel, command, text, user}: Decode.event) => {
     |> then_(response => {
          switch (response) {
          | `Ok(r) => sendMessage(r)
-         | `Failed(e) => sendMessage({j|:warning: $e|j})
+         | `Failed(_) => ()
          };
          resolve();
        })
