@@ -101,7 +101,7 @@ let spotifyRequest = url =>
        )
   );
 
-let getTrack = (uri: string) => {
+let getTrack = uri => {
   let url = {j|https://api.spotify.com/v1/tracks/$uri|j};
 
   Js.Promise.(
@@ -111,7 +111,7 @@ let getTrack = (uri: string) => {
   );
 };
 
-let spotifySearch = (query: string) => {
+let spotifySearch = query => {
   let url = SpotifyUtils.spotifySearchUrl(~query, ());
 
   Js.Promise.(
@@ -147,7 +147,7 @@ let createAttachment = ({album, artists, duration, name, uri}: Track.t) => {
   |],
 };
 
-let searchTrack = (query: string, sendMessageWithAttachments) =>
+let searchTrack = (query, sendMessageWithAttachments) =>
   Js.Promise.(
     spotifySearch(query)
     |> then_((tracks: Track.tracks) => {
