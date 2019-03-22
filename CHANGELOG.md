@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.0.0] - 2019-03-22
+
+**BREAKING CHANGES**: Move all Elasticsearch queries to external service. API
+remains the same for Wejay, but you'll have to the data yourself.
+
 ## [4.0.0] - 2019-03-08
 
 **BREAKING CHANGES**: Removed MySQL, only use Elasticsearch.
