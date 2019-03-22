@@ -32,12 +32,12 @@
   "license": "MIT",
   "devDependencies": {
     "@ahrefs/bs-dotenv": "1.0.3",
-    "@glennsl/bs-jest": "0.4.7",
+    "@glennsl/bs-jest": "0.4.8",
     "@glennsl/bs-json": "3.0.0",
-    "all-contributors-cli": "6.1.2",
+    "all-contributors-cli": "6.2.0",
     "bs-axios": "0.0.39",
     "bs-express": "0.10.0",
-    "bs-platform": "4.0.18",
+    "bs-platform": "5.0.0",
     "is-ci-cli": "1.1.1",
     "jest-date-mock": "1.0.7",
     "nodemon": "1.18.10"
@@ -47,9 +47,9 @@
     "bs-mysql2": "8.2.1",
     "bs-sonos": "0.1.1",
     "date-fns": "1.30.1",
-    "dotenv": "6.2.0",
+    "dotenv": "7.0.0",
     "express": "4.16.4",
-    "query-string": "6.3.0",
+    "query-string": "6.4.0",
     "sonos": "1.9.0"
   },
   "jest": {
