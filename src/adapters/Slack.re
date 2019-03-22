@@ -1,31 +1,26 @@
 let sendPayload = payload => {
-  let request =
-    Axios.makeConfigWithUrl(
+  Js.Promise.(
+    API.createRequest(
       ~url="https://slack.com/api/chat.postMessage",
       ~_method="POST",
-      ~data=payload,
-      ~headers={"Authorization": "Bearer " ++ Config.slackToken},
+      ~data=Some(payload),
+      ~headers=Some({"Authorization": "Bearer " ++ Config.slackToken}),
       (),
-    );
-
-  Js.Promise.(Axios.request(request) |> then_(posted => posted |> resolve))
+    )
+    |> then_(posted => posted |> resolve)
+  )
   |> ignore;
 };
 
 let getUser = token => {
-  let payload = {"token": token};
-
-  let request =
-    Axios.makeConfigWithUrl(
+  Js.Promise.(
+    API.createRequest(
       ~url="https://slack.com/api/auth.test",
       ~_method="POST",
-      ~data=payload,
-      ~headers={"Authorization": "Bearer " ++ token},
+      ~data=Some({"token": token}),
+      ~headers=Some({"Authorization": "Bearer " ++ token}),
       (),
-    );
-
-  Js.Promise.(
-    Axios.request(request)
+    )
     |> then_(user =>
          Belt.Option.getWithDefault(user##data##user_id, "") |> resolve
        )
@@ -33,13 +28,15 @@ let getUser = token => {
 };
 
 let makeAuthCallback = code =>
-  Axios.get(
-    "https://slack.com/api/oauth.access?client_id="
-    ++ Config.slackClientId
-    ++ "&client_secret="
-    ++ Config.slackClientSecret
-    ++ "&code="
-    ++ code,
+  API.createRequest(
+    ~url=
+      "https://slack.com/api/oauth.access?client_id="
+      ++ Config.slackClientId
+      ++ "&client_secret="
+      ++ Config.slackClientSecret
+      ++ "&code="
+      ++ code,
+    (),
   );
 
 let sendSearchResponse = (channel, message, attachments) =>

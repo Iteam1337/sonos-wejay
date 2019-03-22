@@ -72,14 +72,13 @@ module Decode = {
 
 let getToken = () =>
   Js.Promise.(
-    Axios.makeConfigWithUrl(
+    API.createRequest(
       ~url="https://accounts.spotify.com/api/token",
       ~_method="POST",
-      ~data=stringify({"grant_type": "client_credentials"}),
-      ~headers={"Authorization": "Basic " ++ Config.spotifyAuth},
+      ~data=Some(stringify({"grant_type": "client_credentials"})),
+      ~headers=Some({"Authorization": "Basic " ++ Config.spotifyAuth}),
       (),
     )
-    |> Axios.request
     |> then_(value => value##data |> Decode.token |> resolve)
     |> catch(Utils.handleError("spotifyToken"))
   );
@@ -93,13 +92,11 @@ let spotifyRequest = url =>
   Js.Promise.(
     getToken()
     |> then_(token =>
-         Axios.makeConfigWithUrl(
+         API.createRequest(
            ~url,
-           ~_method="GET",
-           ~headers={"Authorization": "Bearer " ++ token.accessToken},
+           ~headers=Some({"Authorization": "Bearer " ++ token.accessToken}),
            (),
          )
-         |> Axios.request
          |> then_(response => resolve(response))
        )
   );
