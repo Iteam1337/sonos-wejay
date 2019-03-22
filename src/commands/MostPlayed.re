@@ -19,7 +19,7 @@ let run = () => {
 
          Belt.Array.(
            switch (length(hits)) {
-           | 0 => resolve(`Ok("No plays :sad_panda:"))
+           | 0 => resolve(`Ok(Messages.noPlays))
            | _ =>
              hits
              ->map(({key}) => key->SpotifyUtils.trackId)

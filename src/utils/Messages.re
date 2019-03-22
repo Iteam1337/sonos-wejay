@@ -2,6 +2,8 @@ let nothingIsPlaying = "Nothing is currently playing, add a track using `search 
 
 let emptyQueue = "The queue is empty, add a track using `search <your track>`";
 
+let noPlays = "No plays :sad_panda:";
+
 let help =
   [|
     "*Queue and search*\n",
