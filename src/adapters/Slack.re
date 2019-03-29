@@ -1,3 +1,27 @@
+module WebApi = {
+  [@bs.deriving abstract]
+  type message = {
+    text: string,
+    channel: string,
+    username: string,
+  };
+
+  type chat = {
+    .
+    [@bs.meth] "postMessage": message => Js.Promise.t(Js.Json.t),
+    [@bs.meth] "delete": (float, string) => Js.Promise.t(unit),
+  };
+
+  type webClient = {. "chat": chat};
+
+  [@bs.new] [@bs.module "@slack/web-api"]
+  external make: string => webClient = "WebClient";
+};
+
+WebApi.make("test")##chat##postMessage(
+  WebApi.message(~text="Test", ~username="Wejay", ~channel="test"),
+);
+
 let sendPayload = payload => {
   Js.Promise.(
     API.createRequest(

@@ -43,6 +43,7 @@
     "nodemon": "1.18.10"
   },
   "dependencies": {
+    "@slack/web-api": "^5.0.0",
     "body-parser": "1.18.3",
     "bs-mysql2": "8.2.1",
     "bs-sonos": "0.1.1",
