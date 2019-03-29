@@ -1,4 +1,4 @@
-/* Deprecated usage of callbacks, these aren't handle in the new way yet */
+/* Deprecated usage of callbacks, these aren't handled in the new way yet */
 let handleEventCallback = event => {
   let {channel, text: q, subtype, command}: Decode.event = event;
   let sendMessageWithAttachments = Slack.sendResponseWithAttachments(channel);
@@ -20,7 +20,11 @@ let handleEventCallback = event => {
 };
 
 let response = (command, args, user, subtype: Decode.Requester.t) => {
-  Elastic.logNew(command, args, user) |> ignore;
+  switch (user) {
+  | Some(u) when u |> Js.String.length === 0 => ()
+  | None => ()
+  | Some(_) => Elastic.logNew(command, args, user) |> ignore
+  };
 
   switch (subtype) {
   | Human =>
