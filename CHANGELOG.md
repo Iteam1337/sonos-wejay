@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.1] - 2019-03-29
+
+### Fixed
+
+- Only log to Elasticsearch when we actually have a user #43
+
 ## [5.0.0] - 2019-03-22
 
 **BREAKING CHANGES**: Move all Elasticsearch queries to external service. API
