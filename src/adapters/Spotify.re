@@ -1,5 +1,8 @@
 [@bs.module "query-string"] external stringify: 'a => 'a = "";
 
+[@bs.module "@wejay/spotify"]
+external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
+
 module Album = {
   type images = {url: string};
   type t = {
@@ -46,6 +49,32 @@ module Track = {
 
   let decode = json =>
     Json.Decode.{items: json |> field("items", array(track))};
+};
+
+module WejayTrack = {
+  type t = {
+    albumName: string,
+    artist: string,
+    cover: string,
+    duration: float,
+    id: string,
+    name: string,
+    releaseDate: string,
+    uri: string,
+  };
+
+  let decode = json => {
+    Json.Decode.{
+      albumName: json |> field("albumName", string),
+      artist: json |> field("artist", string),
+      cover: json |> field("cover", string),
+      duration: json |> field("duration", Json.Decode.float),
+      id: json |> field("id", string),
+      name: json |> field("name", string),
+      releaseDate: json |> field("releaseDate", string),
+      uri: json |> field("uri", string),
+    };
+  };
 };
 
 type data = {tracks: Track.tracks};
@@ -101,13 +130,10 @@ let spotifyRequest = url =>
        )
   );
 
-let getTrack = uri => {
-  let url = {j|https://api.spotify.com/v1/tracks/$uri|j};
-
+let getSpotifyTrack = id => {
   Js.Promise.(
-    spotifyRequest(url)
-    |> then_(posted => resolve(posted##data |> Track.track))
-    |> catch(Utils.handleError("spotifyGetTrack"))
+    _getTrack(id)
+    |> then_(response => response |> WejayTrack.decode |> resolve)
   );
 };
 

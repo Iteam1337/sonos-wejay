@@ -35,22 +35,23 @@
     "@glennsl/bs-jest": "0.4.8",
     "@glennsl/bs-json": "3.0.0",
     "all-contributors-cli": "6.2.0",
-    "bs-axios": "0.0.39",
-    "bs-express": "0.10.0",
+    "bs-axios": "0.0.41",
+    "bs-express": "0.11.1",
     "bs-platform": "5.0.0",
     "is-ci-cli": "1.1.1",
     "jest-date-mock": "1.0.7",
     "nodemon": "1.18.10"
   },
   "dependencies": {
+    "@wejay/spotify": "0.1.5",
     "body-parser": "1.18.3",
     "bs-mysql2": "8.2.1",
     "bs-sonos": "0.1.1",
     "date-fns": "1.30.1",
     "dotenv": "7.0.0",
     "express": "4.16.4",
-    "query-string": "6.4.0",
-    "sonos": "1.9.0"
+    "query-string": "6.4.2",
+    "sonos": "1.10.0"
   },
   "jest": {
     "setupFiles": [
