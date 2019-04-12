@@ -9,8 +9,11 @@ fullqueue|fq ________________________ Display all tracks currently in the queue
 nowplaying|np _______________________ Display what's playing right now
 queue|q <Spotify URI> _______________ Queue a track using a Spotify URI
 search|s <your search string> _______ Search Spotify for a track
-library|l <your search string> ______ Search in music library
 \`\`\`
+
+*Spotify copy/paste*
+In Spotify select one or more tracks and copy their links using \`cmd + c\` (MacOS) or \`ctrl + c\` (Windows).
+Then paste that information straight to me and I'll queue them for you. :notes:
 
 *Play control*
 \`\`\`

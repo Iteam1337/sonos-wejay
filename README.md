@@ -50,7 +50,6 @@ This will compile the Reason code and start up the Express app.
 | `currentqueue`                 | `getqueue`, `gq`, `cq`   | Display upcoming tracks                                      |
 | `fullqueue`                    | `fq`                     | Display all tracks currently in the queue                    |
 | `help`                         |                          | Display the help text                                        |
-| `library <your search string>` | `l <your search string>` | Search in tracks added to the Sonos music library            |
 | `mute`                         |                          | Mute                                                         |
 | `mostplayed`                   |                          | List the most played tracks (requires MySQL database)        |
 | `next`                         |                          | Skip one track forward                                       |
