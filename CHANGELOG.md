@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.0] - 2019-04-12
+
+**BREAKING CHANGES**: Remove `library` search command, because no one uses it.
+
+### Changed
+- Remove `library` command
+- Refactored Spotify search and track using
+  [@wejay/spotify](https://github.com/Iteam1337/wejay-utils) utility.
+- Lots of clean up using `[@bs.obj]`, combined switches and more
+
+### Fixed
+
+- Out of bounds issue in spotify search #44
+
 ## [5.0.1] - 2019-03-29
 
 ### Fixed

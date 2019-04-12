@@ -1,3 +1,35 @@
+module Attachment = {
+  [@bs.obj]
+  external field: (~title: string, ~value: string, ~short: bool) => _ = "";
+
+  [@bs.obj]
+  external action:
+    (
+      ~name: [@bs.as "track"] _,
+      ~text: [@bs.as "Queue"] _,
+      ~_type: [@bs.as "button"] _,
+      ~value: string,
+      unit
+    ) =>
+    _ =
+    "";
+
+  [@bs.obj]
+  external make:
+    (
+      ~color: [@bs.as "#efb560"] _,
+      ~callback_id: [@bs.as "queue"] _,
+      ~thumb_url: string,
+      ~fields: array(Js.t('a)),
+      ~actions: array(Js.t('b)),
+      unit
+    ) =>
+    _ =
+    "";
+};
+
+let userId = id => "<@" ++ id ++ ">";
+
 let sendPayload = payload => {
   Js.Promise.(
     API.createRequest(
@@ -39,29 +71,24 @@ let makeAuthCallback = code =>
     (),
   );
 
-let sendSearchResponse = (channel, message, attachments) =>
-  {
-    "channel": channel,
-    "username": "Wejay",
-    "text": message,
-    "attachments": attachments,
-    "mrkdwn": true,
-  }
-  |> sendPayload;
+module Message = {
+  [@bs.obj]
+  external slackMessage:
+    (
+      ~channel: string,
+      ~username: [@bs.as "Wejay"] _,
+      ~text: string,
+      ~attachments: array(Js.t('a))=?,
+      ~mrkdwn: bool,
+      unit
+    ) =>
+    _ =
+    "";
 
-let sendResponseWithAttachments =
-    (channel: string, message: string, attachments) =>
-  {
-    "channel": channel,
-    "username": "Wejay",
-    "text": message,
-    "attachments": attachments,
-    "mrkdwn": true,
-  }
-  |> sendPayload;
+  let withAttachments = (channel, message, attachments) =>
+    slackMessage(~channel, ~text=message, ~attachments, ~mrkdwn=true, ())
+    |> sendPayload;
 
-let sendSlackResponse = (channel: string, message: string) =>
-  {"channel": channel, "username": "Wejay", "text": message, "mrkdwn": true}
-  |> sendPayload;
-
-let userId = id => "<@" ++ id ++ ">";
+  let regular = (channel: string, message: string) =>
+    slackMessage(~channel, ~text=message, ~mrkdwn=true, ()) |> sendPayload;
+};
