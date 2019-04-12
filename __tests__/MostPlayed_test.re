@@ -2,28 +2,26 @@ open Jest;
 open Expect;
 
 test("creates a formatted message", () => {
-  let tracks: array(Spotify.Track.t) = [|
+  let tracks: array(Spotify.WejayTrack.t) = [|
     {
-      album: {
-        images: [||],
-        name: "30 Seconds to Mars",
-        releaseDate: "2000",
-      },
-      artists: [|{name: "30 Seconds to Mars"}|],
-      duration: 3600,
+      albumName: "30 Seconds to Mars",
+      artist: "30 Seconds to Mars",
+      cover: "",
+      duration: 3600.0,
+      id: "1",
       name: "Echelon",
-      uri: "uri",
+      releaseDate: "",
+      uri: "spotify:track:uri",
     },
     {
-      album: {
-        images: [||],
-        name: "There's a hell...",
-        releaseDate: "2000",
-      },
-      artists: [|{name: "Bring me the Horizon"}|],
-      duration: 3600,
+      albumName: "There's a hell...",
+      artist: "Bring me the Horizon",
+      cover: "",
+      duration: 3600.0,
+      id: "2",
       name: "Hospital for Souls",
-      uri: "uri",
+      releaseDate: "",
+      uri: "spotify:track:uri",
     },
   |];
 

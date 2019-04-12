@@ -1,9 +1,8 @@
 let message =
-    (tracks: array(Spotify.Track.t), hits: array(Elastic.Aggregate.t)) =>
+    (tracks: array(Spotify.WejayTrack.t), hits: array(Elastic.Aggregate.t)) =>
   "*Most played*\n"
   ++ tracks
-     ->Belt.Array.mapWithIndex((i, {artists, name}) => {
-         let artist = Spotify.buildArtist(artists);
+     ->Belt.Array.mapWithIndex((i, {artist, name}) => {
          let n = Utils.listNumber(i);
          let count = hits[i].count;
 
@@ -23,7 +22,7 @@ let run = () => {
            | _ =>
              hits
              ->map(({key}) => key->SpotifyUtils.trackId)
-             ->map(Spotify.getTrack)
+             ->map(Spotify.getSpotifyTrack)
              |> all
              |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)
            }

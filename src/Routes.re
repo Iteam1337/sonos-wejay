@@ -10,11 +10,12 @@ let index =
     res |> Response.sendString("Welcome to Wejay!")
   );
 
-let globalEvent = ({subtype, channel, command, text, user}: Decode.event) => {
-  let sendMessage = Slack.sendSlackResponse(channel);
+let message = request => {
+  let {subtype, channel, command, text: args, user}: Decode.event = request;
+  let sendMessage = Slack.Message.regular(channel);
 
   Js.Promise.(
-    Event.response(command, text, user, subtype)
+    Event.response(~command, ~args, ~user, ~subtype, ())
     |> then_(response => {
          switch (response) {
          | `Ok(r) => sendMessage(r)
@@ -26,11 +27,34 @@ let globalEvent = ({subtype, channel, command, text, user}: Decode.event) => {
   );
 };
 
-let eventCallback = (event: Decode.event) => {
-  switch (event.command) {
-  | Library
-  | Search => Event.handleEventCallback(event)
-  | _ => globalEvent(event)
+let messageWithAttachment = request => {
+  let {subtype, channel, command, text: args, user}: Decode.event = request;
+  let sendSearchResponse = Slack.Message.withAttachments(channel);
+
+  Js.Promise.(
+    Event.responseWithAttachment(~command, ~args, ~user, ~subtype, ())
+    |> then_(response => {
+         switch (response) {
+         | `Ok(message, attachments) =>
+           sendSearchResponse(message, attachments)
+         | `Failed(_) => ()
+         };
+         resolve();
+       })
+    |> ignore
+  );
+};
+
+let eventCallback = (event: option(Decode.event), res) => {
+  switch (event) {
+  | Some(e) =>
+    switch (e.command) {
+    | Search => messageWithAttachment(e)
+    | _ => message(e)
+    };
+
+    res |> Response.sendStatus(Ok);
+  | None => res |> Response.sendStatus(BadRequest)
   };
 };
 
@@ -46,13 +70,7 @@ let event =
 
         switch (eventType) {
         | UrlVerification => res |> handleVerification(body) |> resolve
-        | EventCallback =>
-          switch (event) {
-          | Some(e) =>
-            eventCallback(e);
-            res |> Response.sendStatus(Ok) |> resolve;
-          | None => res |> failed |> resolve
-          }
+        | EventCallback => res |> eventCallback(event) |> resolve
         | UnknownEvent => res |> failed |> resolve
         };
       | None => res |> failed |> resolve
@@ -65,14 +83,18 @@ let action =
     Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let response = body->Decode.parseAction;
+        let response = body |> Decode.parseAction;
         let {actions, user}: Decode.actionPayload =
-          response##payload->Decode.actionPayload;
+          response##payload |> Decode.actionPayload;
         let track = actions[0].value;
 
         Queue.last(track)
         |> then_(message => {
-             Elastic.logNew(Commands.Queue, track, Some(user.id));
+             Elastic.log(
+               ~command=Commands.Queue,
+               ~text=track,
+               ~user=Some(user.id),
+             );
 
              switch (message) {
              | `Ok(m) => res |> Response.sendString(m) |> resolve

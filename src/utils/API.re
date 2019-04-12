@@ -1,12 +1,16 @@
 let createRequest = (~url, ~_method="GET", ~data=None, ~headers=None, ()) => {
-  let base = Axios.makeConfigWithUrl(~url, ~_method);
+  let headers =
+    switch (headers) {
+    | Some(h) => Axios.Headers.fromObj(h)
+    | None => Axios.Headers.fromDict(Js.Dict.empty())
+    };
+
+  let base = Axios.makeConfigWithUrl(~url, ~_method, ~headers);
 
   (
-    switch (data, headers) {
-    | (Some(d), Some(h)) => base(~data=d, ~headers=h, ())
-    | (None, Some(h)) => base(~headers=h, ())
-    | (Some(d), None) => base(~data=d, ())
-    | (None, None) => base()
+    switch (data) {
+    | Some(d) => base(~data=d, ())
+    | None => base()
     }
   )
   |> Axios.request;

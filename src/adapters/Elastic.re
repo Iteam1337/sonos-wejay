@@ -1,3 +1,8 @@
+[@bs.obj]
+external elasticLog:
+  (~sender: string, ~command: string, ~args: array(string)) => _ =
+  "";
+
 module Aggregate = {
   type t = {
     key: string,
@@ -42,35 +47,24 @@ let sendLog = data => {
   |> ignore;
 };
 
-let handleLog = (command: Commands.t, user, text) => {
-  switch (user) {
-  | Some(sender) =>
-    switch (command) {
-    | UnhandledCommand => ()
-    | SpotifyCopy(copiedTracks) =>
-      {"sender": sender, "command": "spotify-copy", "args": copiedTracks}
-      |> sendLog
-    | _ =>
-      {
-        "sender": sender,
-        "command": Commands.commandToString(command),
-        "args":
-          switch (command) {
-          | UnknownCommand(c) => [|c|]
-          | _ =>
-            Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
-          },
-      }
-      |> sendLog
-    }
-  | None => ()
+let log = (~command: Commands.t, ~text, ~user) => {
+  switch (user, command) {
+  | (Some(_), UnhandledCommand)
+  | (None, _) => ()
+  | (Some(sender), SpotifyCopy(copiedTracks)) =>
+    elasticLog(~sender, ~command="spotify-copy", ~args=copiedTracks)
+    |> sendLog
+  | (Some(sender), _) =>
+    elasticLog(
+      ~sender,
+      ~command=Commands.commandToString(command),
+      ~args=
+        switch (command) {
+        | UnknownCommand(c) => [|c|]
+        | _ =>
+          Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
+        },
+    )
+    |> sendLog
   };
-};
-
-let log = ({command, user, text}: Decode.event) => {
-  handleLog(command, user, text);
-};
-
-let logNew = (command: Commands.t, text: string, user: option(string)) => {
-  handleLog(command, user, text);
 };

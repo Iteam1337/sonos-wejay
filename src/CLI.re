@@ -33,12 +33,7 @@ let route =
         |> then_(user => {
              let {command, args} = body |> decode;
 
-             Event.response(
-               command,
-               args,
-               Some(user),
-               Decode.Requester.Human,
-             )
+             Event.response(~command, ~args, ~user=Some(user), ())
              |> then_(response =>
                   switch (response) {
                   | `Ok(r) => res |> Response.sendString(r) |> resolve
