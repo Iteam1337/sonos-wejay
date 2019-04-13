@@ -8,6 +8,13 @@ type searchType =
   | Playlist
   | Track;
 
+let typeOfSearch =
+  fun
+  | Album => "album"
+  | Artist => "artist"
+  | Playlist => "playlist"
+  | Track => "track";
+
 let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) => {
   let l = limit->string_of_int;
   let q =
@@ -15,13 +22,7 @@ let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) =
     |> Js.String.replaceByRe([%re "/&amp;/g"], "&")
     |> Js.Global.encodeURIComponent;
 
-  let sType =
-    switch (searchType) {
-    | Album => "album"
-    | Artist => "artist"
-    | Playlist => "playlist"
-    | Track => "track"
-    };
+  let sType = typeOfSearch(searchType);
 
   {j|https://api.spotify.com/v1/search?q=$q&type=$sType&limit=$l&market=$market|j};
 };

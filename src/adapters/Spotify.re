@@ -1,5 +1,3 @@
-[@bs.module "query-string"] external stringify: 'a => 'a = "";
-
 [@bs.module "@wejay/spotify"]
 external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
 

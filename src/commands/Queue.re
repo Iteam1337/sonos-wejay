@@ -27,61 +27,6 @@ let queueWithFallback = () =>
        |> resolve
      );
 
-let currentQueue = sendMessage =>
-  queueWithFallback()
-  |> then_(({items}) =>
-       Services.getCurrentTrack()
-       |> then_(({queuePosition}) => {
-            let numberOfTracks = items->Belt.Array.length;
-
-            switch (numberOfTracks, queuePosition) {
-            | (0, _) => sendMessage(Messages.emptyQueue)
-            | (nt, qp) when int_of_float(qp) == nt =>
-              sendMessage(Messages.emptyQueue)
-            | _ =>
-              let tracks =
-                items
-                ->Belt.Array.slice(
-                    ~offset=queuePosition |> int_of_float,
-                    ~len=Belt.Array.length(items),
-                  )
-                ->listTracks
-                ->Utils.joinWithNewline;
-
-              sendMessage("*Upcoming tracks*\n" ++ tracks);
-            };
-
-            queue |> resolve;
-          })
-       |> catch(Utils.handleError("currentQueue -> currentTrack"))
-     )
-  |> catch(Utils.handleError("currentQueue"))
-  |> ignore;
-
-let getFullQueue = sendMessage =>
-  queueWithFallback()
-  |> then_(({items}) => {
-       switch (items->Belt.Array.length) {
-       | 0 => sendMessage(Messages.emptyQueue)
-       | _ =>
-         let tracks = items->listTracks->Utils.joinWithNewline;
-         sendMessage("*Here's the full queue*\n" ++ tracks);
-       };
-
-       resolve(true);
-     })
-  |> catch(Utils.handleError("getFullQueue"))
-  |> ignore;
-
-let clearQueue = sendMessage =>
-  device->Sonos.Methods.flush()
-  |> then_(value => {
-       sendMessage("Cleared queue");
-       value |> resolve;
-     })
-  |> catch(Utils.handleError("clearPlaylist"))
-  |> ignore;
-
 /* CLI style */
 let clear = () =>
   device->Sonos.Methods.flush()

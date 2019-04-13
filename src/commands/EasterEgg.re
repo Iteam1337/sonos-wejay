@@ -26,9 +26,9 @@ module Playlist = {
     toPlaylistUri(~user="believer", ~id="5DQzhEf0U4Lji5kvXnPYSy");
 };
 
-let run = egg => {
+let run =
   Queue.(
-    switch (egg) {
+    fun
     | IteamClassics => Playlist.iteamClassics->last
     | FreeBird => Track.freeBird->next
     | Friday =>
@@ -39,6 +39,4 @@ let run = egg => {
     | Slowdance => Playlist.slowdance->last
     | Tequila => Track.tequila->next
     | WWW => Track.worldwideweb->next
-    }
   );
-};

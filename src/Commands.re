@@ -81,34 +81,30 @@ let decodeCommand = text => {
   };
 };
 
-let commandToString = command =>
-  switch (command) {
+let eggToString: EasterEgg.t => string =
+  fun
+  | IteamClassics => "classics"
+  | FreeBird => "freebird"
+  | Friday => "friday"
+  | Shoreline => "shoreline"
+  | Slowdance => "slowdance"
+  | Tequila => "tequila"
+  | WWW => "world-wide-web";
+
+let emojiToString: Emoji.t => string =
+  fun
+  | ThumbsUp => "volume-up"
+  | ThumbsDown => "volume-down"
+  | Santa => "santa"
+  | _ => "unknown";
+
+let commandToString =
+  fun
   | Blame => "blame"
   | Clear => "clear"
   | CurrentQueue => "current-queue"
-  | EasterEgg(egg) =>
-    "easteregg-"
-    ++ (
-      switch (egg) {
-      | IteamClassics => "classics"
-      | FreeBird => "freebird"
-      | Friday => "friday"
-      | Shoreline => "shoreline"
-      | Slowdance => "slowdance"
-      | Tequila => "tequila"
-      | WWW => "world-wide-web"
-      }
-    )
-  | Emoji(emoji) =>
-    "emoji-"
-    ++ (
-      switch (emoji) {
-      | ThumbsUp => "volume-up"
-      | ThumbsDown => "volume-down"
-      | Santa => "santa"
-      | _ => "unknown"
-      }
-    )
+  | EasterEgg(egg) => "easteregg-" ++ eggToString(egg)
+  | Emoji(emoji) => "emoji-" ++ emojiToString(emoji)
   | FullQueue => "full-queue"
   | Help => "help"
   | Library => "library"
@@ -128,5 +124,4 @@ let commandToString = command =>
   | UnknownCommand(_) => "unknown-command"
   | UnhandledCommand => "unhandled-command"
   | Unmute => "playback-unmute"
-  | Volume => "volume"
-  };
+  | Volume => "volume";
