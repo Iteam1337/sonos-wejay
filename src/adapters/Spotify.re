@@ -64,7 +64,7 @@ let createSearchAttachment =
 
 let search = query => {
   Js.Promise.(
-    _search(query)
+    _search(query |> Js.Global.encodeURIComponent)
     |> then_(response => {
          let tracks = response |> WejayTrack.tracks;
 

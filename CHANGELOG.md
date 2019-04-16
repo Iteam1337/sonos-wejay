@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.1] - 2019-04-16
+
+### Fixed
+
+- Parse search string with `encodeURIComponent`
+
 ## [6.0.0] - 2019-04-12
 
 **BREAKING CHANGES**: Remove `library` search command, because no one uses it.
