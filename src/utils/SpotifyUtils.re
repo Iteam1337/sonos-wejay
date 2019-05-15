@@ -15,18 +15,6 @@ let typeOfSearch =
   | Playlist => "playlist"
   | Track => "track";
 
-let spotifySearchUrl = (~query, ~limit=5, ~market="SE", ~searchType=Track, ()) => {
-  let l = limit->string_of_int;
-  let q =
-    query
-    |> Js.String.replaceByRe([%re "/&amp;/g"], "&")
-    |> Js.Global.encodeURIComponent;
-
-  let sType = typeOfSearch(searchType);
-
-  {j|https://api.spotify.com/v1/search?q=$q&type=$sType&limit=$l&market=$market|j};
-};
-
 let isSpotifyCopy = text =>
   Js.String.includes("https://open.spotify.com/track", text)
   || Js.String.includes("https://open.spotify.com/user/", text);
