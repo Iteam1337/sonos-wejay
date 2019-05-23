@@ -56,3 +56,15 @@ let isFriday = () =>
   | 5. => true
   | _ => false
   };
+
+let sonosUriToSpotifyUri = sonosUri => {
+  let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
+
+  Js.String.(
+    switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
+    | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
+    | (true, None) => sonosUri
+    | _ => ""
+    }
+  );
+};

@@ -48,3 +48,5 @@ let unknownCommand = command =>
   ->Utils.joinWithNewline;
 
 let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif";
+
+let cantSkipEasterEgg = "Can't skip this track :hatching_chick:";

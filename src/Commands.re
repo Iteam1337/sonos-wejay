@@ -65,6 +65,8 @@ let decodeCommand = text => {
     | "previous" => Previous
     | "q"
     | "queue" => Queue
+    | "cottoneyejoe"
+    | "rednex" => EasterEgg(Rednex)
     | "s"
     | "search" => Search
     | "shoreline" => EasterEgg(Shoreline)
@@ -86,6 +88,7 @@ let eggToString: EasterEgg.t => string =
   | IteamClassics => "classics"
   | FreeBird => "freebird"
   | Friday => "friday"
+  | Rednex => "rednex"
   | Shoreline => "shoreline"
   | Slowdance => "slowdance"
   | Tequila => "tequila"

@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.1.0] - 2019-05-23
+
+### Changed
+
+- Added an easter egg update
+
 ## [6.0.1] - 2019-04-16
 
 ### Fixed
@@ -11,6 +17,7 @@
 **BREAKING CHANGES**: Remove `library` search command, because no one uses it.
 
 ### Changed
+
 - Remove `library` command
 - Refactored Spotify search and track using
   [@wejay/spotify](https://github.com/Iteam1337/wejay-utils) utility.

@@ -2,6 +2,7 @@ type t =
   | FreeBird
   | Friday
   | IteamClassics
+  | Rednex
   | Shoreline
   | Slowdance
   | Tequila
@@ -15,6 +16,16 @@ module Track = {
   let shoreline = toUri("77jVczOFXfbdugN4djsIqs");
   let tequila = toUri("5gJKsGij5oGt5H5RSFYXPa");
   let worldwideweb = toUri("597NerobfkV9DhKCySXXWF");
+  let rednex = toUri("06hsdMbBxWGqBO0TV0Zrkf");
+
+  let easterEggTracks = [
+    freeBird,
+    friday,
+    shoreline,
+    tequila,
+    worldwideweb,
+    rednex,
+  ];
 };
 
 module Playlist = {
@@ -35,8 +46,20 @@ let run =
       Utils.isFriday()
         ? Track.friday->next
         : Js.Promise.resolve(`Ok("Sorry, it's not Friday"))
+    | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
     | Slowdance => Playlist.slowdance->last
     | Tequila => Track.tequila->next
     | WWW => Track.worldwideweb->next
   );
+
+let isEasterEgg = () => {
+  Js.Promise.(
+    Services.getCurrentTrack()
+    |> then_(({uri}: Sonos.Decode.currentTrackResponse) =>
+         Track.easterEggTracks
+         ->Belt.List.some(track => track == Utils.sonosUriToSpotifyUri(uri))
+         ->resolve
+       )
+  );
+};

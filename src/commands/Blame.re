@@ -14,23 +14,11 @@ let message = (hits: array(Elastic.Search.t)) =>
        ->Utils.joinWithNewline
   };
 
-let sonosUriToSpotifyUri = sonosUri => {
-  let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
-
-  Js.String.(
-    switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
-    | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
-    | (true, None) => sonosUri
-    | _ => ""
-    }
-  );
-};
-
 let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
     |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
-         let uri = sonosUriToSpotifyUri(uri);
+         let uri = Utils.sonosUriToSpotifyUri(uri);
 
          API.createRequest(
            ~url=Config.blameUrl,
