@@ -1,3 +1,4 @@
+.env
 .merlin
 node_modules/
 _build
