@@ -1,117 +1,49 @@
-module Requester = {
-  type t =
-    | Bot
-    | Human;
-};
+module Spotify = {
+  module Track = {
+    type t = {
+      albumName: string,
+      artist: string,
+      cover: string,
+      duration: int,
+      id: string,
+      name: string,
+      releaseDate: string,
+      uri: string,
+    };
 
-type eventType =
-  | UrlVerification
-  | EventCallback
-  | UnknownEvent;
+    let of_json = json =>
+      Ezjsonm.{
+        albumName: get_string(find(json, ["albumName"])),
+        artist: get_string(find(json, ["artist"])),
+        cover: get_string(find(json, ["cover"])),
+        duration: get_int(find(json, ["duration"])),
+        id: get_string(find(json, ["id"])),
+        name: get_string(find(json, ["name"])),
+        releaseDate: get_string(find(json, ["releaseDate"])),
+        uri: get_string(find(json, ["uri"])),
+      };
 
-type verification = {
-  challenge: string,
-  token: string,
-};
-
-type event = {
-  command: Commands.t,
-  channel: string,
-  subtype: Requester.t,
-  text: string,
-  user: option(string),
-};
-
-type eventPayload = {
-  event: option(event),
-  eventType,
-};
-
-type action = {value: string};
-type actions = array(action);
-
-type channel = {id: string};
-
-type user = {
-  id: string,
-  name: string,
-};
-
-type actionPayload = {
-  actions,
-  channel,
-  user,
-};
-
-let verification = json =>
-  Json.Decode.{
-    challenge: json |> field("challenge", string),
-    token: json |> field("token", string),
+    let to_json = track =>
+      Ezjsonm.(
+        dict([
+          ("albumName", string(track.albumName)),
+          ("artist", string(track.artist)),
+          ("cover", string(track.cover)),
+          ("duration", int(track.duration)),
+          ("id", string(track.id)),
+          ("name", string(track.name)),
+          ("releaseDate", string(track.releaseDate)),
+          ("uri", string(track.uri)),
+        ])
+      );
   };
 
-let parseQuery = text =>
-  text
-  |> Utils.removeUser
-  |> Js.String.split(" ")
-  |> Js.Array.sliceFrom(1)
-  |> Js.Array.joinWith(" ");
+  module Tracks = {
+    type t = list(Track.t);
 
-let event = json =>
-  Json.Decode.{
-    channel: json |> field("channel", string),
-    command:
-      Belt.Option.getWithDefault(
-        json |> optional(field("text", string)),
-        "",
-      )
-      |> Commands.decodeCommand,
-    text:
-      switch (json |> optional(field("text", string))) {
-      | Some(text) => parseQuery(text)
-      | None => ""
-      },
-    subtype:
-      switch (json |> optional(field("subtype", string))) {
-      | Some(subtype) =>
-        switch (subtype) {
-        | "bot_message" => Bot
-        | _ => Human
-        }
-      | None => Human
-      },
-    user: json |> optional(field("user", string)),
+    let of_json = json =>
+      Ezjsonm.(find(json, ["tracks"]) |> get_list(Track.of_json));
+
+    let to_json = json => Ezjsonm.(json |> list(Track.to_json));
   };
-
-let eventPayload = json =>
-  Json.Decode.{
-    eventType:
-      switch (json |> field("type", string)) {
-      | "url_verification" => UrlVerification
-      | "app_mention"
-      | "event_callback" => EventCallback
-      | _ => UnknownEvent
-      },
-    event: json |> optional(field("event", event)),
-  };
-
-let action = json => Json.Decode.{value: json |> field("value", string)};
-
-let channel = json => Json.Decode.{id: json |> field("id", string)};
-
-let user = json =>
-  Json.Decode.{
-    id: json |> field("id", string),
-    name: json |> field("name", string),
-  };
-
-let actionPayload = json =>
-  Json.Decode.{
-    actions: json |> field("actions", array(action)),
-    channel: json |> field("channel", channel),
-    user: json |> field("user", user),
-  };
-
-let parseAction = json =>
-  Json.Decode.{
-    "payload": json |> field("payload", string) |> Js.Json.parseExn,
-  };
+};

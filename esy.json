@@ -1,0 +1,27 @@
+{
+  "name": "sonos-wejay",
+  "scripts": {
+    "build": "esy b dune build src/Server.re",
+    "server": "esy b dune exec src/server.exe"
+  },
+  "dependencies": {
+    "@opam/cohttp": "2.1.2",
+    "@opam/cohttp-lwt": "*",
+    "@opam/cohttp-lwt-unix": "2.0.0",
+    "@opam/dune": "*",
+    "@opam/fmt": "*",
+    "@opam/logs": "*",
+    "@opam/lwt_ssl": "*",
+    "@opam/merlin": "*",
+    "@opam/opium": "*",
+    "@opam/opium_kernel": "*",
+    "@opam/reason": "*",
+    "@reason-native/console": "^0.1.0",
+    "ocaml": "*"
+  },
+  "resolutions": {
+    "@opam/opium": "anuragsoni/opium:opium.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",
+    "@opam/opium_kernel": "anuragsoni/opium:opium_kernel.opam#5effc1a254ec641a2f05447e20d3da7867cc029a"
+  }
+}
+

@@ -1,24 +1,29 @@
-open Express;
+open Opium.Std;
 
-let app = express();
-let device = Sonos.Methods.device(Config.wejayIp);
+let command = (req: Request.t) => {
+  /*
+    * Use this?
+    *
+    * Returns Ezjsonm.t
+    * let json = Lwt_main.run(req |> App.json_of_body_exn);
+   */
 
-App.use(app, Middleware.json());
-App.use(app, Middleware.urlencoded(~extended=false, ()));
+  let json = req.body |> Rock.Body.to_string |> Ezjsonm.from_string;
 
-App.get(app, ~path="/") @@ Routes.index;
-App.post(app, ~path="/event") @@ Routes.event;
-App.post(app, ~path="/action") @@ Routes.action;
-App.post(app, ~path="/cli") @@ CLI.route;
-App.get(app, ~path="/slack/auth") @@ Routes.slackAuth;
-App.get(app, ~path="/slack/token") @@ Routes.slackToken;
+  let result = json |> Api.decode |> Service.handle;
 
-let onListen = e =>
-  switch (e) {
-  | exception (Js.Exn.Error(e)) =>
-    Js.log(e);
-    Node.Process.exit(1);
-  | _ => Js.log("Listening at http://localhost:3000")
-  };
+  let as_json =
+    Decode.Spotify.(
+      result |> Ezjsonm.from_string |> Tracks.of_json |> Tracks.to_json
+    );
 
-App.listen(app, ~port=3000, ~onListen, ());
+  `Json(as_json) |> respond';
+};
+
+let wejay = (_req: Request.t) => `Html("<h1>This is Wejay</h1>") |> respond';
+
+let _ =
+  App.empty
+  |> post("/command", command)
+  |> get("/", wejay)
+  |> App.run_command;
