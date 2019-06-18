@@ -1,0 +1,14 @@
+(executable
+  (name App)
+  (public_name app.exe)
+  (package wejay-app)
+  (libraries wejay.lib)
+)
+
+(env
+ (static
+  (flags
+   (:standard -ccopt -static)
+  )
+ )
+)

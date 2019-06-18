@@ -1,0 +1,12 @@
+{
+  "name": "wejay-opium",
+  "version": 2,
+  "builds": [
+    {
+      "src": "bootstrap",
+      "use": "now-static-bin",
+      "config": { "port": 3000 }
+    }
+  ],
+  "routes": [{ "src": "^/.*", "dest": "/bootstrap" }]
+}

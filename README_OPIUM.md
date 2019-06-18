@@ -3,10 +3,10 @@
 ## Getting started
 
 ```
-npm install -g esy
+npm install -g esy@latest
 esy
 esy build
-esy server
+esy run
 ```
 
 Server should be running at `http://localhost:3000`.
@@ -19,3 +19,12 @@ Make a POST-request with a JSON-body to `/command`, e.g.
   "args": "hello"
 }
 ```
+
+## Tests
+
+`esy test`
+
+## Deploy
+
+`./build.sh`
+`now`

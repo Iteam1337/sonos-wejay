@@ -1,0 +1,1 @@
+Wejay.Server.run();

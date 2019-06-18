@@ -1,8 +1,13 @@
 {
-  "name": "sonos-wejay",
+  "name": "wejay",
+  "esy": {
+    "build": "refmterr dune build -p #{self.name}"
+  },
   "scripts": {
-    "build": "esy b dune build src/Server.re",
-    "server": "esy b dune exec src/server.exe"
+    "test": "esy b dune exec test/lib/RunTests.exe",
+    "run": "esy b dune exec bin/App.exe",
+    "build": "esy b dune build bin/App.exe",
+    "watch": "esy dune build --watch -p #{self.name}"
   },
   "dependencies": {
     "@opam/cohttp": "2.1.2",
@@ -13,15 +18,25 @@
     "@opam/logs": "*",
     "@opam/lwt_ssl": "*",
     "@opam/merlin": "*",
+    "@opam/conf-openssl": "*",
     "@opam/opium": "*",
     "@opam/opium_kernel": "*",
     "@opam/reason": "*",
-    "@reason-native/console": "^0.1.0",
-    "ocaml": "*"
+    "@reason-native/console": "*",
+    "@reason-native/rely": "*",
+    "ocaml": "~4.6.0"
   },
   "resolutions": {
     "@opam/opium": "anuragsoni/opium:opium.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",
-    "@opam/opium_kernel": "anuragsoni/opium:opium_kernel.opam#5effc1a254ec641a2f05447e20d3da7867cc029a"
+    "@opam/opium_kernel": "anuragsoni/opium:opium_kernel.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",
+    "@opam/conf-openssl": {
+      "source": "no-source:",
+      "override": {
+        "dependencies": {
+          "@opam/conf-pkg-config": "*",
+          "@esy-packages/esy-openssl": "esy-packages/esy-openssl#65efbc9"
+        }
+      }
+    }
   }
 }
-

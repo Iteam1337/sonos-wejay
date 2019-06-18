@@ -1,3 +1,5 @@
+.vscode
+.DS_Store
 .env
 .merlin
 node_modules/
@@ -7,3 +9,4 @@ _release
 *.byte
 *.native
 *.install
+bootstrap

@@ -1,0 +1,1 @@
+WejayTest.TestFramework.cli();
