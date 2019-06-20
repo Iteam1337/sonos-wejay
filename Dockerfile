@@ -58,3 +58,5 @@ RUN esy install
 RUN esy b dune build bin/App.exe --profile=static
 
 RUN mv $(esy echo '#{self.target_dir}')/default/bin/App.exe bootstrap
+
+RUN strip bootstrap 
