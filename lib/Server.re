@@ -5,23 +5,11 @@ let slack_event = post("/slack/event", _req => `String("Hello") |> respond');
 
 let command =
   post("/command", req => {
-    /*
-      * Use this?
-      *
-      * Returns Ezjsonm.t
-      * let json = Lwt_main.run(req |> App.json_of_body_exn);
-     */
-
     let json = req.body |> Rock.Body.to_string |> Ezjsonm.from_string;
 
-    let result = json |> Api.decode |> Service.handle;
+    let%lwt result = json |> Api.decode |> Service.handle;
 
-    let as_json =
-      Decode.Spotify.(
-        result |> Ezjsonm.from_string |> Tracks.of_json |> Tracks.to_json
-      );
-
-    `Json(as_json) |> respond';
+    `Json(result) |> respond';
   });
 
 let wejay = get("/", _req => `Html("<h1>This is Wejay</h1>") |> respond');
