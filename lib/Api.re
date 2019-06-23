@@ -4,7 +4,9 @@ type t = {
 };
 
 let decode = json =>
-  Ezjsonm.{
-    command: get_string(find(json, ["command"])) |> Command.of_string,
-    args: get_string(find(json, ["args"])),
+  Yojson.Safe.Util.{
+    command: json |> member("command") |> to_string |> Command.of_string,
+    args: json |> member("args") |> to_string,
   };
+
+let make = (~args, ~command) => {args, command};

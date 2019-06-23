@@ -3,5 +3,5 @@
   (public_name wejay.lib)
   (preprocess
     (pps ppx_let lwt_ppx))
-  (libraries cohttp cohttp-lwt cohttp-lwt-unix logs.fmt lwt_ppx opium console.lib)
+  (libraries cohttp cohttp-lwt cohttp-lwt-unix logs.fmt lwt_ppx yojson opium console.lib str)
 )

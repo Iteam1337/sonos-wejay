@@ -9,10 +9,9 @@ let search = query =>
       body
       |> Cohttp_lwt.Body.to_string
       >|= (
-        body =>
-          Decode.Spotify.(
-            body |> Ezjsonm.from_string |> Tracks.of_json |> Tracks.to_json
-          )
+        body => {
+          Decode.Spotify.(body |> Ezjsonm.from_string |> Tracks.of_json);
+        }
       );
     }
   );

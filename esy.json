@@ -4,8 +4,8 @@
     "build": "refmterr dune build -p #{self.name}"
   },
   "scripts": {
-    "test": "esy b dune exec test/lib/RunTests.exe",
-    "run": "esy b dune exec bin/App.exe",
+    "test": "esy dune exec --force test/lib/RunTests.exe",
+    "run": "esy dune exec bin/App.exe",
     "build": "esy b dune build bin/App.exe",
     "watch": "esy dune build --watch -p #{self.name}"
   },
@@ -13,18 +13,20 @@
     "@opam/cohttp": "2.1.2",
     "@opam/cohttp-lwt": "*",
     "@opam/cohttp-lwt-unix": "2.0.0",
+    "@opam/conf-openssl": "*",
     "@opam/dune": "*",
     "@opam/fmt": "*",
     "@opam/logs": "*",
-    "@opam/lwt_ssl": "*",
     "@opam/lwt": "*",
     "@opam/lwt_ppx": "*",
-    "@opam/ppx_let": "*",
-    "@opam/merlin": "*",
-    "@opam/conf-openssl": "*",
+    "@opam/lwt_ssl": "*",
+    "@opam/num": "1.1",
+    "@opam/uri": "*",
     "@opam/opium": "*",
     "@opam/opium_kernel": "*",
+    "@opam/ppx_let": "*",
     "@opam/reason": "*",
+    "@opam/yojson": "*",
     "@reason-native/console": "*",
     "@reason-native/rely": "*",
     "ocaml": "~4.6.0"
@@ -41,5 +43,8 @@
         }
       }
     }
+  },
+  "devDependencies": {
+    "@opam/merlin": "*"
   }
 }

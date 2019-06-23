@@ -1,7 +1,9 @@
+let current_dir = Sys.getcwd();
+
 include Rely.Make({
   let config =
     Rely.TestFrameworkConfig.initialize({
-      snapshotDir: "/Users/ter/dev/diverse/wejay-opium/test/lib/__snapshots__",
-      projectDir: "/Users/ter/dev/diverse/wejay-opium",
+      snapshotDir: current_dir ++ "/test/lib/__snapshots__",
+      projectDir: current_dir,
     });
 });
