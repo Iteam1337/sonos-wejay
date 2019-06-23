@@ -3,11 +3,9 @@ open Lwt.Infix;
 
 let slack_event =
   post("/slack/event", req => {
-    let json = req.body |> Rock.Body.to_string |> Yojson.Safe.from_string;
+    let json = req.body |> Rock.Body.to_string |> Ezjsonm.from_string;
 
-    let j = req.body |> Rock.Body.to_string |> Ezjsonm.from_string;
-
-    let%lwt _result =
+    let%lwt result =
       json
       |> Decode.Slack.Event.event_of_json
       |> (
@@ -28,7 +26,7 @@ let slack_event =
             | Some(e) =>
               e.command
               |> Service.handle
-              >|= (
+              >>= (
                 ((command, payload)) =>
                   Message.reply(`Slack(e), command, payload)
               )
@@ -40,7 +38,7 @@ let slack_event =
           }
       );
 
-    `Json(j) |> respond';
+    `Json(result) |> respond';
   });
 
 let command =
@@ -51,7 +49,7 @@ let command =
       json
       |> Api.decode
       |> Service.handle
-      >|= (((command, payload)) => Message.reply(`Api, command, payload));
+      >>= (((command, payload)) => Message.reply(`Api, command, payload));
 
     `Json(result) |> respond';
   });

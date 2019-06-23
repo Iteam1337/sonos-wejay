@@ -15,7 +15,7 @@ describe("Slack Decode", ({test, _}) => {
               ("text", string("search hello")),
               ("channel", string("1234567890.123456")),
               ("user", string("UXXXXXXX1")),
-              ("subtype", string("xyz")),
+              ("type", string("xyz")),
             ]),
           ),
           ("type", string("event_callback")),
@@ -23,9 +23,7 @@ describe("Slack Decode", ({test, _}) => {
           ("event_id", string("Ev08MFMKH6")),
           ("event_time", int(1234567890)),
         ])
-      )
-      |> Ezjsonm.to_string
-      |> Yojson.Safe.from_string;
+      );
 
     let {event, eventType} = payload |> event_of_json;
 
@@ -40,10 +38,10 @@ describe("Slack Decode", ({test, _}) => {
           "text": "search rage against the machine",
           "channel": "AA12345678",
           "user": "UD8UR2GGP",
-          "subtype": "other"
+          "type": "other"
         }
       |}
-      |> Yojson.Safe.from_string;
+      |> Ezjsonm.from_string;
 
     let event = payload |> of_json;
 
@@ -63,7 +61,7 @@ describe("Slack Decode", ({test, _}) => {
           "type": "url_verification"
         }
       |}
-      |> Yojson.Safe.from_string;
+      |> Ezjsonm.from_string;
 
     let {challenge} = payload |> decode_verification;
 
