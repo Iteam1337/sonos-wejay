@@ -4,7 +4,7 @@
     "build": "refmterr dune build -p #{self.name}"
   },
   "scripts": {
-    "test": "esy dune exec --force test/lib/RunTests.exe",
+    "test": "esy dune exec test/lib/RunTests.exe",
     "run": "esy dune exec bin/App.exe",
     "build": "esy b dune build bin/App.exe",
     "watch": "esy dune build --watch -p #{self.name}"
@@ -29,7 +29,7 @@
     "@opam/yojson": "*",
     "@reason-native/console": "*",
     "@reason-native/rely": "*",
-    "ocaml": "~4.6.0"
+    "ocaml": "~4.7"
   },
   "resolutions": {
     "@opam/opium": "anuragsoni/opium:opium.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",

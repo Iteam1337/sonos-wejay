@@ -35,7 +35,7 @@ RUN echo ' \
 {\
   "name": "package-base", \
   "dependencies": { \
-    "ocaml": "~4.6.0", \
+    "ocaml": "~4.7", \
     "@opam/reason": "*", \
     "@opam/dune": "*", \
     "@esy-packages/esy-openssl": "esy-packages/esy-openssl#65efbc9" \

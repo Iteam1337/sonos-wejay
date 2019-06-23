@@ -43,7 +43,7 @@ let slack_event =
 
 let command =
   post("/command", req => {
-    let json = req.body |> Rock.Body.to_string |> Yojson.Safe.from_string;
+    let json = req.body |> Rock.Body.to_string |> Yojson.Basic.from_string;
 
     let%lwt result =
       json

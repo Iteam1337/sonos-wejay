@@ -4,7 +4,7 @@ type t = {
 };
 
 let decode = json =>
-  Yojson.Safe.Util.{
+  Yojson.Basic.Util.{
     command: json |> member("command") |> to_string |> Command.of_string,
     args: json |> member("args") |> to_string,
   };
