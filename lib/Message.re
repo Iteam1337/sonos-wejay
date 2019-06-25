@@ -18,19 +18,16 @@ module Slack = {
       ~headers=
         Cohttp.Header.of_list([
           ("content-type", "application/json"),
-          ("Authorization", "Bearer " ++ Config.slack_token),
+          ("Authorization", Format.sprintf("Bearer %s", Config.slack_token)),
         ]),
       Uri.of_string("https://slack.com/api/chat.postMessage"),
     )
     >|= (
-      ((response, body)) =>
+      ((response, _body)) =>
         switch (response) {
         | {Cohttp.Response.status: `OK, _} =>
-          Console.log(body |> Cohttp_lwt.Body.to_string);
-          Ezjsonm.(dict([("success", bool(true))]));
-        | {Cohttp.Response.status, _} =>
-          Console.log(status);
-          Ezjsonm.(dict([("success", bool(false))]));
+          Ezjsonm.(dict([("success", bool(true))]))
+        | _ => Ezjsonm.(dict([("success", bool(false))]))
         }
     );
 
@@ -53,19 +50,16 @@ module Slack = {
       ~headers=
         Cohttp.Header.of_list([
           ("content-type", "application/json"),
-          ("Authorization", "Bearer " ++ Config.slack_token),
+          ("Authorization", Format.sprintf("Bearer %s", Config.slack_token)),
         ]),
       Uri.of_string("https://slack.com/api/chat.postMessage"),
     )
     >|= (
-      ((response, body)) =>
+      ((response, _body)) =>
         switch (response) {
         | {Cohttp.Response.status: `OK, _} =>
-          Console.log(body |> Cohttp_lwt.Body.to_string);
-          Ezjsonm.(dict([("success", bool(true))]));
-        | {Cohttp.Response.status, _} =>
-          Console.log(status);
-          Ezjsonm.(dict([("success", bool(false))]));
+          Ezjsonm.(dict([("success", bool(true))]))
+        | _ => Ezjsonm.(dict([("success", bool(false))]))
         }
     );
 
@@ -86,9 +80,9 @@ module Slack = {
         (
           "fields",
           [
-            ("Album", albumName),
-            ("Title", name),
             ("Artist", artist),
+            ("Title", name),
+            ("Album", albumName),
             ("Duration", duration |> string_of_int),
           ]
           |> list(track_field),
@@ -134,11 +128,11 @@ module Slack = {
     ]
     |> String.concat("\n");
 
-  let reply =
-      (command: Command.t, payload: list(Decode.Spotify.Track.t), event) => {
+  let reply = (command: Command.t, payload, event) => {
     open Decode.Slack.Event;
 
     let send_payload = send_message(~user=event.user, ~channel=event.channel);
+
     let send_payload_wa =
       send_message_with_attachments(
         ~user=event.user,
@@ -147,9 +141,9 @@ module Slack = {
       );
 
     let response =
-      switch (command) {
-      | Search =>
-        tracks(payload) |> (attachments => send_payload_wa(~attachments))
+      switch (command, payload) {
+      | (Search, Ok(`Tracks(t))) =>
+        tracks(t) |> (attachments => send_payload_wa(~attachments))
       | _ => help() |> (text => send_payload(~text))
       };
     response;
@@ -158,13 +152,17 @@ module Slack = {
 
 module Api = {
   let tracks = json => Decode.Spotify.Tracks.(json |> to_json);
+  let track = json => Decode.Spotify.Track.(json |> to_json);
+  let help = () => Ezjsonm.(dict([("data", string(Slack.help()))]));
 
   let unknown_command = () => Ezjsonm.(dict([("success", bool(false))]));
 
   let reply = (command, payload) => {
     Command.(
-      switch (command) {
-      | Search => tracks(payload)
+      switch (command, payload) {
+      | (Search, Ok(`Tracks(t))) => tracks(t)
+      | (Queue, Ok(`Track(t))) => track(t)
+      | (Help, _) => help()
       | _ => unknown_command()
       }
     );
@@ -173,7 +171,7 @@ module Api = {
 
 type t = [ | `Api | `Slack(Decode.Slack.Event.event)];
 
-let reply = (reply_type, command, payload) =>
+let reply = (reply_type, (command, payload)) =>
   switch (reply_type) {
   | `Api => Lwt.return(Api.reply(command, payload))
   | `Slack(event) => Slack.reply(command, payload, event)

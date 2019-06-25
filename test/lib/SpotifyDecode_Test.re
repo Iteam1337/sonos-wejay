@@ -62,4 +62,10 @@ describe("Spotify Decode", ({test, _}) => {
 
     expect.fn(() => payload |> Tracks.of_json |> List.length).not.toThrow();
   });
+
+  test("Tracks.of_json - when empty", ({expect}) => {
+    let payload = Ezjsonm.(dict([("tracks", [] |> list(make_track_mock))]));
+
+    expect.fn(() => payload |> Tracks.of_json |> List.length).not.toThrow();
+  });
 });

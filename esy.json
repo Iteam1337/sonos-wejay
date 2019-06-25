@@ -6,10 +6,12 @@
   "scripts": {
     "test": "esy dune exec test/lib/RunTests.exe",
     "run": "esy dune exec bin/App.exe",
+    "run:env": "reenv -e .env esy dune exec bin/App.exe",
     "build": "esy b dune build bin/App.exe",
     "watch": "esy dune build --watch -p #{self.name}"
   },
   "dependencies": {
+    "@opam/bos": "*",
     "@opam/cohttp": "2.1.2",
     "@opam/cohttp-lwt": "*",
     "@opam/cohttp-lwt-unix": "2.0.0",
@@ -20,18 +22,20 @@
     "@opam/lwt": "*",
     "@opam/lwt_ppx": "*",
     "@opam/lwt_ssl": "*",
-    "@opam/num": "1.1",
-    "@opam/uri": "*",
     "@opam/opium": "*",
     "@opam/opium_kernel": "*",
+    "@opam/ppx_deriving_yojson": "*",
     "@opam/ppx_let": "*",
     "@opam/reason": "*",
+    "@opam/uri": "*",
     "@opam/yojson": "*",
     "@reason-native/console": "*",
     "@reason-native/rely": "*",
     "ocaml": "~4.7"
   },
   "resolutions": {
+    "@opam/num": "1.1",
+    "@opam/merlin-extend": "0.3",
     "@opam/opium": "anuragsoni/opium:opium.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",
     "@opam/opium_kernel": "anuragsoni/opium:opium_kernel.opam#5effc1a254ec641a2f05447e20d3da7867cc029a",
     "@opam/conf-openssl": {
@@ -45,6 +49,7 @@
     }
   },
   "devDependencies": {
+    "reenv": "^0.3.0",
     "@opam/merlin": "*"
   }
 }

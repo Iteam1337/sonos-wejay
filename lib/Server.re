@@ -24,12 +24,7 @@ let slack_event =
           | EventCallback =>
             switch (event) {
             | Some(e) =>
-              e.command
-              |> Service.handle
-              >>= (
-                ((command, payload)) =>
-                  Message.reply(`Slack(e), command, payload)
-              )
+              e.command |> Service.handle >>= Message.reply(`Slack(e))
             | _ =>
               Ezjsonm.(Lwt.return(dict([("challenge", string("hello"))])))
             }
@@ -46,10 +41,7 @@ let command =
     let json = req.body |> Rock.Body.to_string |> Yojson.Basic.from_string;
 
     let%lwt result =
-      json
-      |> Api.decode
-      |> Service.handle
-      >>= (((command, payload)) => Message.reply(`Api, command, payload));
+      json |> Api.decode |> Service.handle >>= Message.reply(`Api);
 
     `Json(result) |> respond';
   });
@@ -66,7 +58,7 @@ let run = () => {
       >>= (
         r => {
           Logs.set_reporter(r);
-          Logs.set_level(Some(Logs.Info));
+          Logs.set_level(Some(Logs.Debug));
           app;
         }
       );
