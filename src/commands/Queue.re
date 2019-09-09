@@ -81,25 +81,36 @@ let full = () =>
 let last = track => {
   let parsedTrack = Utils.parsedTrack(track);
 
-  device->queueAsLast(parsedTrack)
-  |> then_(queuedTrack =>
-       Services.getCurrentTrack()
-       |> then_(({queuePosition}: currentTrackResponse) => {
-            let {firstTrackNumberEnqueued}: queueResponse =
-              queuedTrack->queueResponse;
+  queueWithFallback()
+  |> then_(({items}) => {
+       let existsInQueue =
+         items
+         ->Belt.Array.map(item => Utils.sonosUriToSpotifyUri(item.uri))
+         ->Belt.Array.some(uri => uri == parsedTrack);
 
-            let message =
-              "Sweet! Your track is number *"
-              ++ trackPosition(
-                   ~first=firstTrackNumberEnqueued,
-                   ~queueAt=queuePosition,
-                   (),
-                 )
-              ++ "* in the queue :musical_note:";
+       existsInQueue
+         ? Js.Promise.resolve(
+             `Ok("Hey, this track already exists in the queue!"),
+           )
+         : device->queueAsLast(parsedTrack)
+           |> then_(queuedTrack =>
+                Services.getCurrentTrack()
+                |> then_(({queuePosition}: currentTrackResponse) => {
+                     let {firstTrackNumberEnqueued}: queueResponse =
+                       queuedTrack->queueResponse;
+                     let message =
+                       "Sweet! Your track is number *"
+                       ++ trackPosition(
+                            ~first=firstTrackNumberEnqueued,
+                            ~queueAt=queuePosition,
+                            (),
+                          )
+                       ++ "* in the queue :musical_note:";
 
-            `Ok(message) |> resolve;
-          })
-     )
+                     `Ok(message) |> resolve;
+                   })
+              );
+     })
   |> catch(_ => `Failed("Failed to queue track") |> resolve);
 };
 
