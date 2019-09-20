@@ -1,3 +1,10 @@
+## [6.3.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.3.0...v6.3.1) (2019-09-20)
+
+
+### Bug Fixes
+
+* remove playlists from most played fixes [#52](https://github.com/Iteam1337/sonos-wejay/issues/52) ([7037e8d](https://github.com/Iteam1337/sonos-wejay/commit/7037e8d))
+
 # [6.3.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.2.0...v6.3.0) (2019-09-20)
 
 
