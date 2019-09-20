@@ -77,10 +77,20 @@ Some of the commands, like `blame` and `toplist` requires that you have a MySQL 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
-| [<img src="https://avatars1.githubusercontent.com/u/1478102?v=4" width="100px;"/><br /><sub><b>Rickard Laurin</b></sub>](https://willcodefor.beer/)<br />[💻](https://github.com/Iteam1337/sonos-wejay/commits?author=believer "Code") [🐛](https://github.com/Iteam1337/sonos-wejay/issues?q=author%3Abeliever "Bug reports") [📖](https://github.com/Iteam1337/sonos-wejay/commits?author=believer "Documentation") [🤔](#ideas-believer "Ideas, Planning, & Feedback") [👀](#review-believer "Reviewed Pull Requests") [⚠️](https://github.com/Iteam1337/sonos-wejay/commits?author=believer "Tests") | [<img src="https://avatars3.githubusercontent.com/u/17602389?v=4" width="100px;"/><br /><sub><b>Tom Ekander</b></sub>](https://github.com/lessp)<br />[💻](https://github.com/Iteam1337/sonos-wejay/commits?author=lessp "Code") [⚠️](https://github.com/Iteam1337/sonos-wejay/commits?author=lessp "Tests") [🤔](#ideas-lessp "Ideas, Planning, & Feedback") | [<img src="https://avatars0.githubusercontent.com/u/8521353?v=4" width="100px;"/><br /><sub><b>Jimmy Jardland</b></sub>](https://github.com/Jimjardland)<br />[🤔](#ideas-Jimjardland "Ideas, Planning, & Feedback") | [<img src="https://avatars0.githubusercontent.com/u/3233182?v=4" width="100px;"/><br /><sub><b>Nils Nilsson</b></sub>](http://nilssonnils.se)<br />[💻](https://github.com/Iteam1337/sonos-wejay/commits?author=dubbelnisse "Code") [🤔](#ideas-dubbelnisse "Ideas, Planning, & Feedback") |
-| :---: | :---: | :---: | :---: |
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://willcodefor.beer/"><img src="https://avatars1.githubusercontent.com/u/1478102?v=4" width="100px;" alt="Rickard Laurin"/><br /><sub><b>Rickard Laurin</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Code">💻</a> <a href="https://github.com/Iteam1337/sonos-wejay/issues?q=author%3Abeliever" title="Bug reports">🐛</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Documentation">📖</a> <a href="#ideas-believer" title="Ideas, Planning, & Feedback">🤔</a> <a href="#review-believer" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/lessp"><img src="https://avatars3.githubusercontent.com/u/17602389?v=4" width="100px;" alt="Tom Ekander"/><br /><sub><b>Tom Ekander</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=lessp" title="Code">💻</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=lessp" title="Tests">⚠️</a> <a href="#ideas-lessp" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/Jimjardland"><img src="https://avatars0.githubusercontent.com/u/8521353?v=4" width="100px;" alt="Jimmy Jardland"/><br /><sub><b>Jimmy Jardland</b></sub></a><br /><a href="#ideas-Jimjardland" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://nilssonnils.se"><img src="https://avatars0.githubusercontent.com/u/3233182?v=4" width="100px;" alt="Nils Nilsson"/><br /><sub><b>Nils Nilsson</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=dubbelnisse" title="Code">💻</a> <a href="#ideas-dubbelnisse" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/faroutchris"><img src="https://avatars0.githubusercontent.com/u/3967818?v=4" width="100px;" alt="faroutchris"/><br /><sub><b>faroutchris</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=faroutchris" title="Code">💻</a></td>
+  </tr>
+</table>
 
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
