@@ -9,6 +9,7 @@ type eventType =
   | EventCallback
   | UnknownEvent;
 
+[@decco]
 type verification = {
   challenge: string,
   token: string,
@@ -43,11 +44,7 @@ type actionPayload = {
   user,
 };
 
-let verification = json =>
-  Json.Decode.{
-    challenge: json |> field("challenge", string),
-    token: json |> field("token", string),
-  };
+let verification = json => verification_decode(json)->Parser.handle;
 
 let parseQuery = text =>
   text

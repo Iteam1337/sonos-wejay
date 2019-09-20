@@ -18,35 +18,16 @@ module WejayTrack = {
   };
 
   [@decco]
-  type tracks = {tracks: array(t)};
+  type tracks = array(t);
 
-  let tracks = json => {
-    switch (tracks_decode(json)) {
-    | Belt.Result.Ok(output) => output
-    | Belt.Result.Error({Decco.path, message}) =>
-      failwith({j|Decode error: $message ($path)|j})
-    };
-  };
-
-  let decode = json => {
-    Json.Decode.{
-      albumName: json |> field("albumName", string),
-      artist: json |> field("artist", string),
-      cover: json |> field("cover", string),
-      duration: json |> field("duration", Json.Decode.float),
-      id: json |> field("id", string),
-      name: json |> field("name", string),
-      releaseDate: json |> field("releaseDate", string),
-      uri: json |> field("uri", string),
-    };
-  };
-  /*let tracks = json => json |> Json.Decode.array(decode);*/
+  let tracks = json => tracks_decode(json)->Parser.handle;
+  let track = json => t_decode(json)->Parser.handle;
 };
 
 let getSpotifyTrack = id => {
   Js.Promise.(
     _getTrack(id)
-    |> then_(response => response |> WejayTrack.decode |> resolve)
+    |> then_(response => response |> WejayTrack.track |> resolve)
   );
 };
 
