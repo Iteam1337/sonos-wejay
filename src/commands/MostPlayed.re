@@ -1,5 +1,5 @@
 let message =
-    (tracks: array(Spotify.WejayTrack.t), hits: array(Elastic.Aggregate.t)) =>
+    (tracks: array(Spotify.WejayTrack.t), hits: Elastic.Aggregate.t) =>
   "*Most played*\n"
   ++ tracks
      ->Belt.Array.mapWithIndex((i, {artist, name}) => {
@@ -27,6 +27,10 @@ let run = () => {
              |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)
            }
          );
+       })
+    |> catch(err => {
+         Js.log(err);
+         resolve(`Failed("Error in :: Most played"));
        })
   );
 };

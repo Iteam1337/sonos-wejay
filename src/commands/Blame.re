@@ -1,4 +1,4 @@
-let message = (hits: array(Elastic.Search.t)) =>
+let message = (hits: Elastic.Search.t) =>
   switch (Belt.Array.length(hits)) {
   | 0 => "Sorry, I don't know who added this track"
   | 1 => Slack.userId(hits[0].sender) ++ " added this awesome track!"

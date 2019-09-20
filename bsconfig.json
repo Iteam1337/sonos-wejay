@@ -20,9 +20,11 @@
     "bs-axios",
     "bs-express",
     "@glennsl/bs-json",
-    "@ahrefs/bs-dotenv"
+    "@ahrefs/bs-dotenv",
+    "@ryb73/decco"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
+  "ppx-flags": ["@ryb73/decco/ppx/ppx_decco.sh"],
   "warnings": {
     "error": "+101"
   },

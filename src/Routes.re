@@ -83,9 +83,8 @@ let action =
     Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let response = body |> Decode.parseAction;
         let {actions, user}: Decode.actionPayload =
-          response##payload |> Decode.actionPayload;
+          body |> Decode.parseAction;
         let track = actions[0].value;
 
         Queue.last(track)

@@ -48,6 +48,7 @@
     "nodemon": "1.19.2"
   },
   "dependencies": {
+    "@ryb73/decco": "^0.1.0",
     "@wejay/spotify": "0.1.5",
     "body-parser": "1.19.0",
     "bs-sonos": "0.1.1",

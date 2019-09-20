@@ -5,6 +5,7 @@ external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
 external _search: string => Js.Promise.t(Js.Json.t) = "search";
 
 module WejayTrack = {
+  [@decco]
   type t = {
     albumName: string,
     artist: string,
@@ -16,28 +17,17 @@ module WejayTrack = {
     uri: string,
   };
 
-  type tracks = {tracks: array(t)};
+  [@decco]
+  type tracks = array(t);
 
-  let decode = json => {
-    Json.Decode.{
-      albumName: json |> field("albumName", string),
-      artist: json |> field("artist", string),
-      cover: json |> field("cover", string),
-      duration: json |> field("duration", Json.Decode.float),
-      id: json |> field("id", string),
-      name: json |> field("name", string),
-      releaseDate: json |> field("releaseDate", string),
-      uri: json |> field("uri", string),
-    };
-  };
-
-  let tracks = json => json |> Json.Decode.array(decode);
+  let tracks = json => tracks_decode(json)->Parser.handle;
+  let track = json => t_decode(json)->Parser.handle;
 };
 
 let getSpotifyTrack = id => {
   Js.Promise.(
     _getTrack(id)
-    |> then_(response => response |> WejayTrack.decode |> resolve)
+    |> then_(response => response |> WejayTrack.track |> resolve)
   );
 };
 
