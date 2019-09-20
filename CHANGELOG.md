@@ -1,3 +1,10 @@
+# [6.3.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.2.0...v6.3.0) (2019-09-20)
+
+
+### Features
+
+* start using decco for json ([#56](https://github.com/Iteam1337/sonos-wejay/issues/56)) ([4e364b5](https://github.com/Iteam1337/sonos-wejay/commit/4e364b5))
+
 # [6.2.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.1.0...v6.2.0) (2019-09-20)
 
 
