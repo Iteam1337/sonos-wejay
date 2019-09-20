@@ -10,8 +10,6 @@
 
 * check if track exists before queuing up a new track ([#54](https://github.com/Iteam1337/sonos-wejay/issues/54)) ([ccc2719](https://github.com/Iteam1337/sonos-wejay/commit/ccc2719))
 
-# Changelog
-
 ## [6.1.0] - 2019-05-23
 
 ### Changed
