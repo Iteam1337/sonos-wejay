@@ -16,4 +16,11 @@ describe("SpotifyUtils", () => {
       expect(toUri("1337")) |> toEqual("spotify:track:1337")
     )
   );
+
+  describe("#trackId", () =>
+    test("should return an id for track", () =>
+      expect(trackId("spotify:track:3Bj2mrlp3tALHO5U3mK8zM"))
+      |> toEqual("3Bj2mrlp3tALHO5U3mK8zM")
+    )
+  );
 });

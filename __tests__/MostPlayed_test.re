@@ -32,3 +32,23 @@ test("creates a formatted message", () => {
 
   expect(MostPlayed.message(tracks, hits)) |> toMatchSnapshot;
 });
+
+describe("#filterPlaylists", () => {
+  test("should remove spotify playlists", () => {
+    let test: Elastic.Aggregate.aggregate = {
+      key: "spotify:user:spotify:playlist:37i9dQZF1DX9uKNf5jGX6m",
+      count: 3,
+    };
+
+    expect(MostPlayed.filterPlaylists(test)) |> toBe(false);
+  });
+
+  test("should allow normal tracks", () => {
+    let test: Elastic.Aggregate.aggregate = {
+      key: "spotify:track:3Bj2mrlp3tALHO5U3mK8zM",
+      count: 3,
+    };
+
+    expect(MostPlayed.filterPlaylists(test)) |> toBe(true);
+  });
+});

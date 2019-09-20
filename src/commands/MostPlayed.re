@@ -10,6 +10,9 @@ let message =
        })
      ->Utils.joinWithNewline;
 
+let filterPlaylists = (doc: Elastic.Aggregate.aggregate) =>
+  !Js.String.includes("playlist", doc.key);
+
 let run = () => {
   Js.Promise.(
     API.createRequest(~url=Config.mostPlayedUrl, ())
@@ -21,6 +24,7 @@ let run = () => {
            | 0 => resolve(`Ok(Messages.noPlays))
            | _ =>
              hits
+             ->keep(filterPlaylists)
              ->map(({key}) => key->SpotifyUtils.trackId)
              ->map(Spotify.getSpotifyTrack)
              |> all
