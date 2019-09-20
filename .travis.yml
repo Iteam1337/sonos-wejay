@@ -20,7 +20,7 @@
       name: "Deploy to Wejay"
       language: node_js
       node_js:
-        - 12
+        - 10
       script:
         - docker login -u $DOCKER_USER -p $DOCKER_PASS
         - export REPO=iteam1337/sonos-wejay
@@ -28,9 +28,6 @@
           ; fi`
         - docker build -f Dockerfile -t $REPO:$TAG .
         - docker push $REPO
-      env:
-        - secure: QfmWxZY4VgRqPbprH04QrgqmVWc5rZQ6KeIqRUa8cPZUzTgxwWhnOcLxk1RX4iSPOBEm4R+YRQ3SaSvz4pNfkvuoXIEirR8i8n2MSc3bu/Jv3V4NSfLpgufiD0T+s5QtwP5VJuByz5EzABqAhGZ1qPLVWsd/pfR4rVhqZq5PsgHMQQtQqZo9XCuQVXa27hkx53Af7cdVSyVJ0zex7MqFx+vtVyNWknfcQN6Mz2ZK2tAthcBVaxmXkml//ASzkaX3OaYP4JhtdW6HdLcMSnO7QYFMJOC3/QH0v1I7gH8t7OI0l36/4YqgZlhQ+6Je6Qrx57wRixLhRJ5LdnQy5ImN3YMTn1duvlGYHOtcsKOfh3e6UGXsSFgvQy8fRTWgbB/gOxXYK5N4VfdFiNz7+Uxdu+hgw1e8LCNbH73IJMdpLviK9T9uL/fbWWoNR/GSl7ZaZTOx901BJ7I4YmVWjENnLF28ww+hBfWP7ysPgaiRw7HX2MHqV5/J4/gi+a1R7hs64/ZTAveKIlxbMss99ygCgMPnO7R5fb4jYVFGwfTEJrKHDdr9qCeFqiPEGEpiU/WicewKJDV+dHdU1OtE3PFizXy5BfFC1NL3krIvg7eQhH0U7mnn+2uckHBmp2PyRRRQbPEbRDD4Xw0tB3p2P1nEwoK7Ty+2LrRCkBlYdGZkuUI=
-        - secure: ITSS+JZBfcPcXldixCJlJoplGJZ7Oq0y8Il9v/VBwS+I5u+Sgu9wz4+1LHPyXieGNcYZnXiqOPfueEL5zacuiVyzfdDeugFSHzE/B9+iSS4kuTjneMTjBAKEyoa8xkdsLcJKNxBogCoFc9r+FJAWMK5uT3ie5A5aRI5a6XhKru8MZgHFwvvSmWABB71jD8SKX64h8jxsGVglwgD9nlFGiYPNKOXY7dj9Cv8XuybU5MT/OjmdmlQphFimyE35H0lGnw+Awk/J8qjPzmvlgMrTFhorI50PKFnpin2+LX7biZgmeFr7NmhHOWBw23JMont+NVK/uqJcTpoRkim5ox14yF1gk/rXpePs+ghiAbyjkjk+YHfFD3gWugCHWZDrbx43GGPJd5y6EN8BtncB2hFw3Kzs8JNbcAESzhXeHwUpTYwouDF3HrRo3MNt/5kiLVF3DGotjOnkyKsiBGKJOgIugGIwGGSv4ViMh9KtwFNaaKCwrn27VOZw85tk1R6nrD40TCCre2dL5CyEOeSgsRwKAMNma8v3sUkEJNmuWn9g72BMl5gMqQWGWf+81MbKCVdHRCBNTrsu6wApoTc9sMmy2uMzpv7xxIDEQqAe1qMK9YjMA/FC6M5c7CLhvzFys7SkyQwxwxRhYzomQZtxtHX0GHDjPpJ0ZIQi0UxRE1fNwy4=
 stages:
   - test
   - release
