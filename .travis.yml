@@ -10,6 +10,7 @@
       script:
         - npm test
     - stage: release
+      if: branch = master
       name: "Create release notes with semantic-release"
       language: node_js
       node_js:
@@ -18,6 +19,7 @@
         - npx semantic-release
     - stage: deploy
       name: "Deploy to Wejay"
+      if: branch = master
       language: node_js
       node_js:
         - 10
