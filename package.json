@@ -6,7 +6,7 @@
     "dev": "nodemon lib/js/src/Server.bs.js",
     "server": "node lib/js/src/Server.bs.js",
     "build": "bsb -make-world",
-    "start": "bsb -make-world -w",
+    "start": "cross-env BS_WATCH_CLEAR=true bsb -make-world -w",
     "clean": "bsb -clean-world",
     "prepare": "npm run build",
     "test": "is-ci \"test:ci\" \"test:watch\"",
@@ -31,25 +31,26 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@ahrefs/bs-dotenv": "1.0.3",
-    "@glennsl/bs-jest": "0.4.8",
-    "@glennsl/bs-json": "3.0.0",
-    "all-contributors-cli": "6.4.0",
+    "@ahrefs/bs-dotenv": "2.0.0",
+    "@glennsl/bs-jest": "0.4.9",
+    "@glennsl/bs-json": "5.0.1",
+    "all-contributors-cli": "6.9.1",
     "bs-axios": "0.0.42",
-    "bs-express": "0.12.0",
-    "bs-platform": "5.0.3",
+    "bs-express": "0.12.1",
+    "bs-platform": "5.1.0",
+    "cross-env": "6.0.0",
     "is-ci-cli": "1.1.1",
     "jest-date-mock": "1.0.7",
-    "nodemon": "1.19.0"
+    "nodemon": "1.19.2"
   },
   "dependencies": {
     "@wejay/spotify": "0.1.5",
     "body-parser": "1.19.0",
     "bs-sonos": "0.1.1",
     "date-fns": "1.30.1",
-    "dotenv": "8.0.0",
-    "express": "4.16.4",
-    "sonos": "1.11.0"
+    "dotenv": "8.1.0",
+    "express": "4.17.1",
+    "sonos": "1.12.3"
   },
   "jest": {
     "setupFiles": [
