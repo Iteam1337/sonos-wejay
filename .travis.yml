@@ -20,7 +20,7 @@
       name: "Deploy to Wejay"
       language: node_js
       node_js:
-        - 12
+        - 10
       script:
         - docker login -u $DOCKER_USER -p $DOCKER_PASS
         - export REPO=iteam1337/sonos-wejay
