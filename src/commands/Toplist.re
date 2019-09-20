@@ -1,4 +1,4 @@
-let message = (hits: array(Elastic.Aggregate.t)) =>
+let message = (hits: Elastic.Aggregate.t) =>
   switch (Belt.Array.length(hits)) {
   | 0 => `Ok(Messages.noPlays)
   | _ =>

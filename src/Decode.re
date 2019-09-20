@@ -28,21 +28,30 @@ type eventPayload = {
   eventType,
 };
 
+[@decco]
 type action = {value: string};
+
+[@decco]
 type actions = array(action);
 
+[@decco]
 type channel = {id: string};
 
+[@decco]
 type user = {
   id: string,
   name: string,
 };
 
+[@decco]
 type actionPayload = {
   actions,
   channel,
   user,
 };
+
+[@decco]
+type actionResponse = {payload: string};
 
 let verification = json => verification_decode(json)->Parser.handle;
 
@@ -91,24 +100,11 @@ let eventPayload = json =>
     event: json |> optional(field("event", event)),
   };
 
-let action = json => Json.Decode.{value: json |> field("value", string)};
-
-let channel = json => Json.Decode.{id: json |> field("id", string)};
-
-let user = json =>
-  Json.Decode.{
-    id: json |> field("id", string),
-    name: json |> field("name", string),
+let parseAction = json => {
+  switch (actionResponse_decode(json)) {
+  | Belt.Result.Ok(output) =>
+    output.payload->Js.Json.parseExn->actionPayload_decode->Parser.handle
+  | Belt.Result.Error({Decco.path, message}) =>
+    failwith({j|Decode error: $message ($path)|j})
   };
-
-let actionPayload = json =>
-  Json.Decode.{
-    actions: json |> field("actions", array(action)),
-    channel: json |> field("channel", channel),
-    user: json |> field("user", user),
-  };
-
-let parseAction = json =>
-  Json.Decode.{
-    "payload": json |> field("payload", string) |> Js.Json.parseExn,
-  };
+};

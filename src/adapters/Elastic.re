@@ -4,33 +4,30 @@ external elasticLog:
   "";
 
 module Aggregate = {
-  type t = {
+  [@decco]
+  type aggregate = {
     key: string,
+    [@decco.key "doc_count"]
     count: int,
   };
 
-  let aggregation = json =>
-    Json.Decode.{
-      key: json |> field("key", string),
-      count: json |> field("doc_count", int),
-    };
+  [@decco]
+  type t = array(aggregate);
 
-  let make = json => json |> Json.Decode.array(aggregation);
+  let make = json => t_decode(json)->Parser.handle;
 };
 
 module Search = {
-  type t = {
+  [@decco]
+  type search = {
     sender: string,
     timestamp: string,
   };
 
-  let hit = json =>
-    Json.Decode.{
-      sender: json |> field("sender", string),
-      timestamp: json |> field("timestamp", string),
-    };
+  [@decco]
+  type t = array(search);
 
-  let make = json => json |> Json.Decode.array(hit);
+  let make = json => t_decode(json)->Parser.handle;
 };
 
 let sendLog = data => {

@@ -25,7 +25,7 @@ test("creates a formatted message", () => {
     },
   |];
 
-  let hits: array(Elastic.Aggregate.t) = [|
+  let hits: Elastic.Aggregate.t = [|
     {key: "", count: 2},
     {key: "", count: 1},
   |];
