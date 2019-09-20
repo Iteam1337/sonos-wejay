@@ -5,6 +5,7 @@ external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
 external _search: string => Js.Promise.t(Js.Json.t) = "search";
 
 module WejayTrack = {
+  [@decco]
   type t = {
     albumName: string,
     artist: string,
@@ -16,7 +17,16 @@ module WejayTrack = {
     uri: string,
   };
 
+  [@decco]
   type tracks = {tracks: array(t)};
+
+  let tracks = json => {
+    switch (tracks_decode(json)) {
+    | Belt.Result.Ok(output) => output
+    | Belt.Result.Error({Decco.path, message}) =>
+      failwith({j|Decode error: $message ($path)|j})
+    };
+  };
 
   let decode = json => {
     Json.Decode.{
@@ -30,8 +40,7 @@ module WejayTrack = {
       uri: json |> field("uri", string),
     };
   };
-
-  let tracks = json => json |> Json.Decode.array(decode);
+  /*let tracks = json => json |> Json.Decode.array(decode);*/
 };
 
 let getSpotifyTrack = id => {
