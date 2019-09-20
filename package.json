@@ -41,7 +41,7 @@
     "all-contributors-cli": "6.9.1",
     "bs-axios": "0.0.42",
     "bs-express": "0.12.1",
-    "bs-platform": "5.1.0",
+    "bs-platform": "5.0.6",
     "cross-env": "6.0.0",
     "is-ci-cli": "1.1.1",
     "jest-date-mock": "1.0.7",

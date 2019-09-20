@@ -1,9 +1,8 @@
-let formatDate = dateString => DateFns.formatString(dateString, "YYYY-MM-DD");
+let formatDate = dateString =>
+  dateString->Js.Date.fromString->DateFns.format("yyyy-MM-dd");
 
-let formatTimestamp = timestamp => {
-  let date = Js.Date.fromFloat(timestamp);
-  DateFns.formatDate(date, "YYYY-MM-DD");
-};
+let formatTimestamp = timestamp =>
+  timestamp->Js.Date.fromFloat->DateFns.format("yyyy-MM-dd");
 
 let splitBy = (str, split) => str |> Js.String.split(split);
 let joinWithNewline = arr => arr |> Js.Array.joinWith("\n");
