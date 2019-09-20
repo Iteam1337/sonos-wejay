@@ -1,15 +1,7 @@
 # Build app
-FROM node:11-alpine as builder
-
-## Build tools and Git
-RUN apk update && apk add python make g++
-RUN apk update && apk upgrade && \
-  apk add --no-cache bash git openssh coreutils
+FROM node:11 as builder
 
 WORKDIR /build
-
-## Global installation of Reason
-RUN npm install -g --unsafe-perm reason-cli@3.2.0-linux serve
 
 COPY package*json ./
 COPY bsconfig.json ./bsconfig.json
