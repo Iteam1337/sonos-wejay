@@ -1,3 +1,15 @@
+# [6.2.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.1.0...v6.2.0) (2019-09-20)
+
+
+### Bug Fixes
+
+* update date-fns bindings ([e4b1e85](https://github.com/Iteam1337/sonos-wejay/commit/e4b1e85))
+
+
+### Features
+
+* check if track exists before queuing up a new track ([#54](https://github.com/Iteam1337/sonos-wejay/issues/54)) ([ccc2719](https://github.com/Iteam1337/sonos-wejay/commit/ccc2719))
+
 # Changelog
 
 ## [6.1.0] - 2019-05-23
