@@ -50,3 +50,5 @@ let unknownCommand = command =>
 let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/giphy.gif";
 
 let cantSkipEasterEgg = "Can't skip this track :hatching_chick:";
+
+let trackExistsInQueue = "Hey, this track already exists in the queue!";

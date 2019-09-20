@@ -2,8 +2,8 @@ open Jest;
 open Utils;
 open Expect;
 
-[@bs.module "jest-date-mock"] external clear: unit => unit = "";
-[@bs.module "jest-date-mock"] external advanceTo: float => unit = "";
+[@bs.module "jest-date-mock"] external clear: unit => unit = "clear";
+[@bs.module "jest-date-mock"] external advanceTo: float => unit = "advanceTo";
 
 afterEach(clear);
 
