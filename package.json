@@ -51,7 +51,7 @@
     "@wejay/spotify": "0.1.5",
     "body-parser": "1.19.0",
     "bs-sonos": "0.1.1",
-    "date-fns": "1.30.1",
+    "date-fns": "2.2.1",
     "dotenv": "8.1.0",
     "express": "4.17.1",
     "sonos": "1.12.3"
