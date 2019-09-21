@@ -6,12 +6,13 @@ let logCommand = (command, args, user) => {
   };
 };
 
-let makeWithAttachment =
+let makeWithBlocks =
     (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
   logCommand(command, args, user);
 
   Js.Promise.(
     switch (subtype, command) {
+    | (Human, NowPlaying) => NowPlaying.run()
     | (Human, Search) => Spotify.search(args)
     | (Human, _) =>
       resolve(`Failed("This is not the command you are looking for"))
@@ -28,7 +29,6 @@ let make = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
     | Human =>
       switch (command) {
       | Blame => Blame.run()
-      | NowPlaying => NowPlaying.run()
 
       /* Queue control */
       | Clear => Queue.clear()

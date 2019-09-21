@@ -1,9 +1,81 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`#nowPlayingData current track 1`] = `
-"*Currently playing*
-30 Seconds to Mars - Echelon (30 Seconds to Mars)
-Position in queue 1 - 2:00/6:00"
+Array [
+  Object {
+    "accessory": Object {
+      "action_id": undefined,
+      "alt_text": "Album cover",
+      "image_url": "img",
+      "text": undefined,
+      "type": "image",
+      "value": undefined,
+    },
+    "elements": undefined,
+    "fields": Array [
+      Object {
+        "text": "*Artist*
+30 Seconds to Mars",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Track name*
+Echelon",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Album*
+30 Seconds to Mars",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Current position*
+2:00 / 6:00",
+        "type": "mrkdwn",
+      },
+    ],
+    "text": undefined,
+    "type": "section",
+  },
+]
 `;
 
-exports[`#nowPlayingData nothing is playing 1`] = `"Nothing is currently playing, add a track using \`search <your track>\`"`;
+exports[`#nowPlayingData nothing is playing 1`] = `
+Array [
+  Object {
+    "accessory": Object {
+      "action_id": undefined,
+      "alt_text": "Album cover",
+      "image_url": "img",
+      "text": undefined,
+      "type": "image",
+      "value": undefined,
+    },
+    "elements": undefined,
+    "fields": Array [
+      Object {
+        "text": "*Artist*
+30 Seconds to Mars",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Track name*
+Echelon",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Album*
+30 Seconds to Mars",
+        "type": "mrkdwn",
+      },
+      Object {
+        "text": "*Current position*
+20:00 / 1:00:00",
+        "type": "mrkdwn",
+      },
+    ],
+    "text": undefined,
+    "type": "section",
+  },
+]
+`;

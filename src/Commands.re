@@ -83,7 +83,7 @@ let make = text => {
       | text => UnknownCommand(text)
       }
     }
-  | None => UnknownCommand("no text")
+  | None => UnhandledCommand
   };
 };
 

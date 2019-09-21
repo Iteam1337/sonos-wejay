@@ -33,22 +33,32 @@ let getSpotifyTrack = id => {
 
 let createSearchAttachment =
     ({albumName, artist, cover, duration, name, uri}: WejayTrack.t) => {
-  Slack.Attachment.(
-    make(
-      ~thumb_url=cover,
-      ~fields=[|
-        field(~title="Artist", ~value=artist, ~short=true),
-        field(~title="Title", ~value=name, ~short=true),
-        field(~title="Album", ~value=albumName, ~short=true),
-        field(
-          ~title="Duration",
-          ~value=Utils.parseDuration(duration /. 1000.),
-          ~short=true,
-        ),
-      |],
-      ~actions=[|action(~value=uri, ())|],
-      (),
-    )
+  let trackDuration = Utils.parseDuration(duration /. 1000.0);
+
+  Slack.Block.(
+    [|
+      Divider.make(),
+      Fields.make(
+        ~accessory=Image.make(~image_url=cover, ~alt_text="Album cover", ()),
+        ~fields=[|
+          Text.make(~text={j|*Artist*\n$artist|j}, ()),
+          Text.make(~text={j|*Track name*\n$name|j}, ()),
+          Text.make(~text={j|*Album*\n$albumName|j}, ()),
+          Text.make(~text={j|*Current position*\n$trackDuration|j}, ()),
+        |],
+        (),
+      ),
+      Actions.make(
+        ~elements=[|
+          Button.make(
+            ~text="Queue track",
+            ~value=uri,
+            ~action_id="queue_new_track",
+            (),
+          ),
+        |],
+      ),
+    |]
   );
 };
 
@@ -67,9 +77,22 @@ let search = query => {
          let attachments =
            tracks
            ->Belt.Array.slice(~offset=0, ~len=5)
-           ->Belt.Array.map(createSearchAttachment);
+           ->Belt.Array.reduce([||], (acc, curr) =>
+               acc->Belt.Array.concat(createSearchAttachment(curr))
+             );
 
-         resolve(`Ok((message, attachments)));
+         resolve(
+           `Ok((
+             message,
+             [|
+               Slack.Block.Section.make(
+                 ~text={j|Here are the results for *$query*|j},
+                 (),
+               ),
+             |]
+             ->Belt.Array.concat(attachments),
+           )),
+         );
        })
   );
 };

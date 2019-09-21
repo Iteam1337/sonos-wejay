@@ -27,18 +27,18 @@ let message = request => {
   );
 };
 
-let messageWithAttachment = request => {
+let messageWithBlocks = request => {
   let {subtype, channel, command, text: args, user}: Decode.Event.t = request;
-  let sendSearchResponse = Slack.Message.withAttachments(channel);
+  let sendSearchResponse = Slack.Message.withBlocks(channel);
 
   Js.Promise.(
-    Event.makeWithAttachment(~command, ~args, ~user, ~subtype, ())
+    Event.makeWithBlocks(~command, ~args, ~user, ~subtype, ())
     |> then_(response => {
          switch (response) {
-         | `Ok(message, attachments) =>
-           sendSearchResponse(message, attachments)
+         | `Ok(message, blocks) => sendSearchResponse(message, blocks)
          | `Failed(_) => ()
          };
+
          resolve();
        })
     |> ignore
@@ -49,7 +49,8 @@ let eventCallback = (event: option(Decode.Event.t), res) => {
   switch (event) {
   | Some(e) =>
     switch (e.command) {
-    | Search => messageWithAttachment(e)
+    | Search
+    | NowPlaying => messageWithBlocks(e)
     | _ => message(e)
     };
 
@@ -78,12 +79,15 @@ let event =
     )
   );
 
-let action =
-  PromiseMiddleware.from((_next, req, res) =>
-    Js.Promise.(
+module Action = {
+  open Js.Promise;
+
+  let make =
+    PromiseMiddleware.from((_next, req, res) =>
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {actions, user}: Decode.Action.t = body |> Decode.Action.make;
+        let {actions, response_url, user}: Decode.Action.t =
+          body |> Decode.Action.make;
         let track = actions[0].value;
 
         Queue.last(track)
@@ -95,14 +99,22 @@ let action =
              );
 
              switch (message) {
-             | `Ok(m) => res |> Response.sendString(m) |> resolve
+             | `Ok(m) =>
+               API.createRequest(
+                 ~url=response_url,
+                 ~_method="POST",
+                 ~data=Some({"text": m}),
+                 (),
+               )
+               |> then_(_ => res |> Response.sendString(m) |> resolve)
+
              | `Failed(_) => res |> failed |> resolve
              };
            });
       | None => res |> failed |> resolve
       }
-    )
-  );
+    );
+};
 
 let slackAuth =
   Middleware.from((_next, _req, res) =>

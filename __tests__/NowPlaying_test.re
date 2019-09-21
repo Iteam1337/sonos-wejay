@@ -3,7 +3,7 @@ open Expect;
 
 describe("#nowPlayingData", () => {
   test("nothing is playing", () => {
-    let track: Sonos.Decode.currentTrackResponse = {
+    let sonos: Sonos.Decode.currentTrackResponse = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
       albumArtURL: "",
@@ -15,11 +15,11 @@ describe("#nowPlayingData", () => {
       position: 1200.0,
     };
 
-    expect(NowPlaying.message(track)) |> toMatchSnapshot;
+    expect(NowPlaying.message(~sonos, ~cover="img")) |> toMatchSnapshot;
   });
 
   test("current track", () => {
-    let track: Sonos.Decode.currentTrackResponse = {
+    let sonos: Sonos.Decode.currentTrackResponse = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
       albumArtURL: "",
@@ -31,6 +31,6 @@ describe("#nowPlayingData", () => {
       position: 120.0,
     };
 
-    expect(NowPlaying.message(track)) |> toMatchSnapshot;
+    expect(NowPlaying.message(~sonos, ~cover="img")) |> toMatchSnapshot;
   });
 });

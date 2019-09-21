@@ -132,6 +132,7 @@ module Action = {
   [@decco]
   type t = {
     actions,
+    response_url: string,
     channel,
     user,
   };

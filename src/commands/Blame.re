@@ -14,20 +14,27 @@ let message = (hits: Elastic.Search.t) =>
        ->Utils.joinWithNewline
   };
 
+module Request = {
+  let make = uri => {
+    Js.Promise.(
+      API.createRequest(
+        ~url=Config.blameUrl,
+        ~_method="POST",
+        ~data=Some({"uri": uri}),
+        (),
+      )
+      |> then_(response => response##data->Elastic.Search.make->resolve)
+    );
+  };
+};
+
 let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
     |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
          let uri = Utils.sonosUriToSpotifyUri(uri);
 
-         API.createRequest(
-           ~url=Config.blameUrl,
-           ~_method="POST",
-           ~data=Some({"uri": uri}),
-           (),
-         )
-         |> then_(response =>
-              `Ok(response##data->Elastic.Search.make->message)->resolve
-            );
+         Request.make(uri)
+         |> then_(response => `Ok(message(response))->resolve);
        })
   );

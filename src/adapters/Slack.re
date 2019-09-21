@@ -1,31 +1,105 @@
-module Attachment = {
-  [@bs.obj]
-  external field: (~title: string, ~value: string, ~short: bool) => _ = "";
+module Block = {
+  [@bs.deriving {jsConverter: newType}]
+  type text = {
+    _type: string,
+    text: string,
+  };
 
-  [@bs.obj]
-  external action:
-    (
-      ~name: [@bs.as "track"] _,
-      ~text: [@bs.as "Queue"] _,
-      ~_type: [@bs.as "button"] _,
-      ~value: string,
-      unit
-    ) =>
-    _ =
-    "";
+  [@bs.deriving {jsConverter: newType}]
+  type accessory = {
+    _type: string,
+    action_id: option(string),
+    alt_text: option(string),
+    image_url: option(string),
+    text: option(abs_text),
+    value: option(string),
+  };
 
-  [@bs.obj]
-  external make:
-    (
-      ~color: [@bs.as "#efb560"] _,
-      ~callback_id: [@bs.as "queue"] _,
-      ~thumb_url: string,
-      ~fields: array(Js.t('a)),
-      ~actions: array(Js.t('b)),
-      unit
-    ) =>
-    _ =
-    "";
+  [@bs.deriving jsConverter]
+  type section = {
+    _type: string,
+    elements: option(array(option(abs_accessory))),
+    fields: option(array(abs_text)),
+    accessory: option(abs_accessory),
+    text: option(abs_text),
+  };
+
+  let base =
+      (
+        ~_type="section",
+        ~fields=None,
+        ~text=None,
+        ~accessory=None,
+        ~elements=None,
+        (),
+      ) => {
+    sectionToJs({_type, fields, text, accessory, elements});
+  };
+
+  let baseAccessory =
+      (
+        ~_type,
+        ~image_url=None,
+        ~alt_text=None,
+        ~text=None,
+        ~value=None,
+        ~action_id=None,
+        (),
+      ) => {
+    accessoryToJs({_type, image_url, alt_text, text, value, action_id});
+  };
+
+  module Text = {
+    let make = (~text, ~_type="mrkdwn", ()) => {
+      textToJs({_type, text});
+    };
+  };
+
+  module Image = {
+    let make = (~image_url, ~alt_text, ~_type="image", ()) => {
+      Some(
+        baseAccessory(
+          ~_type,
+          ~image_url=Some(image_url),
+          ~alt_text=Some(alt_text),
+          (),
+        ),
+      );
+    };
+  };
+
+  module Button = {
+    let make = (~text, ~value, ~action_id, ~_type="button", ()) => {
+      Some(
+        baseAccessory(
+          ~_type,
+          ~value=Some(value),
+          ~action_id=Some(action_id),
+          ~text=Some(Text.make(~text, ~_type="plain_text", ())),
+          (),
+        ),
+      );
+    };
+  };
+
+  module Divider = {
+    let make = () => base(~_type="divider", ());
+  };
+
+  module Fields = {
+    let make = (~fields, ~accessory=None, ()) =>
+      base(~fields=Some(fields), ~accessory, ());
+  };
+
+  module Actions = {
+    let make = (~elements) =>
+      base(~_type="actions", ~elements=Some(elements), ());
+  };
+
+  module Section = {
+    let make = (~text, ~_type="mrkdwn", ~accessory=None, ()) =>
+      base(~accessory, ~text=Some(Text.make(~_type, ~text, ())), ());
+  };
 };
 
 let userId = id => "<@" ++ id ++ ">";
@@ -79,14 +153,15 @@ module Message = {
       ~username: [@bs.as "Wejay"] _,
       ~text: string,
       ~attachments: array(Js.t('a))=?,
+      ~blocks: array(Js.t('a))=?,
       ~mrkdwn: bool,
       unit
     ) =>
     _ =
     "";
 
-  let withAttachments = (channel, message, attachments) =>
-    slackMessage(~channel, ~text=message, ~attachments, ~mrkdwn=true, ())
+  let withBlocks = (channel, message, blocks) =>
+    slackMessage(~channel, ~text=message, ~blocks, ~mrkdwn=true, ())
     |> sendPayload;
 
   let regular = (channel: string, message: string) =>
