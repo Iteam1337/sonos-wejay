@@ -1,3 +1,11 @@
+# [6.4.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.3.1...v6.4.0) (2019-09-21)
+
+
+### Features
+
+* add better messages when using spotify copy ([44d6790](https://github.com/Iteam1337/sonos-wejay/commit/44d6790))
+* use Slack blocks instead of attachments ([cc96b1f](https://github.com/Iteam1337/sonos-wejay/commit/cc96b1f))
+
 ## [6.3.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.3.0...v6.3.1) (2019-09-20)
 
 
