@@ -1,5 +1,8 @@
+open Belt.Result;
+
+let fail = (msg, path) => failwith({j|Decode error: $msg ($path)|j});
+
 let handle =
   fun
-  | Belt.Result.Ok(output) => output
-  | Belt.Result.Error({Decco.path, message}) =>
-    failwith({j|Decode error: $message ($path)|j});
+  | Ok(output) => output
+  | Error({Decco.path, message}) => fail(message, path);

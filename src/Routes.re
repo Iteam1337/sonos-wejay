@@ -1,7 +1,7 @@
 open Express;
 
 let handleVerification = body => {
-  let {challenge}: Decode.verification = body |> Decode.verification;
+  let {challenge}: Decode.Verification.t = body |> Decode.Verification.make;
   Response.sendString(challenge);
 };
 
@@ -11,11 +11,11 @@ let index =
   );
 
 let message = request => {
-  let {subtype, channel, command, text: args, user}: Decode.event = request;
+  let {subtype, channel, command, text: args, user}: Decode.Event.t = request;
   let sendMessage = Slack.Message.regular(channel);
 
   Js.Promise.(
-    Event.response(~command, ~args, ~user, ~subtype, ())
+    Event.make(~command, ~args, ~user, ~subtype, ())
     |> then_(response => {
          switch (response) {
          | `Ok(r) => sendMessage(r)
@@ -28,11 +28,11 @@ let message = request => {
 };
 
 let messageWithAttachment = request => {
-  let {subtype, channel, command, text: args, user}: Decode.event = request;
+  let {subtype, channel, command, text: args, user}: Decode.Event.t = request;
   let sendSearchResponse = Slack.Message.withAttachments(channel);
 
   Js.Promise.(
-    Event.responseWithAttachment(~command, ~args, ~user, ~subtype, ())
+    Event.makeWithAttachment(~command, ~args, ~user, ~subtype, ())
     |> then_(response => {
          switch (response) {
          | `Ok(message, attachments) =>
@@ -45,7 +45,7 @@ let messageWithAttachment = request => {
   );
 };
 
-let eventCallback = (event: option(Decode.event), res) => {
+let eventCallback = (event: option(Decode.Event.t), res) => {
   switch (event) {
   | Some(e) =>
     switch (e.command) {
@@ -65,8 +65,8 @@ let event =
     Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {eventType, event}: Decode.eventPayload =
-          Decode.eventPayload(body);
+        let {eventType, event}: Decode.EventResponse.t =
+          Decode.EventResponse.make(body);
 
         switch (eventType) {
         | UrlVerification => res |> handleVerification(body) |> resolve
@@ -83,8 +83,7 @@ let action =
     Js.Promise.(
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {actions, user}: Decode.actionPayload =
-          body |> Decode.parseAction;
+        let {actions, user}: Decode.Action.t = body |> Decode.Action.make;
         let track = actions[0].value;
 
         Queue.last(track)

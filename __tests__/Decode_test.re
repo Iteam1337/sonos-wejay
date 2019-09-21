@@ -1,22 +1,22 @@
 open Jest;
-open Decode;
 
 describe("Decode", () => {
   open Expect;
 
-  describe("parseQuery", () => {
+  describe("Event.parseText", () => {
     test("removes user", () =>
-      expect(parseQuery("<@UD8UR2GGP> s doors end")) |> toEqual("doors end")
+      expect(Decode.Event.parseText("<@UD8UR2GGP> s doors end"))
+      |> toEqual("doors end")
     );
 
     test("handles command query", () =>
-      expect(parseQuery("s test")) |> toEqual("test")
+      expect(Decode.Event.parseText("s test")) |> toEqual("test")
     );
   });
 
   describe("eventPayload", () =>
     test("parses eventPayload", () => {
-      let mockEvent = {
+      let mockEvent: Decode.EventResponse.t = {
         event:
           Some({
             subtype: Bot,
@@ -27,6 +27,7 @@ describe("Decode", () => {
           }),
         eventType: EventCallback,
       };
+
       let mockPayload =
         {|{
           "event": {
@@ -39,9 +40,9 @@ describe("Decode", () => {
         }|}
         |> Json.parseOrRaise;
 
-      let {eventType, event}: Decode.eventPayload =
-        mockPayload |> Decode.eventPayload;
-      let {eventType: eType, event: e}: Decode.eventPayload = mockEvent;
+      let {eventType, event}: Decode.EventResponse.t =
+        mockPayload |> Decode.EventResponse.make;
+      let {eventType: eType, event: e}: Decode.EventResponse.t = mockEvent;
 
       expect((eventType, event)) |> toEqual((eType, e));
     })

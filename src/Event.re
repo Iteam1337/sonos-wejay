@@ -6,7 +6,7 @@ let logCommand = (command, args, user) => {
   };
 };
 
-let responseWithAttachment =
+let makeWithAttachment =
     (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
   logCommand(command, args, user);
 
@@ -20,7 +20,7 @@ let responseWithAttachment =
   );
 };
 
-let response = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
+let make = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
   logCommand(command, args, user);
 
   Js.Promise.(

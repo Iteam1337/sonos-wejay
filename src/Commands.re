@@ -33,53 +33,57 @@ let parseCommand = text =>
   |> Js.Array.slice(~start=0, ~end_=1)
   |> (array => array[0]);
 
-let decodeCommand = text => {
-  switch (SpotifyUtils.isSpotifyCopy(text), Emoji.isEmoji(text)) {
-  | (true, _) => SpotifyCopy(Utils.parseSpotifyCopy(text))
-  | (_, true) => Emoji(Emoji.emojiCommand(text))
-  | (_, _) =>
-    switch (parseCommand(text)) {
-    | "" => UnhandledCommand
-    | "classics" => EasterEgg(IteamClassics)
-    | "blame" => Blame
-    | "clear" => Clear
-    | "cq"
-    | "currentqueue"
-    | "gq"
-    | "getqueue" => CurrentQueue
-    | "freebird" => EasterEgg(FreeBird)
-    | "friday" => EasterEgg(Friday)
-    | "fq"
-    | "fullqueue" => FullQueue
-    | "help" => Help
-    | "l"
-    | "library" => Library
-    | "mute" => Mute
-    | "mostplayed" => MostPlayed
-    | "next" => Next
-    | "np"
-    | "nowplaying" => NowPlaying
-    | "pause" => Pause
-    | "play" => Play
-    | "playtrack" => PlayTrack
-    | "previous" => Previous
-    | "q"
-    | "queue" => Queue
-    | "cottoneyejoe"
-    | "rednex" => EasterEgg(Rednex)
-    | "s"
-    | "search" => Search
-    | "shoreline" => EasterEgg(Shoreline)
-    | "slowdance" => EasterEgg(Slowdance)
-    | "time" => Time
-    | "tequila" => EasterEgg(Tequila)
-    | "toplist" => Toplist
-    | "unmute" => Unmute
-    | "volume" => Volume
-    | "www"
-    | "worldwideweb" => EasterEgg(WWW)
-    | text => UnknownCommand(text)
+let make = text => {
+  switch (text) {
+  | Some(text) =>
+    switch (SpotifyUtils.isSpotifyCopy(text), Emoji.isEmoji(text)) {
+    | (true, _) => SpotifyCopy(Utils.parseSpotifyCopy(text))
+    | (_, true) => Emoji(Emoji.emojiCommand(text))
+    | (_, _) =>
+      switch (parseCommand(text)) {
+      | "" => UnhandledCommand
+      | "classics" => EasterEgg(IteamClassics)
+      | "blame" => Blame
+      | "clear" => Clear
+      | "cq"
+      | "currentqueue"
+      | "gq"
+      | "getqueue" => CurrentQueue
+      | "freebird" => EasterEgg(FreeBird)
+      | "friday" => EasterEgg(Friday)
+      | "fq"
+      | "fullqueue" => FullQueue
+      | "help" => Help
+      | "l"
+      | "library" => Library
+      | "mute" => Mute
+      | "mostplayed" => MostPlayed
+      | "next" => Next
+      | "np"
+      | "nowplaying" => NowPlaying
+      | "pause" => Pause
+      | "play" => Play
+      | "playtrack" => PlayTrack
+      | "previous" => Previous
+      | "q"
+      | "queue" => Queue
+      | "cottoneyejoe"
+      | "rednex" => EasterEgg(Rednex)
+      | "s"
+      | "search" => Search
+      | "shoreline" => EasterEgg(Shoreline)
+      | "slowdance" => EasterEgg(Slowdance)
+      | "time" => Time
+      | "tequila" => EasterEgg(Tequila)
+      | "toplist" => Toplist
+      | "unmute" => Unmute
+      | "volume" => Volume
+      | "www"
+      | "worldwideweb" => EasterEgg(WWW)
+      | text => UnknownCommand(text)
+      }
     }
+  | None => UnknownCommand("no text")
   };
 };
 

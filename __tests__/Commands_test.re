@@ -16,12 +16,14 @@ describe("parseCommand", () => {
   );
 });
 
-describe("#decodeCommand", () => {
+describe("#make", () => {
   describe("SpotifyCopy", () => {
     test("should add spotify copy and paste", () =>
       expect(
-        decodeCommand(
-          "<https://open.spotify.com/track/2mPE346iPVnss0GoRgwGTK>\n<https://open.spotify.com/track/4LT7xQZgICM6FqUJkWI6aM>",
+        make(
+          Some(
+            "<https://open.spotify.com/track/2mPE346iPVnss0GoRgwGTK>\n<https://open.spotify.com/track/4LT7xQZgICM6FqUJkWI6aM>",
+          ),
         ),
       )
       |> toEqual(
@@ -34,8 +36,10 @@ describe("#decodeCommand", () => {
 
     test("should add spotify playlists from copied link", () =>
       expect(
-        decodeCommand(
-          "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+        make(
+          Some(
+            "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+          ),
         ),
       )
       |> toEqual(
@@ -48,156 +52,156 @@ describe("#decodeCommand", () => {
 
   describe("#Emoji", () => {
     test(":thumbsup:", () =>
-      expect(decodeCommand(":thumbsup:")) |> toEqual(Emoji(ThumbsUp))
+      expect(make(Some(":thumbsup:"))) |> toEqual(Emoji(ThumbsUp))
     );
 
     test(":thumbsdown:", () =>
-      expect(decodeCommand(":thumbsdown:")) |> toEqual(Emoji(ThumbsDown))
+      expect(make(Some(":thumbsdown:"))) |> toEqual(Emoji(ThumbsDown))
     );
 
     test(":+1:", () =>
-      expect(decodeCommand(":+1:")) |> toEqual(Emoji(ThumbsUp))
+      expect(make(Some(":+1:"))) |> toEqual(Emoji(ThumbsUp))
     );
 
     test(":-1:", () =>
-      expect(decodeCommand(":-1:")) |> toEqual(Emoji(ThumbsDown))
+      expect(make(Some(":-1:"))) |> toEqual(Emoji(ThumbsDown))
     );
 
     test(":santa:", () =>
-      expect(decodeCommand(":santa:")) |> toEqual(Emoji(Santa))
+      expect(make(Some(":santa:"))) |> toEqual(Emoji(Santa))
     );
   });
 
   test("clear", () =>
-    expect(decodeCommand("clear")) |> toEqual(Clear)
+    expect(make(Some("clear"))) |> toEqual(Clear)
   );
 
   test("cq", () =>
-    expect(decodeCommand("cq")) |> toEqual(CurrentQueue)
+    expect(make(Some("cq"))) |> toEqual(CurrentQueue)
   );
 
   test("currentqueue", () =>
-    expect(decodeCommand("currentqueue")) |> toEqual(CurrentQueue)
+    expect(make(Some("currentqueue"))) |> toEqual(CurrentQueue)
   );
 
   test("gq", () =>
-    expect(decodeCommand("gq")) |> toEqual(CurrentQueue)
+    expect(make(Some("gq"))) |> toEqual(CurrentQueue)
   );
 
   test("getqueue", () =>
-    expect(decodeCommand("getqueue")) |> toEqual(CurrentQueue)
+    expect(make(Some("getqueue"))) |> toEqual(CurrentQueue)
   );
 
   test("freebird", () =>
-    expect(decodeCommand("freebird")) |> toEqual(EasterEgg(FreeBird))
+    expect(make(Some("freebird"))) |> toEqual(EasterEgg(FreeBird))
   );
 
   test("friday", () =>
-    expect(decodeCommand("friday")) |> toEqual(EasterEgg(Friday))
+    expect(make(Some("friday"))) |> toEqual(EasterEgg(Friday))
   );
 
   test("fq", () =>
-    expect(decodeCommand("fq")) |> toEqual(FullQueue)
+    expect(make(Some("fq"))) |> toEqual(FullQueue)
   );
 
   test("fullqueue", () =>
-    expect(decodeCommand("fullqueue")) |> toEqual(FullQueue)
+    expect(make(Some("fullqueue"))) |> toEqual(FullQueue)
   );
 
   test("classics", () =>
-    expect(decodeCommand("classics")) |> toEqual(EasterEgg(IteamClassics))
+    expect(make(Some("classics"))) |> toEqual(EasterEgg(IteamClassics))
   );
 
   test("shoreline", () =>
-    expect(decodeCommand("shoreline")) |> toEqual(EasterEgg(Shoreline))
+    expect(make(Some("shoreline"))) |> toEqual(EasterEgg(Shoreline))
   );
 
   test("slowdance", () =>
-    expect(decodeCommand("slowdance")) |> toEqual(EasterEgg(Slowdance))
+    expect(make(Some("slowdance"))) |> toEqual(EasterEgg(Slowdance))
   );
 
   test("tequila", () =>
-    expect(decodeCommand("tequila")) |> toEqual(EasterEgg(Tequila))
+    expect(make(Some("tequila"))) |> toEqual(EasterEgg(Tequila))
   );
 
   test("help", () =>
-    expect(decodeCommand("help")) |> toEqual(Help)
+    expect(make(Some("help"))) |> toEqual(Help)
   );
 
   test("l (library short-hand)", () =>
-    expect(decodeCommand("l")) |> toEqual(Library)
+    expect(make(Some("l"))) |> toEqual(Library)
   );
 
   test("library", () =>
-    expect(decodeCommand("library")) |> toEqual(Library)
+    expect(make(Some("library"))) |> toEqual(Library)
   );
 
   test("mute", () =>
-    expect(decodeCommand("mute")) |> toEqual(Mute)
+    expect(make(Some("mute"))) |> toEqual(Mute)
   );
 
   test("next", () =>
-    expect(decodeCommand("next")) |> toEqual(Next)
+    expect(make(Some("next"))) |> toEqual(Next)
   );
 
   test("np (nowplaying short-hand)", () =>
-    expect(decodeCommand("np")) |> toEqual(NowPlaying)
+    expect(make(Some("np"))) |> toEqual(NowPlaying)
   );
 
   test("nowplaying", () =>
-    expect(decodeCommand("nowplaying")) |> toEqual(NowPlaying)
+    expect(make(Some("nowplaying"))) |> toEqual(NowPlaying)
   );
 
   test("pause", () =>
-    expect(decodeCommand("pause")) |> toEqual(Pause)
+    expect(make(Some("pause"))) |> toEqual(Pause)
   );
 
   test("play", () =>
-    expect(decodeCommand("play")) |> toEqual(Play)
+    expect(make(Some("play"))) |> toEqual(Play)
   );
 
   test("playtrack", () =>
-    expect(decodeCommand("playtrack")) |> toEqual(PlayTrack)
+    expect(make(Some("playtrack"))) |> toEqual(PlayTrack)
   );
 
   test("previous", () =>
-    expect(decodeCommand("previous")) |> toEqual(Previous)
+    expect(make(Some("previous"))) |> toEqual(Previous)
   );
 
   test("q (queue short-hand)", () =>
-    expect(decodeCommand("q")) |> toEqual(Queue)
+    expect(make(Some("q"))) |> toEqual(Queue)
   );
 
   test("queue", () =>
-    expect(decodeCommand("queue")) |> toEqual(Queue)
+    expect(make(Some("queue"))) |> toEqual(Queue)
   );
 
   test("s (search short-hand)", () =>
-    expect(decodeCommand("s")) |> toEqual(Search)
+    expect(make(Some("s"))) |> toEqual(Search)
   );
 
   test("search", () =>
-    expect(decodeCommand("search")) |> toEqual(Search)
+    expect(make(Some("search"))) |> toEqual(Search)
   );
 
   test("unmute", () =>
-    expect(decodeCommand("unmute")) |> toEqual(Unmute)
+    expect(make(Some("unmute"))) |> toEqual(Unmute)
   );
 
   test("unknowncommand", () =>
-    expect(decodeCommand("unknowncommand"))
+    expect(make(Some("unknowncommand")))
     |> toEqual(UnknownCommand("unknowncommand"))
   );
 
   test("volume", () =>
-    expect(decodeCommand("volume")) |> toEqual(Volume)
+    expect(make(Some("volume"))) |> toEqual(Volume)
   );
 
   test("www", () =>
-    expect(decodeCommand("www")) |> toEqual(EasterEgg(WWW))
+    expect(make(Some("www"))) |> toEqual(EasterEgg(WWW))
   );
 
   test("worldwideweb", () =>
-    expect(decodeCommand("worldwideweb")) |> toEqual(EasterEgg(WWW))
+    expect(make(Some("worldwideweb"))) |> toEqual(EasterEgg(WWW))
   );
 });

@@ -1,15 +1,25 @@
 open Express;
 
+[@decco]
+type cli = {
+  command: string,
+  args: string,
+};
+
 type t = {
   command: Commands.t,
   args: string,
 };
 
-let decode = json =>
-  Json.Decode.{
-    command: json |> field("command", string) |> Commands.decodeCommand,
-    args: json |> field("args", string),
-  };
+let decode: Js.Json.t => t =
+  json =>
+    switch (cli_decode(json)) {
+    | Ok(output) => {
+        args: output.args,
+        command: Commands.make(Some(output.command)),
+      }
+    | Error({Decco.path, message}) => Parser.fail(message, path)
+    };
 
 let getToken = req => {
   let headers =
@@ -31,9 +41,9 @@ let route =
         token
         |> Slack.getUser
         |> then_(user => {
-             let {command, args} = body |> decode;
+             let {command, args} = decode(body);
 
-             Event.response(~command, ~args, ~user=Some(user), ())
+             Event.make(~command, ~args, ~user=Some(user), ())
              |> then_(response =>
                   switch (response) {
                   | `Ok(r) => res |> Response.sendString(r) |> resolve
