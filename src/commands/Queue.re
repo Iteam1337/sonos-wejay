@@ -154,8 +154,40 @@ let next = track => {
      );
 };
 
-let multiple = tracks => {
-  tracks->Belt.Array.forEach(track => last(track) |> ignore);
+type multiple = {
+  exists: list(string),
+  newTracks: list(string),
+};
 
-  resolve(`Ok("Your tracks have been queued!"));
+let multiple = tracks => {
+  let parsedTracks = tracks->Belt.Array.map(Utils.parsedTrack);
+  let exists = parsedTracks->Belt.Array.map(track => Exists.inQueue(track));
+
+  all(exists)
+  |> then_(allTracks => {
+       let (inQueue, notInQueue) =
+         allTracks->Belt.Array.reduceWithIndex(
+           (0, 0), ((inQueue, notInQueue), curr, i) =>
+           switch (curr) {
+           | Exists.InQueue => (inQueue + 1, notInQueue)
+           | NotInQueue =>
+             last(parsedTracks[i]) |> ignore;
+
+             (inQueue, notInQueue + 1);
+           }
+         );
+
+       let message =
+         switch (inQueue, notInQueue) {
+         | (1, 0) => "Skipped *1* track that's already queued"
+         | (x, 0) => {j|Skipped *$x* tracks that are already queued|j}
+         | (0, 1) => "Queued *1* track"
+         | (0, x) => {j|Queued *$x* tracks|j}
+         | (1, 1) => {j|Queued *1* track, skipped *1* that is already queued|j}
+         | (x, 1) => {j|Queued *1* track, skipped *$x* that are already queued|j}
+         | (x, y) => {j|Queued *$y* tracks, skipped *$x* that are already queued|j}
+         };
+
+       resolve(`Ok(message));
+     });
 };
