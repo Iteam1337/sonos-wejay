@@ -1,6 +1,6 @@
 let toPlaylistUri = (~user, ~id) => {j|spotify:user:$user:playlist:$id|j};
 let toUri = id => {j|spotify:track:$id|j};
-let trackId = uri => uri->Utils.splitBy(":") |> (items => items[2]);
+let trackId = uri => uri->Utils.splitBy(":")->Belt.Array.get(2);
 
 type searchType =
   | Album

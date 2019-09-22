@@ -20,7 +20,7 @@ describe("SpotifyUtils", () => {
   describe("#trackId", () =>
     test("should return an id for track", () =>
       expect(trackId("spotify:track:3Bj2mrlp3tALHO5U3mK8zM"))
-      |> toEqual("3Bj2mrlp3tALHO5U3mK8zM")
+      |> toEqual(Some("3Bj2mrlp3tALHO5U3mK8zM"))
     )
   );
 });

@@ -16,16 +16,15 @@ describe("Decode", () => {
 
   describe("eventPayload", () =>
     test("parses eventPayload", () => {
-      let mockEvent: Decode.EventResponse.t = {
-        event:
+      let mockEvent: Decode.EventResponse.t =
+        EventCallback(
           Some({
             user: Some("UXXXXXXX"),
             command: Human(Commands.Help),
             channel: "AA12345678",
             text: "",
           }),
-        eventType: EventCallback,
-      };
+        );
 
       let mockPayload =
         {|{
@@ -38,11 +37,10 @@ describe("Decode", () => {
         }|}
         |> Json.parseOrRaise;
 
-      let {eventType, event}: Decode.EventResponse.t =
+      let event: Decode.EventResponse.t =
         mockPayload |> Decode.EventResponse.make;
-      let {eventType: eType, event: e}: Decode.EventResponse.t = mockEvent;
 
-      expect((eventType, event)) |> toEqual((eType, e));
+      expect(event) |> toEqual(mockEvent);
     })
   );
 });

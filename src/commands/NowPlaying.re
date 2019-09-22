@@ -30,12 +30,23 @@ let run = () =>
          let uri = Utils.sonosUriToSpotifyUri(sonos.uri);
          let id = SpotifyUtils.trackId(uri);
 
-         Spotify.getSpotifyTrack(id)
-         |> then_(spotifyTrack => {
-              let {cover}: Spotify.WejayTrack.t = spotifyTrack;
+         switch (id) {
+         | None =>
+           `Ok([|
+             Slack.Block.Section.make(
+               ~text="Nothing is currently playing",
+               (),
+             ),
+           |])
+           |> resolve
+         | Some(id) =>
+           Spotify.getSpotifyTrack(id)
+           |> then_(spotifyTrack => {
+                let {cover}: Spotify.WejayTrack.t = spotifyTrack;
 
-              `Ok(message(~cover, ~sonos)) |> resolve;
-            });
+                `Ok(message(~cover, ~sonos)) |> resolve;
+              })
+         };
        })
     |> catch(_ => `Failed("Now playing failed") |> resolve)
   );

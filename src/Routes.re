@@ -51,17 +51,19 @@ module CreateMessage = {
   };
 };
 
-let eventCallback = (event: option(Decode.Event.t), res) => {
-  switch (event) {
-  | Some({command} as e) =>
-    switch (command) {
-    | Human(Search)
-    | Human(NowPlaying) => CreateMessage.blocks(e)
-    | _ => CreateMessage.message(e)
-    };
+module EventCallback = {
+  let make = (event: option(Decode.Event.t), res) => {
+    switch (event) {
+    | Some({command} as e) =>
+      switch (command) {
+      | Human(Search)
+      | Human(NowPlaying) => CreateMessage.blocks(e)
+      | _ => CreateMessage.message(e)
+      };
 
-    res |> Response.sendStatus(Ok);
-  | None => res |> Response.sendStatus(BadRequest)
+      res |> Response.sendStatus(Ok);
+    | None => res |> Response.sendStatus(BadRequest)
+    };
   };
 };
 
@@ -70,18 +72,15 @@ module EventRoute = {
     PromiseMiddleware.from((_next, req, res) =>
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
-        let {eventType, event}: Decode.EventResponse.t =
-          Decode.EventResponse.make(body);
-
         res
         |> (
-          switch (eventType) {
+          switch (Decode.EventResponse.make(body)) {
           | UrlVerification => VerificationRoute.make(body)
-          | EventCallback => eventCallback(event)
+          | EventCallback(event) => EventCallback.make(event)
           | UnknownEvent => badRequest
           }
         )
-        |> resolve;
+        |> resolve
       | None => res |> badRequest |> resolve
       }
     );

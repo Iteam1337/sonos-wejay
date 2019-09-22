@@ -26,6 +26,7 @@ let run = () => {
              hits
              ->keep(filterPlaylists)
              ->map(({key}) => key->SpotifyUtils.trackId)
+             ->keepMap(track => track)
              ->map(Spotify.getSpotifyTrack)
              |> all
              |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)

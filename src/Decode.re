@@ -27,20 +27,6 @@ module Requester = {
   };
 };
 
-module EventType = {
-  type t =
-    | UrlVerification
-    | EventCallback
-    | UnknownEvent;
-
-  let fromString =
-    fun
-    | "url_verification" => UrlVerification
-    | "app_mention"
-    | "event_callback" => EventCallback
-    | _ => UnknownEvent;
-};
-
 module EventPayload = {
   [@decco]
   type t = {
@@ -80,6 +66,21 @@ module Event = {
   };
 };
 
+module EventType = {
+  type t =
+    | UrlVerification
+    | EventCallback(option(Event.t))
+    | UnknownEvent;
+
+  let make = (eventString, event) =>
+    switch (eventString) {
+    | "url_verification" => UrlVerification
+    | "app_mention"
+    | "event_callback" => EventCallback(Event.make(event))
+    | _ => UnknownEvent
+    };
+};
+
 module EventResponse = {
   [@decco]
   type payload = {
@@ -88,17 +89,11 @@ module EventResponse = {
     event: option(EventPayload.t),
   };
 
-  type t = {
-    event: option(Event.t),
-    eventType: EventType.t,
-  };
+  type t = EventType.t;
 
   let make = json => {
     switch (payload_decode(json)) {
-    | Ok({event, type_}) => {
-        eventType: EventType.fromString(type_),
-        event: Event.make(event),
-      }
+    | Ok({event, type_}) => EventType.make(type_, event)
     | Error({Decco.path, message}) => Parser.fail(message, path)
     };
   };
