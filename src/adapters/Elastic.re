@@ -44,24 +44,28 @@ let sendLog = data => {
   |> ignore;
 };
 
-let log = (~command: Commands.t, ~text, ~user) => {
+let log = (~command: Decode.Requester.t, ~text, ~user) => {
   switch (user, command) {
-  | (Some(_), UnhandledCommand)
-  | (None, _) => ()
-  | (Some(sender), SpotifyCopy(copiedTracks)) =>
-    elasticLog(~sender, ~command="spotify-copy", ~args=copiedTracks)
-    |> sendLog
-  | (Some(sender), _) =>
-    elasticLog(
-      ~sender,
-      ~command=Commands.commandToString(command),
-      ~args=
-        switch (command) {
-        | UnknownCommand(c) => [|c|]
-        | _ =>
-          Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
-        },
-    )
-    |> sendLog
+  | (u, Human(cmd)) =>
+    switch (u, cmd) {
+    | (Some(_), UnhandledCommand)
+    | (None, _) => ()
+    | (Some(sender), SpotifyCopy(copiedTracks)) =>
+      elasticLog(~sender, ~command="spotify-copy", ~args=copiedTracks)
+      |> sendLog
+    | (Some(sender), _) =>
+      elasticLog(
+        ~sender,
+        ~command=Commands.commandToString(cmd),
+        ~args=
+          switch (cmd) {
+          | UnknownCommand(c) => [|c|]
+          | _ =>
+            Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
+          },
+      )
+      |> sendLog
+    }
+  | (_, Bot) => ()
   };
 };

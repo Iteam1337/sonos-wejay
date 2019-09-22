@@ -7,7 +7,7 @@ type cli = {
 };
 
 type t = {
-  command: Commands.t,
+  command: Decode.Requester.t,
   args: string,
 };
 
@@ -16,7 +16,8 @@ let decode: Js.Json.t => t =
     switch (cli_decode(json)) {
     | Ok(output) => {
         args: output.args,
-        command: Commands.make(Some(output.command)),
+        command:
+          Decode.Requester.Human(Commands.make(Some(output.command))),
       }
     | Error({Decco.path, message}) => Parser.fail(message, path)
     };
@@ -43,7 +44,7 @@ let route =
         |> then_(user => {
              let {command, args} = decode(body);
 
-             Event.make(~command, ~args, ~user=Some(user), ())
+             Event.Message.make(~command, ~args, ~user=Some(user), ())
              |> then_(response =>
                   switch (response) {
                   | `Ok(r) => res |> Response.sendString(r) |> resolve

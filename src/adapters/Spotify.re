@@ -82,16 +82,10 @@ let search = query => {
              );
 
          resolve(
-           `Ok((
-             message,
-             [|
-               Slack.Block.Section.make(
-                 ~text={j|Here are the results for *$query*|j},
-                 (),
-               ),
-             |]
+           `Ok(
+             [|Slack.Block.Section.make(~text=message, ())|]
              ->Belt.Array.concat(attachments),
-           )),
+           ),
          );
        })
   );

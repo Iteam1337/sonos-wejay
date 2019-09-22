@@ -52,3 +52,7 @@ let thisIsWejay = "This is Wejay!\nhttps://media.giphy.com/media/Ny4Ian52lZDz2/g
 let cantSkipEasterEgg = "Can't skip this track :hatching_chick:";
 
 let trackExistsInQueue = "Hey, this track already exists in the queue!";
+
+let botRequest = "That's a bot request :robot:";
+
+let unhandledCommand = "This is not the command you are looking for";

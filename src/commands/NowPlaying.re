@@ -34,7 +34,7 @@ let run = () =>
          |> then_(spotifyTrack => {
               let {cover}: Spotify.WejayTrack.t = spotifyTrack;
 
-              `Ok(("", message(~cover, ~sonos))) |> resolve;
+              `Ok(message(~cover, ~sonos)) |> resolve;
             });
        })
     |> catch(_ => `Failed("Now playing failed") |> resolve)

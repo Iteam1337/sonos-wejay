@@ -19,9 +19,8 @@ describe("Decode", () => {
       let mockEvent: Decode.EventResponse.t = {
         event:
           Some({
-            subtype: Bot,
             user: Some("UXXXXXXX"),
-            command: Commands.Help,
+            command: Human(Commands.Help),
             channel: "AA12345678",
             text: "",
           }),
@@ -31,7 +30,6 @@ describe("Decode", () => {
       let mockPayload =
         {|{
           "event": {
-              "subtype": "bot_message",
               "user": "UXXXXXXX",
               "text": "help",
               "channel": "AA12345678"

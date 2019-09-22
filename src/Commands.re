@@ -6,7 +6,6 @@ type t =
   | Emoji(Emoji.t)
   | FullQueue
   | Help
-  | Library
   | MostPlayed
   | Mute
   | Next
@@ -54,8 +53,6 @@ let make = text => {
       | "fq"
       | "fullqueue" => FullQueue
       | "help" => Help
-      | "l"
-      | "library" => Library
       | "mute" => Mute
       | "mostplayed" => MostPlayed
       | "next" => Next
@@ -114,7 +111,6 @@ let commandToString =
   | Emoji(emoji) => "emoji-" ++ emojiToString(emoji)
   | FullQueue => "full-queue"
   | Help => "help"
-  | Library => "library"
   | MostPlayed => "most-played"
   | Mute => "playback-mute"
   | Next => "playback-next"

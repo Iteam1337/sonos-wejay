@@ -13,16 +13,16 @@ module Verification = {
 module Requester = {
   type t =
     | Bot
-    | Human;
+    | Human(Commands.t);
 
-  let make = subtype => {
+  let make = (~subtype, ~command) => {
     switch (subtype) {
     | Some(t) =>
       switch (t) {
       | "bot_message" => Bot
-      | _ => Human
+      | _ => Human(command)
       }
-    | None => Human
+    | None => Human(command)
     };
   };
 };
@@ -54,8 +54,7 @@ module EventPayload = {
 module Event = {
   type t = {
     channel: string,
-    command: Commands.t,
-    subtype: Requester.t,
+    command: Requester.t,
     text: string,
     user: option(string),
   };
@@ -72,13 +71,8 @@ module Event = {
     | Some({channel, text, subtype, user}) =>
       Some({
         channel,
-        command: Commands.make(text),
-        subtype: Requester.make(subtype),
-        text:
-          switch (text) {
-          | Some(t) => parseText(t)
-          | None => ""
-          },
+        command: Requester.make(~subtype, ~command=Commands.make(text)),
+        text: text->Belt.Option.getWithDefault("")->parseText,
         user,
       })
     | None => None

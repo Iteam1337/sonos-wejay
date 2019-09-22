@@ -151,19 +151,22 @@ module Message = {
     (
       ~channel: string,
       ~username: [@bs.as "Wejay"] _,
-      ~text: string,
+      ~text: string=?,
       ~attachments: array(Js.t('a))=?,
       ~blocks: array(Js.t('a))=?,
-      ~mrkdwn: bool,
+      ~mrkdwn: bool=?,
       unit
     ) =>
     _ =
     "";
 
-  let withBlocks = (channel, message, blocks) =>
-    slackMessage(~channel, ~text=message, ~blocks, ~mrkdwn=true, ())
-    |> sendPayload;
+  module Blocks = {
+    let make = (channel, blocks) =>
+      slackMessage(~channel, ~blocks, ()) |> sendPayload;
+  };
 
-  let regular = (channel: string, message: string) =>
-    slackMessage(~channel, ~text=message, ~mrkdwn=true, ()) |> sendPayload;
+  module Regular = {
+    let make = (channel, message) =>
+      slackMessage(~channel, ~text=message, ()) |> sendPayload;
+  };
 };

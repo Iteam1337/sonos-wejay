@@ -128,14 +128,6 @@ describe("#make", () => {
     expect(make(Some("help"))) |> toEqual(Help)
   );
 
-  test("l (library short-hand)", () =>
-    expect(make(Some("l"))) |> toEqual(Library)
-  );
-
-  test("library", () =>
-    expect(make(Some("library"))) |> toEqual(Library)
-  );
-
   test("mute", () =>
     expect(make(Some("mute"))) |> toEqual(Mute)
   );

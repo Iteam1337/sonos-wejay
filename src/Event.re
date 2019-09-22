@@ -1,35 +1,35 @@
-let logCommand = (command, args, user) => {
-  switch (user) {
-  | Some(u) when u |> Js.String.length === 0 => ()
-  | None => ()
-  | Some(_) => Elastic.log(~command, ~text=args, ~user) |> ignore
+open Js.Promise;
+
+module Log = {
+  let make = (command, args, user) => {
+    switch (user) {
+    | Some(u) when u |> Js.String.length === 0 => ()
+    | None => ()
+    | Some(_) => Elastic.log(~command, ~text=args, ~user) |> ignore
+    };
   };
 };
 
-let makeWithBlocks =
-    (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
-  logCommand(command, args, user);
+module Blocks = {
+  let make = (~command, ~args, ~user, ()) => {
+    Log.make(command, args, user);
 
-  Js.Promise.(
-    switch (subtype, command) {
-    | (Human, NowPlaying) => NowPlaying.run()
-    | (Human, Search) => Spotify.search(args)
-    | (Human, _) =>
-      resolve(`Failed("This is not the command you are looking for"))
-    | (Bot, _) => resolve(`Failed("That's a bot request"))
-    }
-  );
+    switch (command) {
+    | Decode.Requester.Human(NowPlaying) => NowPlaying.run()
+    | Human(Search) => Spotify.search(args)
+    | Human(_) => resolve(`Failed(Messages.unhandledCommand))
+    | Bot => resolve(`Failed(Messages.botRequest))
+    };
+  };
 };
 
-let make = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
-  logCommand(command, args, user);
+module Message = {
+  let make = (~command, ~args, ~user, ()) => {
+    Log.make(command, args, user);
 
-  Js.Promise.(
-    switch (subtype) {
-    | Human =>
-      switch (command) {
-      | Blame => Blame.run()
-
+    switch (command) {
+    | Decode.Requester.Human(cmd) =>
+      switch (cmd) {
       /* Queue control */
       | Clear => Queue.clear()
       | CurrentQueue => Queue.current()
@@ -48,6 +48,7 @@ let make = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
       | Volume => Volume.control(args)
 
       /* Misc */
+      | Blame => Blame.run()
       | Emoji(emoji) => Emoji.handleEmoji(emoji)
       | MostPlayed => MostPlayed.run()
       | Toplist => Toplist.run()
@@ -58,9 +59,11 @@ let make = (~command, ~args, ~user, ~subtype=Decode.Requester.Human, ()) => {
         resolve(`Ok(Messages.unknownCommand(command)))
 
       /* Anything else */
-      | _ => resolve(`Failed("This is not the command you are looking for"))
+      | UnhandledCommand => resolve(`Failed(Messages.unhandledCommand))
+      | NowPlaying
+      | Search => resolve(`Failed("Handled as blocks"))
       }
-    | Bot => resolve(`Failed("That's a bot request"))
-    }
-  );
+    | Bot => resolve(`Failed(Messages.botRequest))
+    };
+  };
 };

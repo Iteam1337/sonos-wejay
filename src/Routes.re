@@ -1,57 +1,63 @@
 open Express;
+open Js.Promise;
 
-let handleVerification = body => {
-  let {challenge}: Decode.Verification.t = body |> Decode.Verification.make;
-  Response.sendString(challenge);
+let badRequest = Response.sendStatus(BadRequest);
+
+module IndexRoute = {
+  let make =
+    Middleware.from((_next, _req, res) =>
+      res |> Response.sendString("Welcome to Wejay!")
+    );
 };
 
-let index =
-  Middleware.from((_next, _req, res) =>
-    res |> Response.sendString("Welcome to Wejay!")
-  );
+module VerificationRoute = {
+  open Decode;
 
-let message = request => {
-  let {subtype, channel, command, text: args, user}: Decode.Event.t = request;
-  let sendMessage = Slack.Message.regular(channel);
+  let make = body => {
+    let {challenge}: Verification.t = Verification.make(body);
+    Response.sendString(challenge);
+  };
+};
 
-  Js.Promise.(
-    Event.make(~command, ~args, ~user, ~subtype, ())
+module CreateMessage = {
+  let make = (~request, ~messenger, ~creator) => {
+    let {channel, command, text: args, user}: Decode.Event.t = request;
+
+    creator(~command, ~args, ~user, ())
     |> then_(response => {
          switch (response) {
-         | `Ok(r) => sendMessage(r)
+         | `Ok(r) => messenger(channel, r)
          | `Failed(_) => ()
          };
          resolve();
        })
-    |> ignore
-  );
-};
+    |> ignore;
+  };
 
-let messageWithBlocks = request => {
-  let {subtype, channel, command, text: args, user}: Decode.Event.t = request;
-  let sendSearchResponse = Slack.Message.withBlocks(channel);
+  let message = request => {
+    make(
+      ~request,
+      ~messenger=Slack.Message.Regular.make,
+      ~creator=Event.Message.make,
+    );
+  };
 
-  Js.Promise.(
-    Event.makeWithBlocks(~command, ~args, ~user, ~subtype, ())
-    |> then_(response => {
-         switch (response) {
-         | `Ok(message, blocks) => sendSearchResponse(message, blocks)
-         | `Failed(_) => ()
-         };
-
-         resolve();
-       })
-    |> ignore
-  );
+  let blocks = request => {
+    make(
+      ~request,
+      ~messenger=Slack.Message.Blocks.make,
+      ~creator=Event.Blocks.make,
+    );
+  };
 };
 
 let eventCallback = (event: option(Decode.Event.t), res) => {
   switch (event) {
-  | Some(e) =>
-    switch (e.command) {
-    | Search
-    | NowPlaying => messageWithBlocks(e)
-    | _ => message(e)
+  | Some({command} as e) =>
+    switch (command) {
+    | Human(Search)
+    | Human(NowPlaying) => CreateMessage.blocks(e)
+    | _ => CreateMessage.message(e)
     };
 
     res |> Response.sendStatus(Ok);
@@ -59,29 +65,29 @@ let eventCallback = (event: option(Decode.Event.t), res) => {
   };
 };
 
-let failed = Response.sendStatus(BadRequest);
-
-let event =
-  PromiseMiddleware.from((_next, req, res) =>
-    Js.Promise.(
+module EventRoute = {
+  let make =
+    PromiseMiddleware.from((_next, req, res) =>
       switch (Request.bodyJSON(req)) {
       | Some(body) =>
         let {eventType, event}: Decode.EventResponse.t =
           Decode.EventResponse.make(body);
 
-        switch (eventType) {
-        | UrlVerification => res |> handleVerification(body) |> resolve
-        | EventCallback => res |> eventCallback(event) |> resolve
-        | UnknownEvent => res |> failed |> resolve
-        };
-      | None => res |> failed |> resolve
+        res
+        |> (
+          switch (eventType) {
+          | UrlVerification => VerificationRoute.make(body)
+          | EventCallback => eventCallback(event)
+          | UnknownEvent => badRequest
+          }
+        )
+        |> resolve;
+      | None => res |> badRequest |> resolve
       }
-    )
-  );
+    );
+};
 
-module Action = {
-  open Js.Promise;
-
+module ActionRoute = {
   let make =
     PromiseMiddleware.from((_next, req, res) =>
       switch (Request.bodyJSON(req)) {
@@ -93,7 +99,7 @@ module Action = {
         Queue.last(track)
         |> then_(message => {
              Elastic.log(
-               ~command=Commands.Queue,
+               ~command=Human(Commands.Queue),
                ~text=track,
                ~user=Some(user.id),
              );
@@ -108,37 +114,37 @@ module Action = {
                )
                |> then_(_ => res |> Response.sendString(m) |> resolve)
 
-             | `Failed(_) => res |> failed |> resolve
+             | `Failed(_) => res |> badRequest |> resolve
              };
            });
-      | None => res |> failed |> resolve
+      | None => res |> badRequest |> resolve
       }
     );
 };
 
-let slackAuth =
-  Middleware.from((_next, _req, res) =>
-    res
-    |> Response.redirectCode(
-         301,
-         "https://slack.com/oauth/authorize?scope=identity.basic&client_id="
-         ++ Config.slackClientId,
-       )
-  );
+module SlackRoutes = {
+  let auth =
+    Middleware.from((_next, _req, res) =>
+      res
+      |> Response.redirectCode(
+           301,
+           "https://slack.com/oauth/authorize?scope=identity.basic&client_id="
+           ++ Config.slackClientId,
+         )
+    );
 
-let slackToken =
-  PromiseMiddleware.from((_next, req, res) => {
-    let query = Request.query(req);
+  let token =
+    PromiseMiddleware.from((_next, req, res) => {
+      let query = Request.query(req);
 
-    let code =
-      switch (Js.Dict.get(query, "code")) {
-      | Some(json) => Js.Json.decodeString(json)
-      | _ => None
-      };
+      let code =
+        switch (Js.Dict.get(query, "code")) {
+        | Some(json) => Js.Json.decodeString(json)
+        | _ => None
+        };
 
-    switch (code) {
-    | Some(c) =>
-      Js.Promise.(
+      switch (code) {
+      | Some(c) =>
         Slack.makeAuthCallback(c)
         |> then_(response =>
              resolve(
@@ -148,7 +154,7 @@ let slackToken =
                ),
              )
            )
-      )
-    | None => Js.Promise.resolve(Response.sendStatus(BadRequest, res))
-    };
-  });
+      | None => res |> badRequest |> resolve
+      };
+    });
+};

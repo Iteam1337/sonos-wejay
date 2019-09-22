@@ -6,12 +6,18 @@ let device = Sonos.Methods.device(Config.wejayIp);
 App.use(app, Middleware.json());
 App.use(app, Middleware.urlencoded(~extended=false, ()));
 
-App.get(app, ~path="/") @@ Routes.index;
-App.post(app, ~path="/event") @@ Routes.event;
-App.post(app, ~path="/action") @@ Routes.Action.make;
+App.get(app, ~path="/") @@ Routes.IndexRoute.make;
+
+/* Slack authentication */
+App.get(app, ~path="/slack/auth") @@ Routes.SlackRoutes.auth;
+App.get(app, ~path="/slack/token") @@ Routes.SlackRoutes.token;
+
+/* Slack events */
+App.post(app, ~path="/event") @@ Routes.EventRoute.make;
+App.post(app, ~path="/action") @@ Routes.ActionRoute.make;
+
+/* CLI */
 App.post(app, ~path="/cli") @@ CLI.route;
-App.get(app, ~path="/slack/auth") @@ Routes.slackAuth;
-App.get(app, ~path="/slack/token") @@ Routes.slackToken;
 
 let onListen = e =>
   switch (e) {
