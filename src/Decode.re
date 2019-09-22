@@ -89,8 +89,6 @@ module EventResponse = {
     event: option(EventPayload.t),
   };
 
-  type t = EventType.t;
-
   let make = json => {
     switch (payload_decode(json)) {
     | Ok({event, type_}) => EventType.make(type_, event)

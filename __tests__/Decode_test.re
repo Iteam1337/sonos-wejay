@@ -16,8 +16,8 @@ describe("Decode", () => {
 
   describe("eventPayload", () =>
     test("parses eventPayload", () => {
-      let mockEvent: Decode.EventResponse.t =
-        EventCallback(
+      let mockEvent =
+        Decode.EventType.EventCallback(
           Some({
             user: Some("UXXXXXXX"),
             command: Human(Commands.Help),
@@ -37,10 +37,7 @@ describe("Decode", () => {
         }|}
         |> Json.parseOrRaise;
 
-      let event: Decode.EventResponse.t =
-        mockPayload |> Decode.EventResponse.make;
-
-      expect(event) |> toEqual(mockEvent);
+      mockPayload |> Decode.EventResponse.make |> expect |> toEqual(mockEvent);
     })
   );
 });
