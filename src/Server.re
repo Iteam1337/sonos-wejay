@@ -19,12 +19,32 @@ App.post(app, ~path="/action") @@ Routes.ActionRoute.make;
 /* CLI */
 App.post(app, ~path="/cli") @@ CLI.route;
 
+let listening = () => {
+  let title = Chalk.hex("#F9A231")->Chalk.bold("Wejay");
+  let url = Chalk.green("Server:");
+
+  let value = {j|
+$title is up and running
+-----------------------------
+$url http://localhost:3000
+  |j};
+
+  Boxen.make(
+    ~value,
+    ~padding=Some(1),
+    ~margin=Some(1),
+    ~borderStyle=`doubleSingle,
+    ~borderColor=Some("blue"),
+    (),
+  );
+};
+
 let onListen = e =>
   switch (e) {
   | exception (Js.Exn.Error(e)) =>
     Js.log(e);
     Node.Process.exit(1);
-  | _ => Js.log("Listening at http://localhost:3000")
+  | _ => Js.log(listening())
   };
 
 App.listen(app, ~port=3000, ~onListen, ());
