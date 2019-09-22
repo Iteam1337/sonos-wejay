@@ -40,7 +40,7 @@ module Playlist = {
 let run =
   Queue.(
     fun
-    | IteamClassics => Playlist.iteamClassics->last
+    | IteamClassics => Playlist.iteamClassics->AsLastTrack.make()
     | FreeBird => Track.freeBird->next
     | Friday =>
       Utils.isFriday()
@@ -48,7 +48,7 @@ let run =
         : Js.Promise.resolve(`Ok("Sorry, it's not Friday"))
     | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
-    | Slowdance => Playlist.slowdance->last
+    | Slowdance => Playlist.slowdance->AsLastTrack.make()
     | Tequila => Track.tequila->next
     | WWW => Track.worldwideweb->next
   );

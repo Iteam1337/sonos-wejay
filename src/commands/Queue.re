@@ -84,48 +84,69 @@ module Exists = {
     | NotInQueue;
 
   let inQueue = trackUri => {
-    queueWithFallback()
-    |> then_(({items}) => {
-         let existsInQueue =
-           items
-           ->Belt.Array.map(item => Utils.sonosUriToSpotifyUri(item.uri))
-           ->Belt.Array.some(uri => uri == trackUri);
+    trackUri
+    ->SpotifyUtils.trackId
+    ->Belt.Option.getWithDefault("")
+    ->Spotify.getSpotifyTrack
+    |> then_((spotify: Spotify.WejayTrack.t) =>
+         queueWithFallback()
+         |> then_(({items}) => {
+              /* Only checking URI is not enough, so we do a
+               * naive artist/track name match as well. Sonos
+               * sometimes uses a different track URI
+               * than what was pasted in Wejay because
+               * of different regions or markets */
+              let existsInQueue =
+                items->Belt.Array.some(item =>
+                  Utils.sonosUriToSpotifyUri(item.uri) === trackUri
+                  || item.artist === spotify.artist
+                  && item.title === spotify.name
+                );
 
-         resolve(existsInQueue ? InQueue : NotInQueue);
-       });
+              resolve(existsInQueue ? InQueue : NotInQueue);
+            })
+       );
   };
 };
 
-let last = track => {
-  let parsedTrack = Utils.parsedTrack(track);
+module AsLastTrack = {
+  let queue = track => {
+    device->queueAsLast(track)
+    |> then_(queuedTrack =>
+         Services.getCurrentTrack()
+         |> then_(({queuePosition}: currentTrackResponse) => {
+              let {firstTrackNumberEnqueued}: queueResponse =
+                queuedTrack->queueResponse;
 
-  Exists.inQueue(parsedTrack)
-  |> then_((existsInQueue: Exists.t) =>
-       switch (existsInQueue) {
-       | InQueue => resolve(`Ok(Message.trackExistsInQueue))
-       | NotInQueue =>
-         device->queueAsLast(parsedTrack)
-         |> then_(queuedTrack =>
-              Services.getCurrentTrack()
-              |> then_(({queuePosition}: currentTrackResponse) => {
-                   let {firstTrackNumberEnqueued}: queueResponse =
-                     queuedTrack->queueResponse;
+              let message =
+                "Sweet! Your track is number *"
+                ++ trackPosition(
+                     ~first=firstTrackNumberEnqueued,
+                     ~queueAt=queuePosition,
+                     (),
+                   )
+                ++ "* in the queue :musical_note:";
 
-                   let message =
-                     "Sweet! Your track is number *"
-                     ++ trackPosition(
-                          ~first=firstTrackNumberEnqueued,
-                          ~queueAt=queuePosition,
-                          (),
-                        )
-                     ++ "* in the queue :musical_note:";
+              `Ok(message) |> resolve;
+            })
+       );
+  };
 
-                   `Ok(message) |> resolve;
-                 })
-            )
-         |> catch(_ => `Failed("Failed to queue track") |> resolve)
-       }
-     );
+  let make = (track, ~skipExists=false, ()) => {
+    let parsedTrack = Utils.parsedTrack(track);
+
+    skipExists
+      ? queue(parsedTrack)
+      : Exists.inQueue(parsedTrack)
+        |> then_((existsInQueue: Exists.t) =>
+             switch (existsInQueue) {
+             | InQueue => resolve(`Ok(Message.trackExistsInQueue))
+             | NotInQueue =>
+               queue(parsedTrack)
+               |> catch(_ => `Failed("Failed to queue track") |> resolve)
+             }
+           );
+  };
 };
 
 let next = track => {
@@ -171,7 +192,7 @@ let multiple = tracks => {
            switch (curr) {
            | Exists.InQueue => (inQueue + 1, notInQueue)
            | NotInQueue =>
-             last(parsedTracks[i]) |> ignore;
+             AsLastTrack.make(parsedTracks[i], ~skipExists=true, ()) |> ignore;
 
              (inQueue, notInQueue + 1);
            }

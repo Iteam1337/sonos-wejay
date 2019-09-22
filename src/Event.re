@@ -34,7 +34,7 @@ module Message = {
       | Clear => Queue.clear()
       | CurrentQueue => Queue.current()
       | FullQueue => Queue.full()
-      | Queue => Queue.last(args)
+      | Queue => Queue.AsLastTrack.make(args, ())
       | SpotifyCopy(tracks) => Queue.multiple(tracks)
 
       /* Player control */

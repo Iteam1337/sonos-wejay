@@ -10,7 +10,7 @@ module IndexRoute = {
     );
 };
 
-module VerificationRoute = {
+module VerificationCallback = {
   open Decode;
 
   let make = body => {
@@ -75,7 +75,7 @@ module EventRoute = {
         res
         |> (
           switch (Decode.EventResponse.make(body)) {
-          | UrlVerification => VerificationRoute.make(body)
+          | UrlVerification => VerificationCallback.make(body)
           | EventCallback(event) => EventCallback.make(event)
           | UnknownEvent => badRequest
           }
@@ -95,7 +95,7 @@ module ActionRoute = {
           body |> Decode.Action.make;
         let track = actions[0].value;
 
-        Queue.last(track)
+        Queue.AsLastTrack.make(track, ())
         |> then_(message => {
              Elastic.log(
                ~command=Human(Commands.Queue),
