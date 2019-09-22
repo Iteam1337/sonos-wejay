@@ -26,7 +26,8 @@
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "ppx-flags": ["@ryb73/decco/ppx/ppx_decco.sh"],
   "warnings": {
-    "error": "+101"
+    "number": "+A-4-9-40-41-42-48",
+    "error": "+A-3-4-40-42-44-102"
   },
   "namespace": true,
   "refmt": 3
