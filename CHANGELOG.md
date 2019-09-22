@@ -1,3 +1,10 @@
+## [6.4.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.0...v6.4.1) (2019-09-22)
+
+
+### Bug Fixes
+
+* **exists-in-queue:** handle same track with different uri ([63c1aa3](https://github.com/Iteam1337/sonos-wejay/commit/63c1aa3))
+
 # [6.4.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.3.1...v6.4.0) (2019-09-21)
 
 
