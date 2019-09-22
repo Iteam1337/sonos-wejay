@@ -17,8 +17,8 @@ module Blocks = {
     switch (command) {
     | Decode.Requester.Human(NowPlaying) => NowPlaying.run()
     | Human(Search) => Spotify.search(args)
-    | Human(_) => resolve(`Failed(Messages.unhandledCommand))
-    | Bot => resolve(`Failed(Messages.botRequest))
+    | Human(_) => resolve(`Failed(Message.unhandledCommand))
+    | Bot => resolve(`Failed(Message.botRequest))
     };
   };
 };
@@ -53,17 +53,17 @@ module Message = {
       | MostPlayed => MostPlayed.run()
       | Toplist => Toplist.run()
       | EasterEgg(egg) => EasterEgg.run(egg)
-      | Help => resolve(`Ok(Messages.help))
-      | Time => resolve(`Ok(Messages.thisIsWejay))
+      | Help => resolve(`Ok(Message.help))
+      | Time => resolve(`Ok(Message.thisIsWejay))
       | UnknownCommand(command) =>
-        resolve(`Ok(Messages.unknownCommand(command)))
+        resolve(`Ok(Message.unknownCommand(command)))
 
       /* Anything else */
-      | UnhandledCommand => resolve(`Failed(Messages.unhandledCommand))
+      | UnhandledCommand => resolve(`Failed(Message.unhandledCommand))
       | NowPlaying
       | Search => resolve(`Failed("Handled as blocks"))
       }
-    | Bot => resolve(`Failed(Messages.botRequest))
+    | Bot => resolve(`Failed(Message.botRequest))
     };
   };
 };

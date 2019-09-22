@@ -21,7 +21,7 @@ let run = () => {
 
          Belt.Array.(
            switch (length(hits)) {
-           | 0 => resolve(`Ok(Messages.noPlays))
+           | 0 => resolve(`Ok(Message.noPlays))
            | _ =>
              hits
              ->keep(filterPlaylists)

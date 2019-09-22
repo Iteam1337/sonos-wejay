@@ -13,7 +13,7 @@ let next = () =>
   EasterEgg.isEasterEgg()
   |> then_(isEasterEgg =>
        isEasterEgg
-         ? resolve(`Ok(Messages.cantSkipEasterEgg))
+         ? resolve(`Ok(Message.cantSkipEasterEgg))
          : device->next() |> then_(_ => resolve(`Ok("Playing next track")))
      );
 
@@ -21,7 +21,7 @@ let previous = () =>
   EasterEgg.isEasterEgg()
   |> then_(isEasterEgg =>
        isEasterEgg
-         ? resolve(`Ok(Messages.cantSkipEasterEgg))
+         ? resolve(`Ok(Message.cantSkipEasterEgg))
          : device->previous()
            |> then_(_ => resolve(`Ok("Playing previous track")))
      );
@@ -37,7 +37,7 @@ let play = () =>
   |> then_(({items}: Sonos.Decode.currentQueueResponse) => {
        let message =
          switch (items->Belt.Array.length) {
-         | 0 => Messages.emptyQueue
+         | 0 => Message.emptyQueue
          | _ =>
            device->play() |> then_(_ => resolve(true)) |> ignore;
            "Start playing!";
@@ -50,7 +50,7 @@ let playTrack = trackNumber =>
   EasterEgg.isEasterEgg()
   |> then_(isEasterEgg =>
        isEasterEgg
-         ? resolve(`Ok(Messages.cantSkipEasterEgg))
+         ? resolve(`Ok(Message.cantSkipEasterEgg))
          : device->selectTrack(trackNumber |> int_of_string)
            |> then_(_ =>
                 Services.getCurrentTrack()
@@ -85,7 +85,7 @@ let playTrack = trackNumber =>
                          "*Cannot play track "
                          ++ trackNumber
                          ++ "*\n"
-                         ++ Messages.emptyQueue
+                         ++ Message.emptyQueue
                        | _ =>
                          items
                          ->Belt.Array.mapWithIndex((i, {artist, title}) =>

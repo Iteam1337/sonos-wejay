@@ -42,8 +42,8 @@ let current = () =>
 
             let message =
               switch (numberOfTracks, queuePosition) {
-              | (0, _) => Messages.emptyQueue
-              | (nt, qp) when int_of_float(qp) == nt => Messages.emptyQueue
+              | (0, _) => Message.emptyQueue
+              | (nt, qp) when int_of_float(qp) == nt => Message.emptyQueue
               | _ =>
                 let tracks =
                   items
@@ -68,7 +68,7 @@ let full = () =>
   |> then_(({items}) => {
        let message =
          switch (items->Belt.Array.length) {
-         | 0 => Messages.emptyQueue
+         | 0 => Message.emptyQueue
          | _ =>
            let tracks = items->listTracks->Utils.joinWithNewline;
            "*Here's the full queue*\n" ++ tracks;
@@ -102,7 +102,7 @@ let last = track => {
   Exists.inQueue(parsedTrack)
   |> then_((existsInQueue: Exists.t) =>
        switch (existsInQueue) {
-       | InQueue => resolve(`Ok(Messages.trackExistsInQueue))
+       | InQueue => resolve(`Ok(Message.trackExistsInQueue))
        | NotInQueue =>
          device->queueAsLast(parsedTrack)
          |> then_(queuedTrack =>
@@ -134,7 +134,7 @@ let next = track => {
   Exists.inQueue(parsedTrack)
   |> then_((existsInQueue: Exists.t) =>
        switch (existsInQueue) {
-       | InQueue => resolve(`Ok(Messages.trackExistsInQueue))
+       | InQueue => resolve(`Ok(Message.trackExistsInQueue))
        | NotInQueue =>
          Services.getCurrentTrack()
          |> then_(({position, queuePosition}) =>

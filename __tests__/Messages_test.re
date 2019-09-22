@@ -1,5 +1,5 @@
 open Jest;
-open Messages;
+open Message;
 open Expect;
 
 test("has text for when nothing is playing", () =>

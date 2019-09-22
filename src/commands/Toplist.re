@@ -1,6 +1,6 @@
 let message = (hits: Elastic.Aggregate.t) =>
   switch (Belt.Array.length(hits)) {
-  | 0 => `Ok(Messages.noPlays)
+  | 0 => `Ok(Message.noPlays)
   | _ =>
     `Ok(
       "*Toplist*\n"

@@ -56,7 +56,7 @@ let handleEmoji =
   | ThumbsUp => Volume.update("10")
   | Santa => Christmas.randomTrack()->Queue.next
   | UnhandledEmoji(emoji) =>
-    Js.Promise.resolve(`Ok(Messages.unknownCommand(emoji)));
+    Js.Promise.resolve(`Ok(Message.unknownCommand(emoji)));
 
 let isEmoji = command =>
   switch (Js.String.match(Regex.Patterns.isEmoji, command)) {
