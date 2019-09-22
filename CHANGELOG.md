@@ -1,3 +1,10 @@
+## [6.4.2](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.1...v6.4.2) (2019-09-22)
+
+
+### Bug Fixes
+
+* **pause:** remove line break in message ([ab2ac44](https://github.com/Iteam1337/sonos-wejay/commit/ab2ac44))
+
 ## [6.4.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.0...v6.4.1) (2019-09-22)
 
 
