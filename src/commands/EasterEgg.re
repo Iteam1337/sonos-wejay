@@ -53,13 +53,32 @@ let run =
     | WWW => Track.worldwideweb->next
   );
 
-let isEasterEgg = () => {
-  Js.Promise.(
-    Services.getCurrentTrack()
-    |> then_(({uri}: Sonos.Decode.currentTrackResponse) =>
-         Track.easterEggTracks
-         ->Belt.List.some(track => track == Utils.sonosUriToSpotifyUri(uri))
-         ->resolve
-       )
-  );
+module Test = {
+  type t =
+    | EasterEgg
+    | RegularTrack;
+
+  let fromBool =
+    fun
+    | true => EasterEgg
+    | false => RegularTrack;
+
+  let make = continuation => {
+    Js.Promise.(
+      Services.getCurrentTrack()
+      |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
+           let isEasterEgg =
+             Track.easterEggTracks
+             ->Belt.List.some(track =>
+                 track == Utils.sonosUriToSpotifyUri(uri)
+               )
+             ->fromBool;
+
+           switch (isEasterEgg) {
+           | EasterEgg => resolve(`Ok(Message.cantSkipEasterEgg))
+           | RegularTrack => continuation
+           };
+         })
+    );
+  };
 };
