@@ -1,3 +1,15 @@
+# [6.5.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.2...v6.5.0) (2019-09-23)
+
+
+### Bug Fixes
+
+* **pause:** handle error in pause when nothing is playing ([966ef43](https://github.com/Iteam1337/sonos-wejay/commit/966ef43))
+
+
+### Features
+
+* display helpful messages when params are missing ([6d17386](https://github.com/Iteam1337/sonos-wejay/commit/6d17386))
+
 ## [6.4.2](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.1...v6.4.2) (2019-09-22)
 
 
