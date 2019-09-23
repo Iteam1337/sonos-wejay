@@ -41,57 +41,63 @@ let play = () =>
      });
 
 let playTrack = trackNumber =>
-  EasterEgg.Test.make(
-    device->selectTrack(trackNumber |> int_of_string)
-    |> then_(_ =>
-         Services.getCurrentTrack()
-         |> then_(({artist, title}: Sonos.Decode.currentTrackResponse) => {
-              Services.getPlayingState()
-              |> then_((state: Sonos.Decode.currentPlayingState) => {
-                   switch (state) {
-                   | Paused
-                   | Stopped => play() |> ignore
-                   | Playing
-                   | UnknownState => ()
-                   };
+  switch (trackNumber) {
+  | "" =>
+    `Ok("You forgot to add a track number\n*Example:* `playtrack 2`")
+    |> resolve
+  | trackNumber =>
+    EasterEgg.Test.make(
+      device->selectTrack(trackNumber |> int_of_string)
+      |> then_(_ =>
+           Services.getCurrentTrack()
+           |> then_(({artist, title}: Sonos.Decode.currentTrackResponse) => {
+                Services.getPlayingState()
+                |> then_((state: Sonos.Decode.currentPlayingState) => {
+                     switch (state) {
+                     | Paused
+                     | Stopped => play() |> ignore
+                     | Playing
+                     | UnknownState => ()
+                     };
 
-                   resolve(true);
-                 })
-              |> ignore;
+                     resolve(true);
+                   })
+                |> ignore;
 
-              `Ok(
-                "*Playing track*\n" ++ Utils.artistAndTitle(~artist, ~title),
-              )
-              |> resolve;
-            })
-       )
-    |> catch(_ =>
-         Queue.queueWithFallback()
-         |> then_(({items}: Sonos.Decode.currentQueueResponse) => {
-              let message =
-                switch (items->Belt.Array.length) {
-                | 0 =>
-                  "*Cannot play track "
-                  ++ trackNumber
-                  ++ "*\n"
-                  ++ Message.emptyQueue
-                | _ =>
-                  items
-                  ->Belt.Array.mapWithIndex((i, {artist, title}) =>
-                      Utils.listNumber(i)
-                      ++ Utils.artistAndTitle(~artist, ~title)
-                    )
-                  ->Utils.joinWithNewline
-                  ->(
-                      tracks =>
-                        "*Cannot play track "
-                        ++ trackNumber
-                        ++ ". Here's the whole queue*\n"
-                        ++ tracks
-                    )
-                };
+                `Ok(
+                  "*Playing track*\n" ++ Utils.artistAndTitle(~artist, ~title),
+                )
+                |> resolve;
+              })
+         )
+      |> catch(_ =>
+           Queue.queueWithFallback()
+           |> then_(({items}: Sonos.Decode.currentQueueResponse) => {
+                let message =
+                  switch (items->Belt.Array.length) {
+                  | 0 =>
+                    "*Cannot play track "
+                    ++ trackNumber
+                    ++ "*\n"
+                    ++ Message.emptyQueue
+                  | _ =>
+                    items
+                    ->Belt.Array.mapWithIndex((i, {artist, title}) =>
+                        Utils.listNumber(i)
+                        ++ Utils.artistAndTitle(~artist, ~title)
+                      )
+                    ->Utils.joinWithNewline
+                    ->(
+                        tracks =>
+                          "*Cannot play track "
+                          ++ trackNumber
+                          ++ ". Here's the whole queue*\n"
+                          ++ tracks
+                      )
+                  };
 
-              `Ok(message) |> resolve;
-            })
-       ),
-  );
+                `Ok(message) |> resolve;
+              })
+         ),
+    )
+  };

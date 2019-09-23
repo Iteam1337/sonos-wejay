@@ -64,29 +64,41 @@ let createSearchAttachment =
 
 let search = query => {
   Js.Promise.(
-    _search(query |> Js.Global.encodeURIComponent)
-    |> then_(response => {
-         let tracks = response |> WejayTrack.tracks;
+    switch (query) {
+    | "" =>
+      `Ok([|
+        Slack.Block.Section.make(
+          ~text=
+            "You forgot to tell what to search for\n*Example:* `search rebecca black friday`",
+          (),
+        ),
+      |])
+      |> resolve
+    | query =>
+      _search(query |> Js.Global.encodeURIComponent)
+      |> then_(response => {
+           let tracks = response |> WejayTrack.tracks;
 
-         let message =
-           switch (Belt.Array.length(tracks)) {
-           | 0 => {j|Sorry, I couldn't find anything with *$query*|j}
-           | _ => {j|Here are the results for *$query*|j}
-           };
+           let message =
+             switch (Belt.Array.length(tracks)) {
+             | 0 => {j|Sorry, I couldn't find anything with *$query*|j}
+             | _ => {j|Here are the results for *$query*|j}
+             };
 
-         let attachments =
-           tracks
-           ->Belt.Array.slice(~offset=0, ~len=5)
-           ->Belt.Array.reduce([||], (acc, curr) =>
-               acc->Belt.Array.concat(createSearchAttachment(curr))
-             );
+           let attachments =
+             tracks
+             ->Belt.Array.slice(~offset=0, ~len=5)
+             ->Belt.Array.reduce([||], (acc, curr) =>
+                 acc->Belt.Array.concat(createSearchAttachment(curr))
+               );
 
-         resolve(
-           `Ok(
-             [|Slack.Block.Section.make(~text=message, ())|]
-             ->Belt.Array.concat(attachments),
-           ),
-         );
-       })
+           resolve(
+             `Ok(
+               [|Slack.Block.Section.make(~text=message, ())|]
+               ->Belt.Array.concat(attachments),
+             ),
+           );
+         })
+    }
   );
 };

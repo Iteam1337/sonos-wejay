@@ -133,19 +133,27 @@ module AsLastTrack = {
   };
 
   let make = (track, ~skipExists=false, ()) => {
-    let parsedTrack = Utils.parsedTrack(track);
+    switch (track) {
+    | "" =>
+      `Ok(
+        "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
+      )
+      |> resolve
+    | track =>
+      let parsedTrack = Utils.parsedTrack(track);
 
-    skipExists
-      ? queue(parsedTrack)
-      : Exists.inQueue(parsedTrack)
-        |> then_((existsInQueue: Exists.t) =>
-             switch (existsInQueue) {
-             | InQueue => resolve(`Ok(Message.trackExistsInQueue))
-             | NotInQueue =>
-               queue(parsedTrack)
-               |> catch(_ => `Failed("Failed to queue track") |> resolve)
-             }
-           );
+      skipExists
+        ? queue(parsedTrack)
+        : Exists.inQueue(parsedTrack)
+          |> then_((existsInQueue: Exists.t) =>
+               switch (existsInQueue) {
+               | InQueue => resolve(`Ok(Message.trackExistsInQueue))
+               | NotInQueue =>
+                 queue(parsedTrack)
+                 |> catch(_ => `Failed("Failed to queue track") |> resolve)
+               }
+             );
+    };
   };
 };
 
