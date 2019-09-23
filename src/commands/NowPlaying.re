@@ -4,23 +4,17 @@ let message = (~sonos, ~cover) => {
   let trackDuration = Utils.parseDuration(duration);
   let currentPosition = Utils.parseDuration(position);
 
-  Slack.Block.(
-    [|
-      Fields.make(
-        ~fields=[|
-          Text.make(~text={j|*Artist*\n$artist|j}, ()),
-          Text.make(~text={j|*Track name*\n$title|j}, ()),
-          Text.make(~text={j|*Album*\n$album|j}, ()),
-          Text.make(
-            ~text={j|*Current position*\n$currentPosition / $trackDuration|j},
-            (),
-          ),
-        |],
-        ~accessory=Image.make(~image_url=cover, ~alt_text="Album cover", ()),
-        (),
-      ),
-    |]
-  );
+  Slack.Block.make([
+    `FieldsWithImage({
+      accessory: `Image((cover, "Album cover")),
+      fields: [
+        `Text({j|*Artist*\n$artist|j}),
+        `Text({j|*Track name*\n$title|j}),
+        `Text({j|*Album*\n$album|j}),
+        `Text({j|*Current position*\n$currentPosition / $trackDuration|j}),
+      ],
+    }),
+  ]);
 };
 
 let run = () =>
@@ -32,12 +26,7 @@ let run = () =>
 
          switch (id) {
          | None =>
-           `Ok([|
-             Slack.Block.Section.make(
-               ~text="Nothing is currently playing",
-               (),
-             ),
-           |])
+           `Ok(Slack.Block.make([`Section("Nothing is currently playing")]))
            |> resolve
          | Some(id) =>
            Spotify.getSpotifyTrack(id)

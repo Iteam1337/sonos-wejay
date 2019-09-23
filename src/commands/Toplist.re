@@ -20,7 +20,7 @@ let run = () => {
     |> then_(response => {
          let resp = response##data->Elastic.Aggregate.make;
 
-         `Ok(Slack.Block.Simple.make(~message=message(resp))) |> resolve;
+         `Ok(Slack.Block.make([`Section(message(resp))])) |> resolve;
        })
   );
 };

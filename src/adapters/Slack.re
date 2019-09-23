@@ -1,111 +1,114 @@
 module Block = {
-  [@bs.deriving {jsConverter: newType}]
-  type text = {
-    _type: string,
-    text: string,
-  };
-
-  [@bs.deriving {jsConverter: newType}]
-  type accessory = {
-    _type: string,
-    action_id: option(string),
-    alt_text: option(string),
-    image_url: option(string),
-    text: option(abs_text),
-    value: option(string),
-  };
-
-  [@bs.deriving jsConverter]
-  type section = {
-    _type: string,
-    elements: option(array(option(abs_accessory))),
-    fields: option(array(abs_text)),
-    accessory: option(abs_accessory),
-    text: option(abs_text),
-  };
-
-  let base =
-      (
-        ~_type="section",
-        ~fields=None,
-        ~text=None,
-        ~accessory=None,
-        ~elements=None,
-        (),
-      ) => {
-    sectionToJs({_type, fields, text, accessory, elements});
-  };
-
-  let baseAccessory =
-      (
-        ~_type,
-        ~image_url=None,
-        ~alt_text=None,
-        ~text=None,
-        ~value=None,
-        ~action_id=None,
-        (),
-      ) => {
-    accessoryToJs({_type, image_url, alt_text, text, value, action_id});
-  };
-
   module Text = {
-    let make = (~text, ~_type="mrkdwn", ()) => {
-      textToJs({_type, text});
-    };
-  };
-
-  module Image = {
-    let make = (~image_url, ~alt_text, ~_type="image", ()) => {
-      Some(
-        baseAccessory(
-          ~_type,
-          ~image_url=Some(image_url),
-          ~alt_text=Some(alt_text),
-          (),
-        ),
-      );
-    };
-  };
-
-  module Button = {
-    let make = (~text, ~value, ~action_id, ~_type="button", ()) => {
-      Some(
-        baseAccessory(
-          ~_type,
-          ~value=Some(value),
-          ~action_id=Some(action_id),
-          ~text=Some(Text.make(~text, ~_type="plain_text", ())),
-          (),
-        ),
-      );
-    };
+    let make = (~text) => {"type": "mrkdwn", "text": text} |> Obj.magic;
   };
 
   module Divider = {
-    let make = () => base(~_type="divider", ());
-  };
-
-  module Fields = {
-    let make = (~fields, ~accessory=None, ()) =>
-      base(~fields=Some(fields), ~accessory, ());
-  };
-
-  module Actions = {
-    let make = (~elements) =>
-      base(~_type="actions", ~elements=Some(elements), ());
+    let make = () => {"type": "divider"} |> Obj.magic;
   };
 
   module Section = {
-    let make = (~text, ~_type="mrkdwn", ~accessory=None, ()) =>
-      base(~accessory, ~text=Some(Text.make(~_type, ~text, ())), ());
+    let make = (~text) =>
+      {"type": "section", "text": Text.make(~text)} |> Obj.magic;
   };
 
-  module Simple = {
-    let make = (~message as text) => {
-      [|Section.make(~text, ())|];
+  module Accessory = {
+    type t = [ | `Image(string, string)];
+
+    module Button = {
+      type t = {
+        text: string,
+        value: string,
+        action_id: string,
+      };
+
+      let make = (~text, ~value, ~action_id) =>
+        {
+          "type": "button",
+          "action_id": action_id,
+          "text": {
+            "type": "plain_text",
+            "text": text,
+          },
+          "value": value,
+        }
+        |> Obj.magic;
+    };
+
+    module Image = {
+      let make = (~image_url, ~alt_text) =>
+        {"type": "image", "image_url": image_url, "alt_text": alt_text}
+        |> Obj.magic;
     };
   };
+
+  module Actions = {
+    type t = [ | `Button(Accessory.Button.t)];
+
+    let make = (~elements) => {
+      let elements =
+        elements
+        ->Belt.List.map(element =>
+            switch (element) {
+            | `Button(({text, value, action_id}: Accessory.Button.t)) =>
+              Accessory.Button.make(~text, ~value, ~action_id)
+            }
+          )
+        ->Belt.List.toArray;
+
+      {"type": "actions", "elements": elements} |> Obj.magic;
+    };
+  };
+
+  module Field = {
+    type t = [ | `Text(string)];
+
+    let handleAccessory =
+      fun
+      | `Image(image_url, alt_text) =>
+        Accessory.Image.make(~image_url, ~alt_text);
+
+    let handleFields =
+      fun
+      | `Text(text) => Text.make(~text);
+
+    module WithImage = {
+      let make = (~fields, ~accessory) => {
+        let accessory = handleAccessory(accessory);
+        let fields = fields->Belt.List.map(handleFields)->Belt.List.toArray;
+
+        {"type": "section", "fields": fields, "accessory": accessory}
+        |> Obj.magic;
+      };
+    };
+  };
+
+  type fields = {
+    accessory: Accessory.t,
+    fields: list(Field.t),
+  };
+
+  type t = [
+    | `Divider
+    | `FieldsWithImage(fields)
+    | `Actions(list(Actions.t))
+    | `Section(string)
+  ];
+
+  let make: list(t) => array(Js.t('a)) =
+    blocks => {
+      blocks
+      ->Belt.List.map(block =>
+          switch (block) {
+          | `Divider => Divider.make()
+          | `FieldsWithImage({accessory, fields}) =>
+            Field.WithImage.make(~accessory, ~fields)
+          | `Actions(elements) => Actions.make(~elements)
+          | `Section(text) => Section.make(~text)
+          }
+        )
+      ->Belt.List.toArray;
+    };
 };
 
 let userId = id => "<@" ++ id ++ ">";

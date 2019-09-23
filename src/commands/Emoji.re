@@ -56,7 +56,7 @@ let make =
   | ThumbsUp => Volume.update("10")
   | Santa => Christmas.randomTrack()->Queue.next
   | UnhandledEmoji(emoji) =>
-    `Ok(Slack.Block.Simple.make(~message=Message.unknownCommand(emoji)))
+    `Ok(Slack.Block.make([`Section(Message.unknownCommand(emoji))]))
     |> Js.Promise.resolve;
 
 let isEmoji = command =>

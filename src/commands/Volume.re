@@ -5,9 +5,9 @@ let current = () =>
   Config.device->getVolume()
   |> then_(volume =>
        `Ok(
-         Slack.Block.Simple.make(
-           ~message="Current volume is " ++ (volume |> Utils.cleanFloat),
-         ),
+         Slack.Block.make([
+           `Section("Current volume is " ++ (volume |> Utils.cleanFloat)),
+         ]),
        )
        |> resolve
      )
@@ -25,9 +25,9 @@ let update = volumeValue =>
        Config.device->setVolume(newVolume)
        |> then_(_ =>
             `Ok(
-              Slack.Block.Simple.make(
-                ~message="Volume set to " ++ Utils.cleanFloat(newVolume),
-              ),
+              Slack.Block.make([
+                `Section("Volume set to " ++ Utils.cleanFloat(newVolume)),
+              ]),
             )
             |> resolve
           );

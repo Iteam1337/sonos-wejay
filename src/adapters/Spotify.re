@@ -35,44 +35,38 @@ let createSearchAttachment =
     ({albumName, artist, cover, duration, name, uri}: WejayTrack.t) => {
   let trackDuration = Utils.parseDuration(duration /. 1000.0);
 
-  Slack.Block.(
-    [|
-      Divider.make(),
-      Fields.make(
-        ~accessory=Image.make(~image_url=cover, ~alt_text="Album cover", ()),
-        ~fields=[|
-          Text.make(~text={j|*Artist*\n$artist|j}, ()),
-          Text.make(~text={j|*Track name*\n$name|j}, ()),
-          Text.make(~text={j|*Album*\n$albumName|j}, ()),
-          Text.make(~text={j|*Current position*\n$trackDuration|j}, ()),
-        |],
-        (),
-      ),
-      Actions.make(
-        ~elements=[|
-          Button.make(
-            ~text="Queue track",
-            ~value=uri,
-            ~action_id="queue_new_track",
-            (),
-          ),
-        |],
-      ),
-    |]
-  );
+  Slack.Block.make([
+    `Divider,
+    `FieldsWithImage({
+      accessory: `Image((cover, "Album cover")),
+      fields: [
+        `Text({j|*Artist*\n$artist|j}),
+        `Text({j|*Track name*\n$name|j}),
+        `Text({j|*Album*\n$albumName|j}),
+        `Text({j|*Current position*\n$trackDuration|j}),
+      ],
+    }),
+    `Actions([
+      `Button({
+        text: "Queue track",
+        value: uri,
+        action_id: "queue_new_track",
+      }),
+    ]),
+  ]);
 };
 
 let search = query => {
   Js.Promise.(
     switch (query) {
     | "" =>
-      `Ok([|
-        Slack.Block.Section.make(
-          ~text=
+      `Ok(
+        Slack.Block.make([
+          `Section(
             "You forgot to tell me what to search for\n*Example:* `search rebecca black friday`",
-          (),
-        ),
-      |])
+          ),
+        ]),
+      )
       |> resolve
     | query =>
       _search(query |> Js.Global.encodeURIComponent)
@@ -94,7 +88,7 @@ let search = query => {
 
            resolve(
              `Ok(
-               [|Slack.Block.Section.make(~text=message, ())|]
+               Slack.Block.make([`Section(message)])
                ->Belt.Array.concat(attachments),
              ),
            );

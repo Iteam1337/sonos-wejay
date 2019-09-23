@@ -82,10 +82,10 @@ module ActionRoute = {
                API.createRequest(
                  ~url=response_url,
                  ~_method="POST",
-                 ~data=Some({"text": m}),
+                 ~data=Some({"text": m[0]##text##text}),
                  (),
                )
-               |> then_(_ => res |> Response.sendArray(m) |> resolve)
+               |> then_(_ => res |> Response.sendStatus(Ok) |> resolve)
 
              | `Failed(_) => res |> badRequest |> resolve
              };

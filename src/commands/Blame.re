@@ -36,8 +36,7 @@ let run = () =>
 
          Request.make(uri)
          |> then_(response =>
-              `Ok(Slack.Block.Simple.make(~message=message(response)))
-              ->resolve
+              `Ok(Slack.Block.make([`Section(message(response))]))->resolve
             );
        })
   );

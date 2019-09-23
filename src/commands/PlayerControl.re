@@ -1,6 +1,5 @@
 open Sonos.Methods;
 open Js.Promise;
-open Slack.Block;
 
 /* The Sonos device we send all commands to. Connect devices in the Sonos
  * Controller App to make it play everywhere. */
@@ -8,19 +7,23 @@ let device = Config.device;
 
 let pause = () =>
   device->pause()
-  |> then_(_ => `Ok(Simple.make(~message="Playback paused")) |> resolve)
+  |> then_(_ =>
+       `Ok(Slack.Block.make([`Section("Playback paused")])) |> resolve
+     )
   |> catch(_ =>
-       `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+       `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
+       |> resolve
      );
 
 let next = () =>
   EasterEgg.Test.make(
     device->next()
     |> then_(_ =>
-         `Ok(Simple.make(~message="Playing next track")) |> resolve
+         `Ok(Slack.Block.make([`Section("Playing next track")])) |> resolve
        )
     |> catch(_ =>
-         `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+         `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
+         |> resolve
        ),
   );
 
@@ -28,10 +31,12 @@ let previous = () =>
   EasterEgg.Test.make(
     device->previous()
     |> then_(_ =>
-         `Ok(Simple.make(~message="Playing previous track")) |> resolve
+         `Ok(Slack.Block.make([`Section("Playing previous track")]))
+         |> resolve
        )
     |> catch(_ =>
-         `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+         `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
+         |> resolve
        ),
   );
 
@@ -40,7 +45,7 @@ let mute = isMuted =>
   |> then_(_ => {
        let message = isMuted ? "Muted speakers" : "Unmuted speakers";
 
-       `Ok(Simple.make(~message)) |> resolve;
+       `Ok(Slack.Block.make([`Section(message)])) |> resolve;
      });
 
 let play = () =>
@@ -55,16 +60,18 @@ let play = () =>
            "Start playing!";
          };
 
-       resolve(`Ok(Simple.make(~message)));
+       resolve(`Ok(Slack.Block.make([`Section(message)])));
      });
 
 let playTrack = trackNumber =>
   switch (trackNumber) {
   | "" =>
     `Ok(
-      Simple.make(
-        ~message="You forgot to add a track number\n*Example:* `playtrack 2`",
-      ),
+      Slack.Block.make([
+        `Section(
+          "You forgot to add a track number\n*Example:* `playtrack 2`",
+        ),
+      ]),
     )
     |> resolve
   | trackNumber =>
@@ -87,11 +94,12 @@ let playTrack = trackNumber =>
                 |> ignore;
 
                 `Ok(
-                  Simple.make(
-                    ~message=
+                  Slack.Block.make([
+                    `Section(
                       "*Playing track*\n"
                       ++ Utils.artistAndTitle(~artist, ~title),
-                  ),
+                    ),
+                  ]),
                 )
                 |> resolve;
               })
@@ -122,7 +130,7 @@ let playTrack = trackNumber =>
                       )
                   };
 
-                `Ok(Simple.make(~message)) |> resolve;
+                `Ok(Slack.Block.make([`Section(message)])) |> resolve;
               })
          ),
     )

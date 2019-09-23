@@ -42,13 +42,13 @@ let make = (~command, ~args, ~user, ()) => {
     | MostPlayed => MostPlayed.run()
     | Toplist => Toplist.run()
     | EasterEgg(egg) => EasterEgg.run(egg)
-    | Help => `Ok(Slack.Block.Simple.make(~message=Message.help)) |> resolve
+    | Help => `Ok(Slack.Block.make([`Section(Message.help)])) |> resolve
     | Time =>
-      `Ok(Slack.Block.Simple.make(~message=Message.thisIsWejay)) |> resolve
+      `Ok(Slack.Block.make([`Section(Message.thisIsWejay)])) |> resolve
 
     /* Unhandled and unknown */
     | UnknownCommand(cmd) =>
-      `Ok(Slack.Block.Simple.make(~message=Message.unknownCommand(cmd)))
+      `Ok(Slack.Block.make([`Section(Message.unknownCommand(cmd))]))
       |> resolve
     | UnhandledCommand => `Failed(Message.unhandledCommand) |> resolve
     }

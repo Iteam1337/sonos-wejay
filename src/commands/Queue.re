@@ -1,7 +1,6 @@
 open Sonos.Methods;
 open Sonos.Decode;
 open Js.Promise;
-open Slack.Block;
 
 let device = Config.device;
 
@@ -33,10 +32,11 @@ let clear = () =>
   device->Sonos.Methods.flush()
   |> then_(_ =>
        `Ok(
-         Simple.make(
-           ~message=
+         Slack.Block.make([
+           `Section(
              "I have cleared the queue for you. Add some new tracks! :dusty_stick:",
-         ),
+           ),
+         ]),
        )
        |> resolve
      )
@@ -66,7 +66,7 @@ let current = () =>
                 "*Upcoming tracks*\n" ++ tracks;
               };
 
-            `Ok(Simple.make(~message)) |> resolve;
+            `Ok(Slack.Block.make([`Section(message)])) |> resolve;
           })
        |> catch(_ => `Failed("Failed to get current queue") |> resolve)
      )
@@ -83,7 +83,7 @@ let full = () =>
            "*Here's the full queue*\n" ++ tracks;
          };
 
-       `Ok(Simple.make(~message)) |> resolve;
+       `Ok(Slack.Block.make([`Section(message)])) |> resolve;
      })
   |> catch(_ => `Failed("Failed to get full queue") |> resolve);
 
@@ -136,7 +136,7 @@ module AsLastTrack = {
                    )
                 ++ "* in the queue :musical_note:";
 
-              `Ok(Simple.make(~message)) |> resolve;
+              `Ok(Slack.Block.make([`Section(message)])) |> resolve;
             })
        );
   };
@@ -145,10 +145,11 @@ module AsLastTrack = {
     switch (track) {
     | "" =>
       `Ok(
-        Simple.make(
-          ~message=
+        Slack.Block.make([
+          `Section(
             "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
-        ),
+          ),
+        ]),
       )
       |> resolve
     | track =>
@@ -161,7 +162,11 @@ module AsLastTrack = {
                switch (existsInQueue) {
                | InQueue =>
                  resolve(
-                   `Ok(Simple.make(~message=Message.trackExistsInQueue)),
+                   `Ok(
+                     Slack.Block.make([
+                       `Section(Message.trackExistsInQueue),
+                     ]),
+                   ),
                  )
                | NotInQueue =>
                  queue(parsedTrack)
@@ -179,7 +184,9 @@ let next = track => {
   |> then_((existsInQueue: Exists.t) =>
        switch (existsInQueue) {
        | InQueue =>
-         resolve(`Ok(Simple.make(~message=Message.trackExistsInQueue)))
+         resolve(
+           `Ok(Slack.Block.make([`Section(Message.trackExistsInQueue)])),
+         )
        | NotInQueue =>
          Services.getCurrentTrack()
          |> then_(({position, queuePosition}) =>
@@ -191,7 +198,7 @@ let next = track => {
                      | _ => "Your track will play right after the current"
                      };
 
-                   `Ok(Simple.make(~message)) |> resolve;
+                   `Ok(Slack.Block.make([`Section(message)])) |> resolve;
                  })
               |> catch(_ => `Failed("Failed to queue track") |> resolve)
             )
@@ -233,6 +240,6 @@ let multiple = tracks => {
          | (x, y) => {j|Queued *$y* tracks, skipped *$x* that are already queued|j}
          };
 
-       resolve(`Ok(Simple.make(~message)));
+       resolve(`Ok(Slack.Block.make([`Section(message)])));
      });
 };

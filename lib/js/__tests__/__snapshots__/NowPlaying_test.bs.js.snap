@@ -4,14 +4,10 @@ exports[`#nowPlayingData current track 1`] = `
 Array [
   Object {
     "accessory": Object {
-      "action_id": undefined,
       "alt_text": "Album cover",
       "image_url": "img",
-      "text": undefined,
       "type": "image",
-      "value": undefined,
     },
-    "elements": undefined,
     "fields": Array [
       Object {
         "text": "*Artist*
@@ -34,7 +30,6 @@ Echelon",
         "type": "mrkdwn",
       },
     ],
-    "text": undefined,
     "type": "section",
   },
 ]
@@ -44,14 +39,10 @@ exports[`#nowPlayingData nothing is playing 1`] = `
 Array [
   Object {
     "accessory": Object {
-      "action_id": undefined,
       "alt_text": "Album cover",
       "image_url": "img",
-      "text": undefined,
       "type": "image",
-      "value": undefined,
     },
-    "elements": undefined,
     "fields": Array [
       Object {
         "text": "*Artist*
@@ -74,7 +65,6 @@ Echelon",
         "type": "mrkdwn",
       },
     ],
-    "text": undefined,
     "type": "section",
   },
 ]
