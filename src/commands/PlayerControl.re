@@ -6,7 +6,9 @@ open Js.Promise;
 let device = Config.device;
 
 let pause = () =>
-  device->pause() |> then_(_ => resolve(`Ok("Playback paused")));
+  device->pause()
+  |> then_(_ => resolve(`Ok("Playback paused")))
+  |> catch(_ => resolve(`Ok("Nothing is playing")));
 
 let next = () =>
   EasterEgg.isEasterEgg()
