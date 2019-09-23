@@ -100,6 +100,12 @@ module Block = {
     let make = (~text, ~_type="mrkdwn", ~accessory=None, ()) =>
       base(~accessory, ~text=Some(Text.make(~_type, ~text, ())), ());
   };
+
+  module Simple = {
+    let make = (~message as text) => {
+      [|Section.make(~text, ())|];
+    };
+  };
 };
 
 let userId = id => "<@" ++ id ++ ">";
@@ -160,13 +166,6 @@ module Message = {
     _ =
     "";
 
-  module Blocks = {
-    let make = (channel, blocks) =>
-      slackMessage(~channel, ~blocks, ()) |> sendPayload;
-  };
-
-  module Regular = {
-    let make = (channel, message) =>
-      slackMessage(~channel, ~text=message, ()) |> sendPayload;
-  };
+  let make = (channel, blocks) =>
+    slackMessage(~channel, ~blocks, ()) |> sendPayload;
 };

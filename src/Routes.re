@@ -10,64 +10,32 @@ module IndexRoute = {
     );
 };
 
-module VerificationCallback = {
-  open Decode;
+module EventRoute = {
+  module VerificationCallback = {
+    open Decode;
 
-  let make = body => {
-    let {challenge}: Verification.t = Verification.make(body);
-    Response.sendString(challenge);
-  };
-};
-
-module CreateMessage = {
-  let make = (~request, ~messenger, ~creator) => {
-    let {channel, command, text: args, user}: Decode.Event.t = request;
-
-    creator(~command, ~args, ~user, ())
-    |> then_(response => {
-         switch (response) {
-         | `Ok(r) => messenger(channel, r)
-         | `Failed(_) => ()
-         };
-         resolve();
-       })
-    |> ignore;
-  };
-
-  let message = request => {
-    make(
-      ~request,
-      ~messenger=Slack.Message.Regular.make,
-      ~creator=Event.Message.make,
-    );
-  };
-
-  let blocks = request => {
-    make(
-      ~request,
-      ~messenger=Slack.Message.Blocks.make,
-      ~creator=Event.Blocks.make,
-    );
-  };
-};
-
-module EventCallback = {
-  let make = (event: option(Decode.Event.t), res) => {
-    switch (event) {
-    | Some({command} as e) =>
-      switch (command) {
-      | Human(Search)
-      | Human(NowPlaying) => CreateMessage.blocks(e)
-      | _ => CreateMessage.message(e)
-      };
-
-      res |> Response.sendStatus(Ok);
-    | None => res |> Response.sendStatus(BadRequest)
+    let make = body => {
+      let {challenge}: Verification.t = Verification.make(body);
+      Response.sendString(challenge);
     };
   };
-};
 
-module EventRoute = {
+  module EventCallback = {
+    let make = event => {
+      let {channel, command, text: args, user}: Decode.Event.t = event;
+
+      Event.make(~command, ~args, ~user, ())
+      |> then_(response => {
+           switch (response) {
+           | `Ok(r) => Slack.Message.make(channel, r)
+           | `Failed(_) => ()
+           };
+           resolve();
+         })
+      |> ignore;
+    };
+  };
+
   let make =
     PromiseMiddleware.from((_next, req, res) =>
       switch (Request.bodyJSON(req)) {
@@ -76,7 +44,13 @@ module EventRoute = {
         |> (
           switch (Decode.EventResponse.make(body)) {
           | UrlVerification => VerificationCallback.make(body)
-          | EventCallback(event) => EventCallback.make(event)
+          | EventCallback(event) =>
+            switch (event) {
+            | Some(event) =>
+              EventCallback.make(event);
+              Response.sendStatus(Ok);
+            | None => badRequest
+            }
           | UnknownEvent => badRequest
           }
         )
@@ -111,7 +85,7 @@ module ActionRoute = {
                  ~data=Some({"text": m}),
                  (),
                )
-               |> then_(_ => res |> Response.sendString(m) |> resolve)
+               |> then_(_ => res |> Response.sendArray(m) |> resolve)
 
              | `Failed(_) => res |> badRequest |> resolve
              };

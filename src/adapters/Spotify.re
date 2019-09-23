@@ -69,7 +69,7 @@ let search = query => {
       `Ok([|
         Slack.Block.Section.make(
           ~text=
-            "You forgot to tell what to search for\n*Example:* `search rebecca black friday`",
+            "You forgot to tell me what to search for\n*Example:* `search rebecca black friday`",
           (),
         ),
       |])

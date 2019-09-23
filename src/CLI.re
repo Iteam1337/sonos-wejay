@@ -44,10 +44,10 @@ let route =
         |> then_(user => {
              let {command, args} = decode(body);
 
-             Event.Message.make(~command, ~args, ~user=Some(user), ())
+             Event.make(~command, ~args, ~user=Some(user), ())
              |> then_(response =>
                   switch (response) {
-                  | `Ok(r) => res |> Response.sendString(r) |> resolve
+                  | `Ok(r) => res |> Response.sendArray(r) |> resolve
                   | `Failed(_) =>
                     res |> Response.sendStatus(BadRequest) |> resolve
                   }

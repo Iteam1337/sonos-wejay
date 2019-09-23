@@ -1,6 +1,7 @@
 open Sonos.Methods;
 open Sonos.Decode;
 open Js.Promise;
+open Slack.Block;
 
 let device = Config.device;
 
@@ -30,7 +31,15 @@ let queueWithFallback = () =>
 /* CLI style */
 let clear = () =>
   device->Sonos.Methods.flush()
-  |> then_(_ => `Ok("Cleared queue") |> resolve)
+  |> then_(_ =>
+       `Ok(
+         Simple.make(
+           ~message=
+             "I have cleared the queue for you. Add some new tracks! :dusty_stick:",
+         ),
+       )
+       |> resolve
+     )
   |> catch(_ => `Failed("Failed to clear queue") |> resolve);
 
 let current = () =>
@@ -57,7 +66,7 @@ let current = () =>
                 "*Upcoming tracks*\n" ++ tracks;
               };
 
-            `Ok(message) |> resolve;
+            `Ok(Simple.make(~message)) |> resolve;
           })
        |> catch(_ => `Failed("Failed to get current queue") |> resolve)
      )
@@ -74,7 +83,7 @@ let full = () =>
            "*Here's the full queue*\n" ++ tracks;
          };
 
-       `Ok(message) |> resolve;
+       `Ok(Simple.make(~message)) |> resolve;
      })
   |> catch(_ => `Failed("Failed to get full queue") |> resolve);
 
@@ -127,7 +136,7 @@ module AsLastTrack = {
                    )
                 ++ "* in the queue :musical_note:";
 
-              `Ok(message) |> resolve;
+              `Ok(Simple.make(~message)) |> resolve;
             })
        );
   };
@@ -136,7 +145,10 @@ module AsLastTrack = {
     switch (track) {
     | "" =>
       `Ok(
-        "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
+        Simple.make(
+          ~message=
+            "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
+        ),
       )
       |> resolve
     | track =>
@@ -147,7 +159,10 @@ module AsLastTrack = {
         : Exists.inQueue(parsedTrack)
           |> then_((existsInQueue: Exists.t) =>
                switch (existsInQueue) {
-               | InQueue => resolve(`Ok(Message.trackExistsInQueue))
+               | InQueue =>
+                 resolve(
+                   `Ok(Simple.make(~message=Message.trackExistsInQueue)),
+                 )
                | NotInQueue =>
                  queue(parsedTrack)
                  |> catch(_ => `Failed("Failed to queue track") |> resolve)
@@ -163,7 +178,8 @@ let next = track => {
   Exists.inQueue(parsedTrack)
   |> then_((existsInQueue: Exists.t) =>
        switch (existsInQueue) {
-       | InQueue => resolve(`Ok(Message.trackExistsInQueue))
+       | InQueue =>
+         resolve(`Ok(Simple.make(~message=Message.trackExistsInQueue)))
        | NotInQueue =>
          Services.getCurrentTrack()
          |> then_(({position, queuePosition}) =>
@@ -175,7 +191,7 @@ let next = track => {
                      | _ => "Your track will play right after the current"
                      };
 
-                   `Ok(message) |> resolve;
+                   `Ok(Simple.make(~message)) |> resolve;
                  })
               |> catch(_ => `Failed("Failed to queue track") |> resolve)
             )
@@ -217,6 +233,6 @@ let multiple = tracks => {
          | (x, y) => {j|Queued *$y* tracks, skipped *$x* that are already queued|j}
          };
 
-       resolve(`Ok(message));
+       resolve(`Ok(Simple.make(~message)));
      });
 };

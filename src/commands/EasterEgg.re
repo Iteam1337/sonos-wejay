@@ -45,7 +45,8 @@ let run =
     | Friday =>
       Utils.isFriday()
         ? Track.friday->next
-        : Js.Promise.resolve(`Ok("Sorry, it's not Friday"))
+        : `Ok(Slack.Block.Simple.make(~message="Sorry, it's not Friday"))
+          |> Js.Promise.resolve
     | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
     | Slowdance => Playlist.slowdance->AsLastTrack.make()
@@ -75,7 +76,9 @@ module Test = {
              ->fromBool;
 
            switch (isEasterEgg) {
-           | EasterEgg => resolve(`Ok(Message.cantSkipEasterEgg))
+           | EasterEgg =>
+             `Ok(Slack.Block.Simple.make(~message=Message.cantSkipEasterEgg))
+             |> resolve
            | RegularTrack => continuation
            };
          })

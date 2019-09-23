@@ -35,6 +35,9 @@ let run = () =>
          let uri = Utils.sonosUriToSpotifyUri(uri);
 
          Request.make(uri)
-         |> then_(response => `Ok(message(response))->resolve);
+         |> then_(response =>
+              `Ok(Slack.Block.Simple.make(~message=message(response)))
+              ->resolve
+            );
        })
   );

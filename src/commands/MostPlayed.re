@@ -21,7 +21,8 @@ let run = () => {
 
          Belt.Array.(
            switch (length(hits)) {
-           | 0 => resolve(`Ok(Message.noPlays))
+           | 0 =>
+             resolve(`Ok(Slack.Block.Simple.make(~message=Message.noPlays)))
            | _ =>
              hits
              ->keep(filterPlaylists)
@@ -29,7 +30,12 @@ let run = () => {
              ->keepMap(track => track)
              ->map(Spotify.getSpotifyTrack)
              |> all
-             |> then_(tracks => `Ok(message(tracks, hits)) |> resolve)
+             |> then_(tracks =>
+                  `Ok(
+                    Slack.Block.Simple.make(~message=message(tracks, hits)),
+                  )
+                  |> resolve
+                )
            }
          );
        })

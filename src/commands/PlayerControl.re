@@ -1,5 +1,6 @@
 open Sonos.Methods;
 open Js.Promise;
+open Slack.Block;
 
 /* The Sonos device we send all commands to. Connect devices in the Sonos
  * Controller App to make it play everywhere. */
@@ -7,24 +8,40 @@ let device = Config.device;
 
 let pause = () =>
   device->pause()
-  |> then_(_ => resolve(`Ok("Playback paused")))
-  |> catch(_ => resolve(`Ok("Nothing is playing")));
+  |> then_(_ => `Ok(Simple.make(~message="Playback paused")) |> resolve)
+  |> catch(_ =>
+       `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+     );
 
 let next = () =>
   EasterEgg.Test.make(
-    device->next() |> then_(_ => resolve(`Ok("Playing next track"))),
+    device->next()
+    |> then_(_ =>
+         `Ok(Simple.make(~message="Playing next track")) |> resolve
+       )
+    |> catch(_ =>
+         `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+       ),
   );
 
 let previous = () =>
   EasterEgg.Test.make(
-    device->previous() |> then_(_ => resolve(`Ok("Playing previous track"))),
+    device->previous()
+    |> then_(_ =>
+         `Ok(Simple.make(~message="Playing previous track")) |> resolve
+       )
+    |> catch(_ =>
+         `Ok(Simple.make(~message=Message.nothingIsPlaying)) |> resolve
+       ),
   );
 
 let mute = isMuted =>
   device->setMuted(isMuted)
-  |> then_(_ =>
-       resolve(`Ok(isMuted ? "Muted speakers" : "Unmuted speakers"))
-     );
+  |> then_(_ => {
+       let message = isMuted ? "Muted speakers" : "Unmuted speakers";
+
+       `Ok(Simple.make(~message)) |> resolve;
+     });
 
 let play = () =>
   Queue.queueWithFallback()
@@ -34,16 +51,21 @@ let play = () =>
          | 0 => Message.emptyQueue
          | _ =>
            device->play() |> then_(_ => resolve(true)) |> ignore;
+
            "Start playing!";
          };
 
-       resolve(`Ok(message));
+       resolve(`Ok(Simple.make(~message)));
      });
 
 let playTrack = trackNumber =>
   switch (trackNumber) {
   | "" =>
-    `Ok("You forgot to add a track number\n*Example:* `playtrack 2`")
+    `Ok(
+      Simple.make(
+        ~message="You forgot to add a track number\n*Example:* `playtrack 2`",
+      ),
+    )
     |> resolve
   | trackNumber =>
     EasterEgg.Test.make(
@@ -65,7 +87,11 @@ let playTrack = trackNumber =>
                 |> ignore;
 
                 `Ok(
-                  "*Playing track*\n" ++ Utils.artistAndTitle(~artist, ~title),
+                  Simple.make(
+                    ~message=
+                      "*Playing track*\n"
+                      ++ Utils.artistAndTitle(~artist, ~title),
+                  ),
                 )
                 |> resolve;
               })
@@ -96,7 +122,7 @@ let playTrack = trackNumber =>
                       )
                   };
 
-                `Ok(message) |> resolve;
+                `Ok(Simple.make(~message)) |> resolve;
               })
          ),
     )

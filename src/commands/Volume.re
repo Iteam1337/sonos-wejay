@@ -4,7 +4,12 @@ open Sonos.Methods;
 let current = () =>
   Config.device->getVolume()
   |> then_(volume =>
-       `Ok("Current volume is " ++ (volume |> Utils.cleanFloat)) |> resolve
+       `Ok(
+         Slack.Block.Simple.make(
+           ~message="Current volume is " ++ (volume |> Utils.cleanFloat),
+         ),
+       )
+       |> resolve
      )
   |> catch(_ => `Failed("Cannot get current volume") |> resolve);
 
@@ -19,7 +24,12 @@ let update = volumeValue =>
 
        Config.device->setVolume(newVolume)
        |> then_(_ =>
-            `Ok("Volume set to " ++ Utils.cleanFloat(newVolume)) |> resolve
+            `Ok(
+              Slack.Block.Simple.make(
+                ~message="Volume set to " ++ Utils.cleanFloat(newVolume),
+              ),
+            )
+            |> resolve
           );
      })
   |> catch(_ => `Failed("Cannot update volume") |> resolve);

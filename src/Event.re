@@ -10,60 +10,48 @@ module Log = {
   };
 };
 
-module Blocks = {
-  let make = (~command, ~args, ~user, ()) => {
-    Log.make(command, args, user);
+let make = (~command, ~args, ~user, ()) => {
+  Log.make(command, args, user);
 
-    switch (command) {
-    | Decode.Requester.Human(NowPlaying) => NowPlaying.run()
-    | Human(Search) => Spotify.search(args)
-    | Human(_) => resolve(`Failed(Message.unhandledCommand))
-    | Bot => resolve(`Failed(Message.botRequest))
-    };
-  };
-};
+  switch (command) {
+  | Decode.Requester.Human(cmd) =>
+    switch (cmd) {
+    | NowPlaying => NowPlaying.run()
+    | Search => Spotify.search(args)
+    | SpotifyCopy(tracks) => Queue.multiple(tracks)
 
-module Message = {
-  let make = (~command, ~args, ~user, ()) => {
-    Log.make(command, args, user);
+    /* Queue */
+    | CurrentQueue => Queue.current()
+    | FullQueue => Queue.full()
+    | Clear => Queue.clear()
+    | Queue => Queue.AsLastTrack.make(args, ())
 
-    switch (command) {
-    | Decode.Requester.Human(cmd) =>
-      switch (cmd) {
-      /* Queue control */
-      | Clear => Queue.clear()
-      | CurrentQueue => Queue.current()
-      | FullQueue => Queue.full()
-      | Queue => Queue.AsLastTrack.make(args, ())
-      | SpotifyCopy(tracks) => Queue.multiple(tracks)
+    /* Player control */
+    | Play => PlayerControl.play()
+    | Pause => PlayerControl.pause()
+    | Next => PlayerControl.next()
+    | Previous => PlayerControl.previous()
+    | PlayTrack => PlayerControl.playTrack(args)
+    | Mute => PlayerControl.mute(true)
+    | Unmute => PlayerControl.mute(false)
+    | Volume => Volume.control(args)
 
-      /* Player control */
-      | Play => PlayerControl.play()
-      | PlayTrack => PlayerControl.playTrack(args)
-      | Pause => PlayerControl.pause()
-      | Next => PlayerControl.next()
-      | Previous => PlayerControl.previous()
-      | Mute => PlayerControl.mute(true)
-      | Unmute => PlayerControl.mute(false)
-      | Volume => Volume.control(args)
+    /* Misc */
+    | Blame => Blame.run()
+    | Emoji(emoji) => Emoji.make(emoji)
+    | MostPlayed => MostPlayed.run()
+    | Toplist => Toplist.run()
+    | EasterEgg(egg) => EasterEgg.run(egg)
+    | Help => `Ok(Slack.Block.Simple.make(~message=Message.help)) |> resolve
+    | Time =>
+      `Ok(Slack.Block.Simple.make(~message=Message.thisIsWejay)) |> resolve
 
-      /* Misc */
-      | Blame => Blame.run()
-      | Emoji(emoji) => Emoji.handleEmoji(emoji)
-      | MostPlayed => MostPlayed.run()
-      | Toplist => Toplist.run()
-      | EasterEgg(egg) => EasterEgg.run(egg)
-      | Help => resolve(`Ok(Message.help))
-      | Time => resolve(`Ok(Message.thisIsWejay))
-      | UnknownCommand(command) =>
-        resolve(`Ok(Message.unknownCommand(command)))
-
-      /* Anything else */
-      | UnhandledCommand => resolve(`Failed(Message.unhandledCommand))
-      | NowPlaying
-      | Search => resolve(`Failed("Handled as blocks"))
-      }
-    | Bot => resolve(`Failed(Message.botRequest))
-    };
+    /* Unhandled and unknown */
+    | UnknownCommand(cmd) =>
+      `Ok(Slack.Block.Simple.make(~message=Message.unknownCommand(cmd)))
+      |> resolve
+    | UnhandledCommand => `Failed(Message.unhandledCommand) |> resolve
+    }
+  | Bot => resolve(`Failed(Message.botRequest))
   };
 };

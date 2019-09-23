@@ -50,13 +50,14 @@ let emojiCommand = text => {
   };
 };
 
-let handleEmoji =
+let make =
   fun
   | ThumbsDown => Volume.update("-10")
   | ThumbsUp => Volume.update("10")
   | Santa => Christmas.randomTrack()->Queue.next
   | UnhandledEmoji(emoji) =>
-    Js.Promise.resolve(`Ok(Message.unknownCommand(emoji)));
+    `Ok(Slack.Block.Simple.make(~message=Message.unknownCommand(emoji)))
+    |> Js.Promise.resolve;
 
 let isEmoji = command =>
   switch (Js.String.match(Regex.Patterns.isEmoji, command)) {
