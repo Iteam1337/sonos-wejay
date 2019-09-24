@@ -1,3 +1,5 @@
+open Js.Promise;
+
 [@bs.module "@wejay/spotify"]
 external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
 
@@ -25,10 +27,7 @@ module WejayTrack = {
 };
 
 let getSpotifyTrack = id => {
-  Js.Promise.(
-    _getTrack(id)
-    |> then_(response => response |> WejayTrack.track |> resolve)
-  );
+  _getTrack(id) |> then_(response => response |> WejayTrack.track |> resolve);
 };
 
 let createSearchAttachment =
@@ -56,14 +55,25 @@ let createSearchAttachment =
   ]);
 };
 
-let search = query => {
-  Js.Promise.(
+module Search = {
+  let randomTracks = [
+    "rebecca black friday",
+    "nero promises (aka. the masseuse)",
+    {j|kaj jåo nåo e ja jåo yolo ja nåo|j},
+    "maini let me do your time",
+    "lamb of god walk with me in hell",
+    "the mary onettes void",
+  ];
+
+  let make = query => {
     switch (query) {
     | "" =>
       `Ok(
         Slack.Block.make([
           `Section(
-            "You forgot to tell me what to search for\n*Example:* `search rebecca black friday`",
+            "You forgot to tell me what to search for\n*Example:* `search "
+            ++ Utils.RandomTrack.make(randomTracks)
+            ++ "`",
           ),
         ]),
       )
@@ -93,6 +103,6 @@ let search = query => {
              ),
            );
          })
-    }
-  );
+    };
+  };
 };

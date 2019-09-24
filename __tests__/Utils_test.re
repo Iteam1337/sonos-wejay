@@ -141,3 +141,10 @@ test("is it not friday", () => {
 
   expect(isFriday()) |> toEqual(false);
 });
+
+describe("RandomTrack", () =>
+  test("it returns a random mock search", () =>
+    expect(RandomTrack.make(["test", "test2"]) |> Js.String.length)
+    |> toBeGreaterThan(0)
+  )
+);

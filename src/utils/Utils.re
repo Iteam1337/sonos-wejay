@@ -67,3 +67,13 @@ let sonosUriToSpotifyUri = sonosUri => {
     }
   );
 };
+
+module RandomTrack = {
+  let make = input => {
+    // Generate a seed based on the current time
+    Random.init(int_of_float(Js.Date.now()));
+
+    let randomSongIndex = Random.int(List.length(input));
+    input->Belt.List.get(randomSongIndex)->Belt.Option.getWithDefault("");
+  };
+};

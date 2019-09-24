@@ -17,7 +17,7 @@ let make = (~command, ~args, ~user, ()) => {
   | Decode.Requester.Human(cmd) =>
     switch (cmd) {
     | NowPlaying => NowPlaying.run()
-    | Search => Spotify.search(args)
+    | Search => Spotify.Search.make(args)
     | SpotifyCopy(tracks) => Queue.multiple(tracks)
 
     /* Queue */

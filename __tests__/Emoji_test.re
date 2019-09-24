@@ -7,7 +7,7 @@ test("has a list of christmas songs", () =>
 );
 
 test("should get a random christmas song", () =>
-  expect(Christmas.randomTrack())
+  expect(Christmas.make())
   |> toMatchRe([%re "/^spotify:track:[a-z0-9]+$/ig"])
 );
 

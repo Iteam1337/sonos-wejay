@@ -5,7 +5,7 @@ type t =
   | UnhandledEmoji(string);
 
 module Christmas = {
-  let songs = [|
+  let songs = [
     /* Andy Williams - It's the Most Wonderful Time of the Year */
     "5hslUAKq9I9CG2bAulFkHN",
     /* Ariana Grande - Santa Tell Me */
@@ -28,12 +28,10 @@ module Christmas = {
     "7ogTJKHkj8IMxjhItiFKRC",
     /* Wham! - Last Christmas */
     "77nF1t4qesuOJRd8lbIzNX",
-  |];
+  ];
 
-  let randomTrack = () => {
-    let randomSongIndex = Random.int(Belt.Array.length(songs));
-    let songId = songs[randomSongIndex];
-    SpotifyUtils.toUri(songId);
+  let make = () => {
+    Utils.RandomTrack.make(songs)->SpotifyUtils.toUri;
   };
 };
 
@@ -54,7 +52,7 @@ let make =
   fun
   | ThumbsDown => Volume.update("-10")
   | ThumbsUp => Volume.update("10")
-  | Santa => Christmas.randomTrack()->Queue.next
+  | Santa => Christmas.make()->Queue.next
   | UnhandledEmoji(emoji) =>
     `Ok(Slack.Block.make([`Section(Message.unknownCommand(emoji))]))
     |> Js.Promise.resolve;
