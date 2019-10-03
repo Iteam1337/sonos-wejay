@@ -1,11 +1,5 @@
 open Js.Promise;
 
-[@bs.module "@wejay/spotify"]
-external _getTrack: string => Js.Promise.t(Js.Json.t) = "getTrack";
-
-[@bs.module "@wejay/spotify"]
-external _search: string => Js.Promise.t(Js.Json.t) = "search";
-
 module WejayTrack = {
   [@decco]
   type t = {
@@ -27,7 +21,8 @@ module WejayTrack = {
 };
 
 let getSpotifyTrack = id => {
-  _getTrack(id) |> then_(response => response |> WejayTrack.track |> resolve);
+  WejayUtils.getTrack(id)
+  |> then_(response => response |> WejayTrack.track |> resolve);
 };
 
 let createSearchAttachment =
@@ -57,12 +52,12 @@ let createSearchAttachment =
 
 module Search = {
   let randomTracks = [
-    "rebecca black friday",
-    "nero promises (aka. the masseuse)",
-    {j|kaj jåo nåo e ja jåo yolo ja nåo|j},
-    "maini let me do your time",
     "lamb of god walk with me in hell",
+    "maini let me do your time",
+    "nero promises (aka. the masseuse)",
+    "rebecca black friday",
     "the mary onettes void",
+    {j|kaj jåo nåo e ja jåo yolo ja nåo|j},
   ];
 
   let make = query => {
@@ -79,7 +74,7 @@ module Search = {
       )
       |> resolve
     | query =>
-      _search(query |> Js.Global.encodeURIComponent)
+      WejayUtils.search(query |> Js.Global.encodeURIComponent)
       |> then_(response => {
            let tracks = response |> WejayTrack.tracks;
 
@@ -90,11 +85,13 @@ module Search = {
              };
 
            let attachments =
-             tracks
-             ->Belt.Array.slice(~offset=0, ~len=5)
-             ->Belt.Array.reduce([||], (acc, curr) =>
-                 acc->Belt.Array.concat(createSearchAttachment(curr))
-               );
+             Belt.Array.(
+               tracks
+               ->slice(~offset=0, ~len=5)
+               ->reduce([||], (acc, curr) =>
+                   acc->concat(createSearchAttachment(curr))
+                 )
+             );
 
            resolve(
              `Ok(
