@@ -45,6 +45,7 @@ let make = text => {
       | "classics" => EasterEgg(IteamClassics)
       | "blame" => Blame
       | "clear" => Clear
+      | "rm"
       | "remove" => RemoveMultipleTracks
       | "cq"
       | "currentqueue"
