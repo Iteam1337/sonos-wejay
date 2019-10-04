@@ -43,26 +43,27 @@ This will compile the Reason code and start up the Express app.
 
 ## Available commands
 
-| Command                        | Shorthand                | Description                                                  |
-| ------------------------------ | ------------------------ | ------------------------------------------------------------ |
-| `blame`                        |                          | Who added the track? (requires MySQL database)               |
-| `clear`                        |                          | Reset playlist                                               |
-| `currentqueue`                 | `getqueue`, `gq`, `cq`   | Display upcoming tracks                                      |
-| `fullqueue`                    | `fq`                     | Display all tracks currently in the queue                    |
-| `help`                         |                          | Display the help text                                        |
-| `mute`                         |                          | Mute                                                         |
-| `mostplayed`                   |                          | List the most played tracks (requires MySQL database)        |
-| `next`                         |                          | Skip one track forward                                       |
-| `nowplaying`                   | `np`                     | Display what's playing right now                             |
-| `pause`                        |                          | Pause                                                        |
-| `play`                         |                          | Play                                                         |
-| `playtrack <trackNumber>`      |                          | Play track number                                            |
-| `previous`                     |                          | Go back one track                                            |
-| `queue <Spotify URI>`          | `q <Spotify URI>`        | Queue a track using a Spotify URI                            |
-| `search <your search string>`  | `s <your search string>` | Search Spotify for a track                                   |
-| `toplist`                      |                          | List top Wejayers (requires MySQL database)                  |
-| `unmute`                       |                          | Unmute                                                       |
-| `volume <0-100>`               |                          | Set volume, if no number is provided displays current volume |
+| Command                           | Shorthand                | Description                                                  |
+| --------------------------------- | ------------------------ | ------------------------------------------------------------ |
+| `blame`                           |                          | Who added the track? (requires MySQL database)               |
+| `clear`                           |                          | Reset playlist                                               |
+| `currentqueue`                    | `getqueue`, `gq`, `cq`   | Display upcoming tracks                                      |
+| `fullqueue`                       | `fq`                     | Display all tracks currently in the queue                    |
+| `help`                            |                          | Display the help text                                        |
+| `mute`                            |                          | Mute                                                         |
+| `mostplayed`                      |                          | List the most played tracks (requires MySQL database)        |
+| `next`                            |                          | Skip one track forward                                       |
+| `nowplaying`                      | `np`                     | Display what's playing right now                             |
+| `remove <numberOfTracks> <index>` | `rm`                     | Remove tracks                                                |
+| `pause`                           |                          | Pause                                                        |
+| `play`                            |                          | Play                                                         |
+| `playtrack <trackNumber>`         |                          | Play track number                                            |
+| `previous`                        |                          | Go back one track                                            |
+| `queue <Spotify URI>`             | `q <Spotify URI>`        | Queue a track using a Spotify URI                            |
+| `search <your search string>`     | `s <your search string>` | Search Spotify for a track                                   |
+| `toplist`                         |                          | List top Wejayers (requires MySQL database)                  |
+| `unmute`                          |                          | Unmute                                                       |
+| `volume <0-100>`                  |                          | Set volume, if no number is provided displays current volume |
 
 ### Copy and paste from Spotify
 

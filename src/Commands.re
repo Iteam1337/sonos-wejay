@@ -20,6 +20,7 @@ type t =
   | Time
   | Toplist
   | UnhandledCommand
+  | RemoveMultipleTracks
   | UnknownCommand(string)
   | Unmute
   | Volume;
@@ -44,6 +45,8 @@ let make = text => {
       | "classics" => EasterEgg(IteamClassics)
       | "blame" => Blame
       | "clear" => Clear
+      | "rm"
+      | "remove" => RemoveMultipleTracks
       | "cq"
       | "currentqueue"
       | "gq"
@@ -121,6 +124,7 @@ let commandToString =
   | PlayTrack => "playback-playtrack"
   | Previous => "playback-previous"
   | Queue => "queue"
+  | RemoveMultipleTracks => "remove"
   | SpotifyCopy(_) => "spotify-copy"
   | Search => "search"
   | Time => "time"
