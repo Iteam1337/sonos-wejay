@@ -56,6 +56,7 @@ let make = text => {
       | "mute" => Mute
       | "mostplayed" => MostPlayed
       | "next" => Next
+      | "skip" => Next
       | "np"
       | "nowplaying" => NowPlaying
       | "pause" => Pause
