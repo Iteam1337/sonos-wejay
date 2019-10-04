@@ -3,38 +3,93 @@ open Sonos.Decode;
 open Js.Promise;
 
 module InMemoryQueue = {
-  let listOfLists = ref(Js.Dict.empty());
+  open Belt.List;
 
-  let weave = () => {
-    Weave.make(Js.Dict.values(listOfLists^));
+  type user = {
+    id: string,
+    lastPlay: float,
+    tracks: list(string),
   };
 
-  let addTrack = (user, track) => {
-    switch (user) {
-    | None => ()
-    | Some(u) =>
-      let userList = Js.Dict.get(listOfLists^, u);
+  type t = list((string, user));
 
-      switch (userList) {
-      | Some(list) =>
-        let newList = Belt.Array.concat(list, [|track|]);
-        Js.Dict.set(listOfLists^, u, newList);
-        ();
-      | None => Js.Dict.set(listOfLists^, u, [|track|])
-      };
+  type action =
+    | AddTrack((option(string), string))
+    | ClearQueue
+    | RemoveTrack((option(string), string));
 
-      Js.log(listOfLists);
-      ();
-    };
+  module Time = {
+    let now = () => Js.Date.make() |> Js.Date.getTime;
   };
 
-  let clear = () => {
-    listOfLists := Js.Dict.empty();
-  };
+  let currentState = ref([]);
 
   let nextTrack = () => {
-    // todo: remove track
-    Belt.Array.get(weave(), 0);
+    let state = currentState^;
+
+    state
+    ->sort(((_, a), (_, b)) => (a.lastPlay -. b.lastPlay)->int_of_float)
+    ->map(((_, {tracks})) => toArray(tracks))
+    ->toArray
+    ->Weave.make
+    ->Belt.Array.get(0);
+  };
+
+  let make = action => {
+    let state = currentState^;
+
+    let newState =
+      switch (action) {
+      | AddTrack((user, uri)) =>
+        switch (user) {
+        | None => state
+        | Some(user) =>
+          switch (getAssoc(state, user, (===))) {
+          | Some(row) =>
+            state->setAssoc(
+              user,
+              {
+                ...row,
+                lastPlay: Time.now(),
+                tracks: concat(row.tracks, [uri]),
+              },
+              (===),
+            )
+          | None =>
+            state->concat([
+              (user, {id: user, lastPlay: Time.now(), tracks: [uri]}),
+            ])
+          }
+        }
+
+      | RemoveTrack((user, uri)) =>
+        switch (user) {
+        | None => state
+        | Some(user) =>
+          switch (getAssoc(state, user, (===))) {
+          | Some(row) =>
+            state->setAssoc(
+              user,
+              {
+                ...row,
+                lastPlay: Time.now(),
+                tracks: row.tracks->keep(track => track != uri),
+              },
+              (===),
+            )
+          | None =>
+            state->concat([
+              (user, {id: user, lastPlay: Time.now(), tracks: [uri]}),
+            ])
+          }
+        }
+
+      | ClearQueue => []
+      };
+
+    currentState := newState;
+
+    newState;
   };
 };
 
@@ -178,6 +233,17 @@ module AsLastTrack = {
   };
 
   let make = (track, ~user, ~skipExists=false, ()) => {
+    let _ = InMemoryQueue.make(AddTrack((user, track)));
+    let nextTrack = InMemoryQueue.nextTrack();
+
+    let t =
+      switch (nextTrack) {
+      | Some(next) => Utils.parsedTrack(next)
+      | None => ""
+      };
+
+    Js.log(t);
+
     switch (track) {
     | "" =>
       `Ok(
@@ -191,37 +257,24 @@ module AsLastTrack = {
     | track =>
       let parsedTrack = Utils.parsedTrack(track);
 
-      InMemoryQueue.addTrack(user, parsedTrack);
-
-      switch (InMemoryQueue.nextTrack()) {
-      | None =>
-        Js.Promise.resolve(
-          `Ok(
-            Slack.Block.make([
-              `Section("Nothing to play, add more tracks pls"),
-            ]),
-          ),
-        )
-      | Some(track) =>
-        skipExists
-          ? queue(track)
-          : Exists.inQueue(track)
-            |> then_((existsInQueue: Exists.t) =>
-                 switch (existsInQueue) {
-                 | InQueue =>
-                   resolve(
-                     `Ok(
-                       Slack.Block.make([
-                         `Section(Message.trackExistsInQueue),
-                       ]),
-                     ),
-                   )
-                 | NotInQueue =>
-                   queue(track)
-                   |> catch(_ => `Failed("Failed to queue track") |> resolve)
-                 }
-               )
-      };
+      skipExists
+        ? queue(parsedTrack)
+        : Exists.inQueue(parsedTrack)
+          |> then_((existsInQueue: Exists.t) =>
+               switch (existsInQueue) {
+               | InQueue =>
+                 resolve(
+                   `Ok(
+                     Slack.Block.make([
+                       `Section(Message.trackExistsInQueue),
+                     ]),
+                   ),
+                 )
+               | NotInQueue =>
+                 queue(parsedTrack)
+                 |> catch(_ => `Failed("Failed to queue track") |> resolve)
+               }
+             );
     };
   };
 };

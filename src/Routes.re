@@ -27,8 +27,7 @@ module EventRoute = {
       Event.make(~command, ~args, ~user, ())
       |> then_(response => {
            switch (response) {
-           //  | `Ok(r) => Slack.Message.make(channel, r)
-           | `Ok(r) => Js.log2(channel, r)
+           | `Ok(r) => Slack.Message.make(channel, r)
            | `Failed(_) => ()
            };
            resolve();
