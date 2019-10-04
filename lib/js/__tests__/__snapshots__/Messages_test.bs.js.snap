@@ -17,15 +17,16 @@ Then paste that information straight to me and I'll queue them for you. :notes:
 
 *Play control*
 \`\`\`
-clear ______________________ Reset playlist
-mute _______________________ Mute
-next _______________________ Skip one track forward
-pause ______________________ Pause
-play _______________________ Play
-playtrack <trackNumber> ____ Play track number
-previous ___________________ Go back one track
-unmute _____________________ Unmute
-volume <0-100> _____________ Set volume, if no number is provided displays current volume
+clear ______________________________ Reset playlist
+mute _______________________________ Mute
+next _______________________________ Skip one track forward
+pause ______________________________ Pause
+play _______________________________ Play
+playtrack <trackNumber> ____________ Play track number
+previous ___________________________ Go back one track
+unmute _____________________________ Unmute
+volume <0-100> _____________________ Set volume, if no number is provided displays current volume
+remove|rm <numberOfTracks> <index>__ Remove tracks
 \`\`\`
 
 *Misc*
