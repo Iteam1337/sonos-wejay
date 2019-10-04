@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`creates a formatted message 1`] = `
-"*Most played*
-1. 30 Seconds to Mars - Echelon (2)
-2. Bring me the Horizon - Hospital for Souls (1)"
-`;

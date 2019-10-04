@@ -16,6 +16,6 @@ let mostPlayedUrl = Js.Dict.unsafeGet(env, "MOST_PLAYED_URL");
 let toplistUrl = Js.Dict.unsafeGet(env, "TOPLIST_URL");
 let blameUrl = Js.Dict.unsafeGet(env, "BLAME_URL");
 
-let device = Sonos.Methods.device(wejayIp);
+let device = Sonos.Methods.Device.make(wejayIp);
 
-device->Sonos.Methods.setSpotifyRegion(Sonos.Methods.regionEurope);
+device->Sonos.Methods.SpotifyRegion.set(Sonos.Methods.SpotifyRegion.europe);
