@@ -42,6 +42,35 @@ let clear = () =>
      )
   |> catch(_ => `Failed("Failed to clear queue") |> resolve);
 
+let handleRemoveArgs = args => {
+    switch (args) {
+    | "" => (1, 1)
+    | args =>
+      let input = args |> Js.String.split(" ");
+      let numberOfTracks =
+        input
+        ->Belt.Array.get(0)
+        ->Belt.Option.getWithDefault("1")
+        ->int_of_string;
+      let index =
+        input
+        ->Belt.Array.get(1)
+        ->Belt.Option.getWithDefault("1")
+        ->int_of_string;
+      (numberOfTracks, index);
+    };
+}
+
+let removeMultipleTracks = args => {
+  let (numberOfTracks, index) = handleRemoveArgs(args)
+
+  SonosSpecialCase.removeMultipleTracks(device, index, numberOfTracks)
+  |> then_(_ =>
+       `Ok(Slack.Block.make([`Section("I removed them for you!")]))
+       |> resolve
+     );
+};
+
 let current = () =>
   queueWithFallback()
   |> then_(({items}) =>
