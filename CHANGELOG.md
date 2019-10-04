@@ -1,3 +1,12 @@
+# [6.6.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.5.0...v6.6.0) (2019-10-04)
+
+
+### Features
+
+* alias and docs ([6ef9db0](https://github.com/Iteam1337/sonos-wejay/commit/6ef9db0))
+* more personalized message ([13b7b7e](https://github.com/Iteam1337/sonos-wejay/commit/13b7b7e))
+* remove multiple tracks ([19ebbfb](https://github.com/Iteam1337/sonos-wejay/commit/19ebbfb))
+
 # [6.5.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.4.2...v6.5.0) (2019-09-23)
 
 

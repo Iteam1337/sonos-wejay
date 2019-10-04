@@ -25,6 +25,7 @@ let make = (~command, ~args, ~user, ()) => {
     | FullQueue => Queue.full()
     | Clear => Queue.clear()
     | Queue => Queue.AsLastTrack.make(args, ~user, ())
+    | RemoveMultipleTracks => Queue.removeMultipleTracks(args)
 
     /* Player control */
     | Play => PlayerControl.play()
