@@ -40,7 +40,8 @@ module Playlist = {
 let run =
   Queue.(
     fun
-    | IteamClassics => Playlist.iteamClassics->AsLastTrack.make()
+    | IteamClassics =>
+      Playlist.iteamClassics->AsLastTrack.make(~user=Some("Iteam"), ())
     | FreeBird => Track.freeBird->next
     | Friday =>
       Utils.isFriday()
@@ -49,7 +50,8 @@ let run =
           |> Js.Promise.resolve
     | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
-    | Slowdance => Playlist.slowdance->AsLastTrack.make()
+    | Slowdance =>
+      Playlist.slowdance->AsLastTrack.make(~user=Some("Iteam"), ())
     | Tequila => Track.tequila->next
     | WWW => Track.worldwideweb->next
   );

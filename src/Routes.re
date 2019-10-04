@@ -70,7 +70,7 @@ module ActionRoute = {
           body |> Decode.Action.make;
         let track = actions[0].value;
 
-        Queue.AsLastTrack.make(track, ())
+        Queue.AsLastTrack.make(track, ~user=Some(user.name), ())
         |> then_(message => {
              Elastic.log(
                ~command=Human(Commands.Queue),

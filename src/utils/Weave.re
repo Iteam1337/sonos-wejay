@@ -1,3 +1,3 @@
 [@bs.module]
-external make: (array('a), array('a)) => array('a) =
+external make: array(array('a)) => array('a) =
   "../../../../src/js/weave.js";

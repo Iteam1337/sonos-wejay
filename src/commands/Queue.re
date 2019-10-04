@@ -2,6 +2,42 @@ open Sonos.Methods;
 open Sonos.Decode;
 open Js.Promise;
 
+module InMemoryQueue = {
+  let listOfLists = ref(Js.Dict.empty());
+
+  let weave = () => {
+    Weave.make(Js.Dict.values(listOfLists^));
+  };
+
+  let addTrack = (user, track) => {
+    switch (user) {
+    | None => ()
+    | Some(u) =>
+      let userList = Js.Dict.get(listOfLists^, u);
+
+      switch (userList) {
+      | Some(list) =>
+        let newList = Belt.Array.concat(list, [|track|]);
+        Js.Dict.set(listOfLists^, u, newList);
+        ();
+      | None => Js.Dict.set(listOfLists^, u, [|track|])
+      };
+
+      Js.log(listOfLists);
+      ();
+    };
+  };
+
+  let clear = () => {
+    listOfLists := Js.Dict.empty();
+  };
+
+  let nextTrack = () => {
+    // todo: remove track
+    Belt.Array.get(weave(), 0);
+  };
+};
+
 let device = Config.device;
 
 let trackPosition = (~first, ~queueAt, ()) =>
@@ -141,7 +177,7 @@ module AsLastTrack = {
        );
   };
 
-  let make = (track, ~skipExists=false, ()) => {
+  let make = (track, ~user, ~skipExists=false, ()) => {
     switch (track) {
     | "" =>
       `Ok(
@@ -155,24 +191,37 @@ module AsLastTrack = {
     | track =>
       let parsedTrack = Utils.parsedTrack(track);
 
-      skipExists
-        ? queue(parsedTrack)
-        : Exists.inQueue(parsedTrack)
-          |> then_((existsInQueue: Exists.t) =>
-               switch (existsInQueue) {
-               | InQueue =>
-                 resolve(
-                   `Ok(
-                     Slack.Block.make([
-                       `Section(Message.trackExistsInQueue),
-                     ]),
-                   ),
-                 )
-               | NotInQueue =>
-                 queue(parsedTrack)
-                 |> catch(_ => `Failed("Failed to queue track") |> resolve)
-               }
-             );
+      InMemoryQueue.addTrack(user, parsedTrack);
+
+      switch (InMemoryQueue.nextTrack()) {
+      | None =>
+        Js.Promise.resolve(
+          `Ok(
+            Slack.Block.make([
+              `Section("Nothing to play, add more tracks pls"),
+            ]),
+          ),
+        )
+      | Some(track) =>
+        skipExists
+          ? queue(track)
+          : Exists.inQueue(track)
+            |> then_((existsInQueue: Exists.t) =>
+                 switch (existsInQueue) {
+                 | InQueue =>
+                   resolve(
+                     `Ok(
+                       Slack.Block.make([
+                         `Section(Message.trackExistsInQueue),
+                       ]),
+                     ),
+                   )
+                 | NotInQueue =>
+                   queue(track)
+                   |> catch(_ => `Failed("Failed to queue track") |> resolve)
+                 }
+               )
+      };
     };
   };
 };

@@ -24,7 +24,7 @@ let make = (~command, ~args, ~user, ()) => {
     | CurrentQueue => Queue.current()
     | FullQueue => Queue.full()
     | Clear => Queue.clear()
-    | Queue => Queue.AsLastTrack.make(args, ())
+    | Queue => Queue.AsLastTrack.make(args, ~user, ())
 
     /* Player control */
     | Play => PlayerControl.play()
