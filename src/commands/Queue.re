@@ -28,7 +28,9 @@ let queueWithFallback = () =>
 /* CLI style */
 let clear = () =>
   device->Sonos.Methods.Queue.clear()
-  |> then_(_ =>
+  |> then_(_ => {
+       InMemoryQueue.make(ClearQueue);
+
        `Ok(
          Slack.Block.make([
            `Section(
@@ -36,8 +38,8 @@ let clear = () =>
            ),
          ]),
        )
-       |> resolve
-     )
+       |> resolve;
+     })
   |> catch(_ => `Failed("Failed to clear queue") |> resolve);
 
 let handleRemoveArgs = args => {
@@ -175,42 +177,39 @@ module AsLastTrack = {
   let make = (track, ~user, ~skipExists as _=false, ()) => {
     InMemoryQueue.make(AddTrack((user, track)));
 
-    switch (InMemoryQueue.nextTrack()) {
-    | Some(next) => Utils.parsedTrack(next) |> Js.log2("next")
-    | None => ()
-    };
-
-    switch (InMemoryQueue.currentTrack()) {
-    | Some(next) => Utils.parsedTrack(next) |> Js.log2("current")
-    | None => ()
-    };
-
     Js.log2("queue", InMemoryQueue.getQueue());
 
-    queueWithFallback()
-    |> then_(currentQueue =>
-         device->SonosSpecialCase.removeMultipleTracks(
-           2,
-           currentQueue.total->int_of_string - 1,
-         )
-         |> then_(_ => {
-              InMemoryQueue.getQueue()
-              ->Belt.Array.forEachWithIndex((i, track) =>
-                  Js.Global.setTimeout(
-                    _ =>
-                      device->queueAsLast(Utils.parsedTrack(track)) |> ignore,
-                    50 * i,
-                  )
-                  |> ignore
-                );
+    let addTracks = (~queuePosition) => {
+      InMemoryQueue.getQueue()
+      ->Belt.Array.sliceToEnd(queuePosition)
+      ->Belt.Array.forEachWithIndex((i, {track}) =>
+          Js.Global.setTimeout(
+            _ =>
+              device->Sonos.Methods.Queue.asLast(Utils.parsedTrack(track))
+              |> ignore,
+            500 * i,
+          )
+          |> ignore
+        );
+      `Ok(Slack.Block.make([`Section("Sweet! Your track has been queued")]))
+      |> resolve;
+    };
 
-              `Ok(
-                Slack.Block.make([
-                  `Section("Sweet! Your track has been queued"),
-                ]),
-              )
-              |> resolve;
-            })
+    Services.getCurrentTrack()
+    |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) =>
+         queueWithFallback()
+         |> then_(({total}: Sonos.Decode.CurrentQueue.t) =>
+              switch (queuePosition->int_of_float, total->int_of_string) {
+              | (qp, 0) => addTracks(~queuePosition=qp)
+              | (qp, tot) when qp === tot => addTracks(~queuePosition=qp)
+              | (qp, tot) =>
+                device->Sonos.Methods.Queue.removeMultipleTracks(
+                  qp + 1,
+                  tot - qp,
+                )
+                |> then_(_ => addTracks(~queuePosition=qp))
+              }
+            )
        );
     /*switch (track) {*/
     /*| "" =>*/

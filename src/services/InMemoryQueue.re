@@ -5,6 +5,12 @@ type user = {
   lastPlay: float,
 };
 
+type trackWithUser = {
+  id: string,
+  lastPlay: float,
+  track: string,
+};
+
 type users = list((string, user));
 type t = list((string, list(string)));
 
@@ -28,7 +34,10 @@ let getQueue = () => {
   ->sort(((_, a), (_, b)) => (a.lastPlay -. b.lastPlay)->int_of_float)
   ->map(((_, user)) =>
       switch (state->getAssoc(user.id, (===))) {
-      | Some(row) => toArray(row)
+      | Some(row) =>
+        row
+        ->map(track => {id: user.id, lastPlay: user.lastPlay, track})
+        ->toArray
       | None => [||]
       }
     )
