@@ -1,3 +1,5 @@
+open Js.Promise;
+
 let message = (hits: Elastic.Search.t) =>
   switch (Belt.Array.length(hits)) {
   | 0 => "Sorry, I don't know who added this track"
@@ -16,22 +18,21 @@ let message = (hits: Elastic.Search.t) =>
 
 module Request = {
   let make = uri => {
-    Js.Promise.(
-      API.createRequest(
-        ~url=Config.blameUrl,
-        ~_method="POST",
-        ~data=Some({"uri": uri}),
-        (),
-      )
-      |> then_(response => response##data->Elastic.Search.make->resolve)
-    );
+    API.createRequest(
+      ~url=Config.blameUrl,
+      ~_method="POST",
+      ~data=Some({"uri": uri}),
+      (),
+    )
+    |> then_(response => response##data->Elastic.Search.make->resolve);
   };
 };
 
-let run = () =>
-  Js.Promise.(
+let run = args =>
+  switch (args) {
+  | "" =>
     Services.getCurrentTrack()
-    |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
+    |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
          let uri = Utils.sonosUriToSpotifyUri(uri);
 
          Request.make(uri)
@@ -39,4 +40,25 @@ let run = () =>
               `Ok(Slack.Block.make([`Section(message(response))]))->resolve
             );
        })
-  );
+  | index =>
+    Queue.queueWithFallback()
+    |> then_(({items}: Sonos.Decode.CurrentQueue.t) =>
+         switch (items->Belt.Array.get(index->int_of_string - 1)) {
+         | Some({uri}) =>
+           let uri = Utils.sonosUriToSpotifyUri(Some(uri));
+
+           Request.make(uri)
+           |> then_(response =>
+                `Ok(Slack.Block.make([`Section(message(response))]))
+                ->resolve
+              );
+         | None =>
+           `Ok(
+             Slack.Block.make([
+               `Section("Could not find track number " ++ index),
+             ]),
+           )
+           ->resolve
+         }
+       )
+  };

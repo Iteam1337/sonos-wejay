@@ -1,4 +1,3 @@
-open Sonos.Methods;
 open Js.Promise;
 
 /* The Sonos device we send all commands to. Connect devices in the Sonos
@@ -6,7 +5,7 @@ open Js.Promise;
 let device = Config.device;
 
 let pause = () =>
-  device->pause()
+  device->Sonos.Methods.PlayerControl.pause()
   |> then_(_ =>
        `Ok(Slack.Block.make([`Section("Playback paused")])) |> resolve
      )
@@ -17,7 +16,7 @@ let pause = () =>
 
 let next = () =>
   EasterEgg.Test.make(
-    device->next()
+    device->Sonos.Methods.PlayerControl.next()
     |> then_(_ =>
          `Ok(Slack.Block.make([`Section("Playing next track")])) |> resolve
        )
@@ -29,7 +28,7 @@ let next = () =>
 
 let previous = () =>
   EasterEgg.Test.make(
-    device->previous()
+    device->Sonos.Methods.PlayerControl.previous()
     |> then_(_ =>
          `Ok(Slack.Block.make([`Section("Playing previous track")]))
          |> resolve
@@ -41,7 +40,7 @@ let previous = () =>
   );
 
 let mute = isMuted =>
-  device->setMuted(isMuted)
+  device->Sonos.Methods.PlayerControl.Volume.mute(isMuted)
   |> then_(_ => {
        let message = isMuted ? "Muted speakers" : "Unmuted speakers";
 
@@ -50,12 +49,14 @@ let mute = isMuted =>
 
 let play = () =>
   Queue.queueWithFallback()
-  |> then_(({items}: Sonos.Decode.currentQueueResponse) => {
+  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
        let message =
          switch (items->Belt.Array.length) {
          | 0 => Message.emptyQueue
          | _ =>
-           device->play() |> then_(_ => resolve(true)) |> ignore;
+           device->Sonos.Methods.PlayerControl.play()
+           |> then_(_ => resolve(true))
+           |> ignore;
 
            "Start playing!";
          };
@@ -76,12 +77,12 @@ let playTrack = trackNumber =>
     |> resolve
   | trackNumber =>
     EasterEgg.Test.make(
-      device->selectTrack(trackNumber |> int_of_string)
+      device->Sonos.Methods.Track.select(trackNumber |> int_of_string)
       |> then_(_ =>
            Services.getCurrentTrack()
-           |> then_(({artist, title}: Sonos.Decode.currentTrackResponse) => {
+           |> then_(({artist, title}: Sonos.Decode.CurrentTrack.t) => {
                 Services.getPlayingState()
-                |> then_((state: Sonos.Decode.currentPlayingState) => {
+                |> then_((state: Sonos.Decode.CurrentPlayState.t) => {
                      switch (state) {
                      | Paused
                      | Stopped => play() |> ignore
@@ -106,7 +107,7 @@ let playTrack = trackNumber =>
          )
       |> catch(_ =>
            Queue.queueWithFallback()
-           |> then_(({items}: Sonos.Decode.currentQueueResponse) => {
+           |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
                 let message =
                   switch (items->Belt.Array.length) {
                   | 0 =>

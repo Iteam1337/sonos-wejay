@@ -38,7 +38,7 @@ let make = (~command, ~args, ~user, ()) => {
     | Volume => Volume.control(args)
 
     /* Misc */
-    | Blame => Blame.run()
+    | Blame => Blame.run(args)
     | Emoji(emoji) => Emoji.make(emoji)
     | MostPlayed => MostPlayed.run()
     | Toplist => Toplist.run()

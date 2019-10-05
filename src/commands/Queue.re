@@ -1,5 +1,3 @@
-open Sonos.Methods;
-open Sonos.Decode;
 open Js.Promise;
 
 let device = Config.device;
@@ -7,13 +5,13 @@ let device = Config.device;
 let trackPosition = (~first, ~queueAt, ()) =>
   int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
 
-let listTracks = (tracks: array(currentQueue)) =>
+let listTracks = (tracks: array(Sonos.Decode.CurrentQueue.queueItem)) =>
   tracks->Belt.Array.mapWithIndex((i, {artist, title}) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
   );
 
 let queueWithFallback = () =>
-  device->getQueue()
+  device->Sonos.Methods.Queue.get()
   |> then_(queue =>
        (
          switch (Js.Types.classify(queue)) {
@@ -23,13 +21,13 @@ let queueWithFallback = () =>
          | _ => queue
          }
        )
-       |> currentQueueResponse
+       |> Sonos.Decode.CurrentQueue.make
        |> resolve
      );
 
 /* CLI style */
 let clear = () =>
-  device->Sonos.Methods.flush()
+  device->Sonos.Methods.Queue.clear()
   |> then_(_ =>
        `Ok(
          Slack.Block.make([
@@ -64,7 +62,7 @@ let handleRemoveArgs = args => {
 let removeMultipleTracks = args => {
   let (numberOfTracks, index) = handleRemoveArgs(args);
 
-  SonosSpecialCase.removeMultipleTracks(device, index, numberOfTracks)
+  Sonos.Methods.Queue.removeMultipleTracks(device, index, numberOfTracks)
   |> then_(_ => {
        let message =
          switch (index, numberOfTracks) {
@@ -77,9 +75,9 @@ let removeMultipleTracks = args => {
 
 let current = () =>
   queueWithFallback()
-  |> then_(({items}) =>
+  |> then_(({items}: Sonos.Decode.CurrentQueue.t) =>
        Services.getCurrentTrack()
-       |> then_(({queuePosition}) => {
+       |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) => {
             let numberOfTracks = items->Belt.Array.length;
 
             let message =
@@ -107,7 +105,7 @@ let current = () =>
 
 let full = () =>
   queueWithFallback()
-  |> then_(({items}) => {
+  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
        let message =
          switch (items->Belt.Array.length) {
          | 0 => Message.emptyQueue
@@ -132,7 +130,7 @@ module Exists = {
     ->Spotify.getSpotifyTrack
     |> then_((spotify: Spotify.WejayTrack.t) =>
          queueWithFallback()
-         |> then_(({items}) => {
+         |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
               /* Only checking URI is not enough, so we do a
                * naive artist/track name match as well. Sonos
                * sometimes uses a different track URI
@@ -140,7 +138,7 @@ module Exists = {
                * of different regions or markets */
               let existsInQueue =
                 items->Belt.Array.some(item =>
-                  Utils.sonosUriToSpotifyUri(item.uri) === trackUri
+                  Utils.sonosUriToSpotifyUri(Some(item.uri)) === trackUri
                   || item.artist === spotify.artist
                   && item.title === spotify.name
                 );
@@ -153,12 +151,12 @@ module Exists = {
 
 module AsLastTrack = {
   let queue = track => {
-    device->queueAsLast(track)
+    device->Sonos.Methods.Queue.asLast(track)
     |> then_(queuedTrack =>
          Services.getCurrentTrack()
-         |> then_(({queuePosition}: currentTrackResponse) => {
-              let {firstTrackNumberEnqueued}: queueResponse =
-                queuedTrack->queueResponse;
+         |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) => {
+              let {firstTrackNumberEnqueued}: Sonos.Decode.QueueTrack.t =
+                queuedTrack->Sonos.Decode.QueueTrack.make;
 
               let message =
                 "Sweet! Your track is number *"
@@ -260,8 +258,11 @@ let next = track => {
          )
        | NotInQueue =>
          Services.getCurrentTrack()
-         |> then_(({position, queuePosition}) =>
-              device->queue(parsedTrack, int_of_float(queuePosition) + 1)
+         |> then_(({position, queuePosition}: Sonos.Decode.CurrentTrack.t) =>
+              device->Sonos.Methods.Queue.atPosition(
+                parsedTrack,
+                int_of_float(queuePosition) + 1,
+              )
               |> then_(() => {
                    let message =
                      switch (position, queuePosition) {

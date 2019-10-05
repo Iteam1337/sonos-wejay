@@ -1,6 +1,6 @@
 # Sonos Wejay
 
-[![Build Status](https://travis-ci.com/Iteam1337/sonos-wejay.svg?token=pRHtrm4YwVYpN8sqXadx&branch=master)](https://travis-ci.com/Iteam1337/sonos-wejay)
+[![](https://github.com/Iteam1337/sonos-wejay/workflows/Release/badge.svg)](https://github.com/Iteam1337/sonos-wejay/actions?workflow=Release)
 
 Wejay is a music collaboration bot for Slack that can be used to add music to a local Sonos system. It needs to be started on the same network as your Sonos system in order to communicate with the speakers.
 
@@ -52,7 +52,7 @@ This will compile the Reason code and start up the Express app.
 | `help`                            |                          | Display the help text                                        |
 | `mute`                            |                          | Mute                                                         |
 | `mostplayed`                      |                          | List the most played tracks (requires MySQL database)        |
-| `next`                            |                          | Skip one track forward                                       |
+| `next`                            | `skip`                   | Skip one track forward                                       |
 | `nowplaying`                      | `np`                     | Display what's playing right now                             |
 | `remove <numberOfTracks> <index>` | `rm`                     | Remove tracks                                                |
 | `pause`                           |                          | Pause                                                        |
@@ -82,9 +82,9 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://willcodefor.beer/"><img src="https://avatars1.githubusercontent.com/u/1478102?v=4" width="100px;" alt="Rickard Laurin"/><br /><sub><b>Rickard Laurin</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Code">💻</a> <a href="https://github.com/Iteam1337/sonos-wejay/issues?q=author%3Abeliever" title="Bug reports">🐛</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Documentation">📖</a> <a href="#ideas-believer" title="Ideas, Planning, & Feedback">🤔</a> <a href="#review-believer" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Tests">⚠️</a></td>
-    <td align="center"><a href="https://github.com/lessp"><img src="https://avatars3.githubusercontent.com/u/17602389?v=4" width="100px;" alt="Tom Ekander"/><br /><sub><b>Tom Ekander</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=lessp" title="Code">💻</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=lessp" title="Tests">⚠️</a> <a href="#ideas-lessp" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/Jimjardland"><img src="https://avatars0.githubusercontent.com/u/8521353?v=4" width="100px;" alt="Jimmy Jardland"/><br /><sub><b>Jimmy Jardland</b></sub></a><br /><a href="#ideas-Jimjardland" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://willcodefor.beer/"><img src="https://avatars1.githubusercontent.com/u/1478102?v=4" width="100px;" alt="Rickard Laurin"/><br /><sub><b>Rickard Laurin</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Code">💻</a> <a href="https://github.com/Iteam1337/sonos-wejay/commits?author=believer" title="Documentation">📖</a> <a href="#ideas-believer" title="Ideas, Planning, & Feedback">🤔</a> <a href="#review-believer" title="Reviewed Pull Requests">👀</a> </td>
+    <td align="center"><a href="https://github.com/lessp"><img src="https://avatars3.githubusercontent.com/u/17602389?v=4" width="100px;" alt="Tom Ekander"/><br /><sub><b>Tom Ekander</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=lessp" title="Code">💻</a> <a href="#ideas-lessp" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/Jimjardland"><img src="https://avatars0.githubusercontent.com/u/8521353?v=4" width="100px;" alt="Jimmy Jardland"/><br /><sub><b>Jimmy Jardland</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=Jimjardland" title="Code">💻</a> <a href="#ideas-Jimjardland" title="Ideas, Planning, & Feedback">🤔</a> </td>
     <td align="center"><a href="http://nilssonnils.se"><img src="https://avatars0.githubusercontent.com/u/3233182?v=4" width="100px;" alt="Nils Nilsson"/><br /><sub><b>Nils Nilsson</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=dubbelnisse" title="Code">💻</a> <a href="#ideas-dubbelnisse" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/faroutchris"><img src="https://avatars0.githubusercontent.com/u/3967818?v=4" width="100px;" alt="faroutchris"/><br /><sub><b>faroutchris</b></sub></a><br /><a href="https://github.com/Iteam1337/sonos-wejay/commits?author=faroutchris" title="Code">💻</a></td>
   </tr>
