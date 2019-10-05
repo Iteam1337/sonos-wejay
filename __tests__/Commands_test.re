@@ -136,6 +136,10 @@ describe("#make", () => {
     expect(make(Some("next"))) |> toEqual(Next)
   );
 
+  test("skip", () =>
+    expect(make(Some("skip"))) |> toEqual(Next)
+  );
+
   test("np (nowplaying short-hand)", () =>
     expect(make(Some("np"))) |> toEqual(NowPlaying)
   );
