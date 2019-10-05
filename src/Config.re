@@ -1,8 +1,3 @@
-type t;
-
-[@bs.val] external fromStringWithEncoding: string => t = "Buffer.from";
-[@bs.send] external toString: (t, string) => string = "toString";
-
 Dotenv.config();
 
 let env = Node.Process.process##env;

@@ -3,11 +3,11 @@ open Expect;
 
 describe("#nowPlayingData", () => {
   test("nothing is playing", () => {
-    let sonos: Sonos.Decode.currentTrackResponse = {
+    let sonos: Sonos.Decode.CurrentTrack.t = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
       albumArtURL: "",
-      uri: "",
+      uri: Some(""),
       artist: "30 Seconds to Mars",
       duration: 3600.0,
       title: "Echelon",
@@ -19,11 +19,11 @@ describe("#nowPlayingData", () => {
   });
 
   test("current track", () => {
-    let sonos: Sonos.Decode.currentTrackResponse = {
+    let sonos: Sonos.Decode.CurrentTrack.t = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
       albumArtURL: "",
-      uri: "",
+      uri: Some(""),
       artist: "30 Seconds to Mars",
       duration: 360.0,
       title: "Echelon",

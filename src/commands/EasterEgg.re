@@ -67,7 +67,7 @@ module Test = {
   let make = continuation => {
     Js.Promise.(
       Services.getCurrentTrack()
-      |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
+      |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
            let isEasterEgg =
              Track.easterEggTracks
              ->Belt.List.some(track =>

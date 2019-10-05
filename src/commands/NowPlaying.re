@@ -1,5 +1,5 @@
 let message = (~sonos, ~cover) => {
-  let {artist, title, album, position, duration}: Sonos.Decode.currentTrackResponse = sonos;
+  let {artist, title, album, position, duration}: Sonos.Decode.CurrentTrack.t = sonos;
 
   let trackDuration = Utils.parseDuration(duration);
   let currentPosition = Utils.parseDuration(position);
@@ -20,7 +20,7 @@ let message = (~sonos, ~cover) => {
 let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
-    |> then_((sonos: Sonos.Decode.currentTrackResponse) => {
+    |> then_((sonos: Sonos.Decode.CurrentTrack.t) => {
          let uri = Utils.sonosUriToSpotifyUri(sonos.uri);
          let id = SpotifyUtils.trackId(uri);
 

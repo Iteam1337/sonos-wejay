@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a message when there are no plays 1`] = `"No plays :sad_panda:"`;
+
+exports[`creates a messages when plays exist 1`] = `
+"*Toplist*
+1. <@1337> (5)
+2. <@1338> (3)"
+`;
