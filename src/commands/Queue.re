@@ -2,97 +2,6 @@ open Sonos.Methods;
 open Sonos.Decode;
 open Js.Promise;
 
-module InMemoryQueue = {
-  open Belt.List;
-
-  type user = {
-    id: string,
-    lastPlay: float,
-    tracks: list(string),
-  };
-
-  type t = list((string, user));
-
-  type action =
-    | AddTrack((option(string), string))
-    | ClearQueue
-    | RemoveTrack((option(string), string));
-
-  module Time = {
-    let now = () => Js.Date.make() |> Js.Date.getTime;
-  };
-
-  let currentState = ref([]);
-
-  let nextTrack = () => {
-    let state = currentState^;
-
-    state
-    ->sort(((_, a), (_, b)) => (a.lastPlay -. b.lastPlay)->int_of_float)
-    ->map(((_, {tracks})) => toArray(tracks))
-    ->toArray
-    ->Weave.make
-    ->Belt.Array.get(0);
-  };
-
-  let make = action => {
-    let state = currentState^;
-
-    let newState =
-      switch (action) {
-      | AddTrack((user, uri)) =>
-        switch (user) {
-        | None => state
-        | Some(user) =>
-          switch (getAssoc(state, user, (===))) {
-          | Some(row) =>
-            state->setAssoc(
-              user,
-              {
-                ...row,
-                lastPlay: Time.now(),
-                tracks: concat(row.tracks, [uri]),
-              },
-              (===),
-            )
-          | None =>
-            state->concat([
-              (user, {id: user, lastPlay: Time.now(), tracks: [uri]}),
-            ])
-          }
-        }
-
-      | RemoveTrack((user, uri)) =>
-        switch (user) {
-        | None => state
-        | Some(user) =>
-          switch (getAssoc(state, user, (===))) {
-          | Some(row) =>
-            state->setAssoc(
-              user,
-              {
-                ...row,
-                lastPlay: Time.now(),
-                tracks: row.tracks->keep(track => track != uri),
-              },
-              (===),
-            )
-          | None =>
-            state->concat([
-              (user, {id: user, lastPlay: Time.now(), tracks: [uri]}),
-            ])
-          }
-        }
-
-      | ClearQueue => []
-      };
-
-    currentState := newState;
-
-    newState;
-  };
-};
-
 let device = Config.device;
 
 let trackPosition = (~first, ~queueAt, ()) =>
@@ -265,50 +174,77 @@ module AsLastTrack = {
        );
   };
 
-  let make = (track, ~user, ~skipExists=false, ()) => {
-    let _ = InMemoryQueue.make(AddTrack((user, track)));
-    let nextTrack = InMemoryQueue.nextTrack();
+  let make = (track, ~user, ~skipExists as _=false, ()) => {
+    InMemoryQueue.make(AddTrack((user, track)));
 
-    let t =
-      switch (nextTrack) {
-      | Some(next) => Utils.parsedTrack(next)
-      | None => ""
-      };
-
-    Js.log(t);
-
-    switch (track) {
-    | "" =>
-      `Ok(
-        Slack.Block.make([
-          `Section(
-            "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
-          ),
-        ]),
-      )
-      |> resolve
-    | track =>
-      let parsedTrack = Utils.parsedTrack(track);
-
-      skipExists
-        ? queue(parsedTrack)
-        : Exists.inQueue(parsedTrack)
-          |> then_((existsInQueue: Exists.t) =>
-               switch (existsInQueue) {
-               | InQueue =>
-                 resolve(
-                   `Ok(
-                     Slack.Block.make([
-                       `Section(Message.trackExistsInQueue),
-                     ]),
-                   ),
-                 )
-               | NotInQueue =>
-                 queue(parsedTrack)
-                 |> catch(_ => `Failed("Failed to queue track") |> resolve)
-               }
-             );
+    switch (InMemoryQueue.nextTrack()) {
+    | Some(next) => Utils.parsedTrack(next) |> Js.log2("next")
+    | None => ()
     };
+
+    switch (InMemoryQueue.currentTrack()) {
+    | Some(next) => Utils.parsedTrack(next) |> Js.log2("current")
+    | None => ()
+    };
+
+    Js.log2("queue", InMemoryQueue.getQueue());
+
+    queueWithFallback()
+    |> then_(currentQueue =>
+         device->SonosSpecialCase.removeMultipleTracks(
+           2,
+           currentQueue.total->int_of_string - 1,
+         )
+         |> then_(_ => {
+              InMemoryQueue.getQueue()
+              ->Belt.Array.forEachWithIndex((i, track) =>
+                  Js.Global.setTimeout(
+                    _ =>
+                      device->queueAsLast(Utils.parsedTrack(track)) |> ignore,
+                    50 * i,
+                  )
+                  |> ignore
+                );
+
+              `Ok(
+                Slack.Block.make([
+                  `Section("Sweet! Your track has been queued"),
+                ]),
+              )
+              |> resolve;
+            })
+       );
+    /*switch (track) {*/
+    /*| "" =>*/
+    /*`Ok(*/
+    /*Slack.Block.make([*/
+    /*`Section(*/
+    /*"You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",*/
+    /*),*/
+    /*]),*/
+    /*)*/
+    /*|> resolve*/
+    /*| track =>*/
+    /*let parsedTrack = Utils.parsedTrack(track);*/
+    /*skipExists*/
+    /*? queue(parsedTrack)*/
+    /*: Exists.inQueue(parsedTrack)*/
+    /*|> then_((existsInQueue: Exists.t) =>*/
+    /*switch (existsInQueue) {*/
+    /*| InQueue =>*/
+    /*resolve(*/
+    /*`Ok(*/
+    /*Slack.Block.make([*/
+    /*`Section(Message.trackExistsInQueue),*/
+    /*]),*/
+    /*),*/
+    /*)*/
+    /*| NotInQueue =>*/
+    /*queue(parsedTrack)*/
+    /*|> catch(_ => `Failed("Failed to queue track") |> resolve)*/
+    /*}*/
+    /*);*/
+    /*};*/
   };
 };
 
