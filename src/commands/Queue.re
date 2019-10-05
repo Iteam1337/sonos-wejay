@@ -62,7 +62,7 @@ let handleRemoveArgs = args => {
 let removeMultipleTracks = args => {
   let (numberOfTracks, index) = handleRemoveArgs(args);
 
-  SonosSpecialCase.removeMultipleTracks(device, index, numberOfTracks)
+  Sonos.Methods.Queue.removeMultipleTracks(device, index, numberOfTracks)
   |> then_(_ => {
        let message =
          switch (index, numberOfTracks) {
