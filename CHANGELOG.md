@@ -1,3 +1,10 @@
+# [6.8.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.7.0...v6.8.0) (2019-10-05)
+
+
+### Features
+
+* update bindings ([#62](https://github.com/Iteam1337/sonos-wejay/issues/62)) ([8d37304](https://github.com/Iteam1337/sonos-wejay/commit/8d37304))
+
 # [6.7.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.6.0...v6.7.0) (2019-10-05)
 
 
