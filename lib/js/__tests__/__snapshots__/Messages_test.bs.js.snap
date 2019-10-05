@@ -31,10 +31,10 @@ remove|rm <numberOfTracks> <index>__ Remove tracks
 
 *Misc*
 \`\`\`
-blame _____________ Who added the track?
-help ______________ Display this message
-mostplayed ________ List the most played tracks
-toplist ___________ List top Wejayers
+blame <trackNumber> ___ Who added the track?
+help __________________ Display this message
+mostplayed ____________ List the most played tracks
+toplist _______________ List top Wejayers
 \`\`\`
 
 There's also some hidden easter eggs :hatching_chick:"
