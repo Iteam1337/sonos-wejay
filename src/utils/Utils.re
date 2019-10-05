@@ -57,15 +57,19 @@ let isFriday = () =>
   };
 
 let sonosUriToSpotifyUri = sonosUri => {
-  let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
+  switch (sonosUri) {
+  | Some(sonosUri) =>
+    let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
 
-  Js.String.(
-    switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
-    | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
-    | (true, None) => sonosUri
-    | _ => ""
-    }
-  );
+    Js.String.(
+      switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
+      | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
+      | (true, None) => sonosUri
+      | _ => ""
+      }
+    );
+  | None => ""
+  };
 };
 
 module RandomTrack = {

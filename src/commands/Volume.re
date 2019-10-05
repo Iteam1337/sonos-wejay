@@ -1,8 +1,7 @@
 open Js.Promise;
-open Sonos.Methods;
 
 let current = () =>
-  Config.device->getVolume()
+  Config.device->Sonos.Methods.PlayerControl.Volume.get()
   |> then_(volume =>
        `Ok(
          Slack.Block.make([
@@ -14,7 +13,7 @@ let current = () =>
   |> catch(_ => `Failed("Cannot get current volume") |> resolve);
 
 let update = volumeValue =>
-  Config.device->getVolume()
+  Config.device->Sonos.Methods.PlayerControl.Volume.get()
   |> then_(currentVolume => {
        let newVolume =
          switch (currentVolume, float_of_string(volumeValue)) {
@@ -22,7 +21,7 @@ let update = volumeValue =>
          | (c, v) => c +. v
          };
 
-       Config.device->setVolume(newVolume)
+       Config.device->Sonos.Methods.PlayerControl.Volume.set(newVolume)
        |> then_(_ =>
             `Ok(
               Slack.Block.make([

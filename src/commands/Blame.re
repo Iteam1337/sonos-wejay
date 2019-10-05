@@ -31,7 +31,7 @@ module Request = {
 let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
-    |> then_(({uri}: Sonos.Decode.currentTrackResponse) => {
+    |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
          let uri = Utils.sonosUriToSpotifyUri(uri);
 
          Request.make(uri)
