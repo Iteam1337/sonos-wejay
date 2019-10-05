@@ -21,7 +21,7 @@ let help =
     "```",
     "clear ______________________________ Reset playlist",
     "mute _______________________________ Mute",
-    "next _______________________________ Skip one track forward",
+    "next|skip __________________________ Skip one track forward",
     "pause ______________________________ Pause",
     "play _______________________________ Play",
     "playtrack <trackNumber> ____________ Play track number",

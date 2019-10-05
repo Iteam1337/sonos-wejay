@@ -52,7 +52,7 @@ This will compile the Reason code and start up the Express app.
 | `help`                            |                          | Display the help text                                        |
 | `mute`                            |                          | Mute                                                         |
 | `mostplayed`                      |                          | List the most played tracks (requires MySQL database)        |
-| `next`                            |                          | Skip one track forward                                       |
+| `next`                            | `skip`                   | Skip one track forward                                       |
 | `nowplaying`                      | `np`                     | Display what's playing right now                             |
 | `remove <numberOfTracks> <index>` | `rm`                     | Remove tracks                                                |
 | `pause`                           |                          | Pause                                                        |
