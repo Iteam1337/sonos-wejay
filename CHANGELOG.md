@@ -1,3 +1,10 @@
+# [6.9.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.8.0...v6.9.0) (2019-10-05)
+
+
+### Features
+
+* add blame track number ([#63](https://github.com/Iteam1337/sonos-wejay/issues/63)) ([6117e6b](https://github.com/Iteam1337/sonos-wejay/commit/6117e6b))
+
 # [6.8.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.7.0...v6.8.0) (2019-10-05)
 
 
