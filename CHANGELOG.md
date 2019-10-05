@@ -1,3 +1,10 @@
+# [6.7.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.6.0...v6.7.0) (2019-10-05)
+
+
+### Features
+
+* add skip as alias for next ([#61](https://github.com/Iteam1337/sonos-wejay/issues/61)) ([30d0ed5](https://github.com/Iteam1337/sonos-wejay/commit/30d0ed5))
+
 # [6.6.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.5.0...v6.6.0) (2019-10-04)
 
 
