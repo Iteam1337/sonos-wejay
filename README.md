@@ -1,6 +1,6 @@
 # Sonos Wejay
 
-[![Build Status](https://travis-ci.com/Iteam1337/sonos-wejay.svg?token=pRHtrm4YwVYpN8sqXadx&branch=master)](https://travis-ci.com/Iteam1337/sonos-wejay)
+[![](https://github.com/Iteam1337/sonos-wejay/workflows/Release/badge.svg)](https://github.com/Iteam1337/sonos-wejay/actions?workflow=Release)
 
 Wejay is a music collaboration bot for Slack that can be used to add music to a local Sonos system. It needs to be started on the same network as your Sonos system in order to communicate with the speakers.
 
