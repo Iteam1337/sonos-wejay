@@ -26,6 +26,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SEMANTIC_RELEASE_PACKAGE: "wejay"
         CI: true
 
     - name: Build to Docker
