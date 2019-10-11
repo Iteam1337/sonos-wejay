@@ -1,3 +1,10 @@
+# [6.10.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.9.0...v6.10.0) (2019-10-11)
+
+
+### Features
+
+* add in-depth help message for queue ([#66](https://github.com/Iteam1337/sonos-wejay/issues/66)) ([7047083](https://github.com/Iteam1337/sonos-wejay/commit/7047083797703fe87b5524567e4564bbf5365fc1))
+
 # [6.9.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.8.0...v6.9.0) (2019-10-05)
 
 
