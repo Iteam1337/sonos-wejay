@@ -25,6 +25,7 @@ jobs:
       run: npx semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         CI: true
 
     - name: Build to Docker
