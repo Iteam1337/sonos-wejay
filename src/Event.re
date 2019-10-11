@@ -13,8 +13,9 @@ module Log = {
 let make = (~command, ~args, ~user, ()) => {
   Log.make(command, args, user);
 
-  switch (command) {
-  | Decode.Requester.Human(cmd) =>
+  switch (command, args) {
+  | (Decode.Requester.Human(cmd), "help") => Help.make(Some(cmd))
+  | (Decode.Requester.Human(cmd), _) =>
     switch (cmd) {
     | NowPlaying => NowPlaying.run()
     | Search => Spotify.Search.make(args)
@@ -43,7 +44,7 @@ let make = (~command, ~args, ~user, ()) => {
     | MostPlayed => MostPlayed.run()
     | Toplist => Toplist.run()
     | EasterEgg(egg) => EasterEgg.run(egg)
-    | Help => `Ok(Slack.Block.make([`Section(Message.help)])) |> resolve
+    | Help => Help.make(None)
     | Time =>
       `Ok(Slack.Block.make([`Section(Message.thisIsWejay)])) |> resolve
 
@@ -53,6 +54,6 @@ let make = (~command, ~args, ~user, ()) => {
       |> resolve
     | UnhandledCommand => `Failed(Message.unhandledCommand) |> resolve
     }
-  | Bot => resolve(`Failed(Message.botRequest))
+  | (Bot, _) => resolve(`Failed(Message.botRequest))
   };
 };

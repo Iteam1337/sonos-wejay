@@ -48,13 +48,20 @@ describe("#parsedTrack", () => {
     |> toEqual("spotify:track:4UQLQJu3DNvVkMVglwElU2")
   );
 
-  test("parses Spotify URL", () =>
+  test("parses spotify url", () =>
     expect(
       parsedTrack(
-        "https://open.spotify.com/track/6DUdjPhPTpE3zMTA9jdCex?si=pufHMXrGTpC89VBP88CAow",
+        "https://open.spotify.com/track/6dudjphptpe3zmta9jdcex?si=pufhmxrgtpc89vbp88caow",
       ),
     )
-    |> toEqual("spotify:track:6DUdjPhPTpE3zMTA9jdCex")
+    |> toEqual("spotify:track:6dudjphptpe3zmta9jdcex")
+  );
+
+  test("parses spotify url", () =>
+    expect(
+      parsedTrack("https://open.spotify.com/track/5fxDE80ZPA32JXjZN87pQJ"),
+    )
+    |> toEqual("spotify:track:5fxDE80ZPA32JXjZN87pQJ")
   );
 });
 
