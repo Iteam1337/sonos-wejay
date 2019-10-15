@@ -37,6 +37,7 @@ let make = (~command, ~args, ~user, ()) => {
     | Mute => PlayerControl.mute(true)
     | Unmute => PlayerControl.mute(false)
     | Volume => Volume.control(args)
+    | PlayLatestTrack => PlayerControl.playLatestTrack()
 
     /* Misc */
     | Blame => Blame.run(args)

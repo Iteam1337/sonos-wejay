@@ -13,6 +13,7 @@ type t =
   | Pause
   | Play
   | PlayTrack
+  | PlayLatestTrack
   | Previous
   | Queue
   | Search
@@ -65,6 +66,8 @@ let make = text => {
       | "pause" => Pause
       | "play" => Play
       | "playtrack" => PlayTrack
+      | "pl"
+      | "playlatest" => PlayLatestTrack
       | "previous" => Previous
       | "q"
       | "queue" => Queue
@@ -132,4 +135,5 @@ let commandToString =
   | UnknownCommand(_) => "unknown-command"
   | UnhandledCommand => "unhandled-command"
   | Unmute => "playback-unmute"
+  | PlayLatestTrack => "play-latest-track"
   | Volume => "volume";

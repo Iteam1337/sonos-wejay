@@ -25,6 +25,7 @@ let help =
     "pause ______________________________ Pause",
     "play _______________________________ Play",
     "playtrack <trackNumber> ____________ Play track number",
+    "playlatest|pl  _____________________ Play latest track",
     "previous ___________________________ Go back one track",
     "unmute _____________________________ Unmute",
     "volume <0-100> _____________________ Set volume, if no number is provided displays current volume",

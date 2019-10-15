@@ -58,6 +58,7 @@ This will compile the Reason code and start up the Express app.
 | `pause`                           |                          | Pause                                                        |
 | `play`                            |                          | Play                                                         |
 | `playtrack <trackNumber>`         |                          | Play track number                                            |
+| `playlatest`                      | `pl`                     | Play latest track                                            |
 | `previous`                        |                          | Go back one track                                            |
 | `queue <Spotify URI>`             | `q <Spotify URI>`        | Queue a track using a Spotify URI                            |
 | `search <your search string>`     | `s <your search string>` | Search Spotify for a track                                   |
