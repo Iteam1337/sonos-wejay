@@ -1,3 +1,10 @@
+# [6.11.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.10.0...v6.11.0) (2019-10-19)
+
+
+### Features
+
+* play the latest track ([#67](https://github.com/Iteam1337/sonos-wejay/issues/67)) ([b2ee63f](https://github.com/Iteam1337/sonos-wejay/commit/b2ee63f5c5928a9be05de6437d2ed26df2c28e4f))
+
 # [6.10.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.9.0...v6.10.0) (2019-10-11)
 
 
