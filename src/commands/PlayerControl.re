@@ -136,3 +136,10 @@ let playTrack = trackNumber =>
          ),
     )
   };
+
+  let playLatestTrack = () =>
+    Queue.queueWithFallback()
+      |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
+        let lastTrack = items->Belt.Array.length;
+        playTrack(string_of_int(lastTrack))
+      })
