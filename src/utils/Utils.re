@@ -72,6 +72,27 @@ let sonosUriToSpotifyUri = sonosUri => {
   };
 };
 
+module Parse = {
+  type t =
+    | Track(string)
+    | Playlist(string);
+
+  let make = track => {
+    let parsed =
+      Regex.(
+        track
+        ->replaceByRe(Patterns.removeSlackCommandBrackets, "")
+        ->replaceByRe(Patterns.queryParams, "")
+        ->replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
+      );
+
+    switch (parsed |> Js.String.includes(":playlist:")) {
+    | false => Track(parsed)
+    | true => Playlist(parsed)
+    };
+  };
+};
+
 module RandomTrack = {
   let make = input => {
     // Generate a seed based on the current time

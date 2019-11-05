@@ -123,53 +123,82 @@ module Exists = {
     | InQueue
     | NotInQueue;
 
-  let inQueue = trackUri => {
-    trackUri
-    ->SpotifyUtils.trackId
-    ->Belt.Option.getWithDefault("")
-    ->Spotify.getSpotifyTrack
-    |> then_((spotify: Spotify.WejayTrack.t) =>
-         queueWithFallback()
-         |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-              /* Only checking URI is not enough, so we do a
-               * naive artist/track name match as well. Sonos
-               * sometimes uses a different track URI
-               * than what was pasted in Wejay because
-               * of different regions or markets */
-              let existsInQueue =
-                items->Belt.Array.some(item =>
-                  Utils.sonosUriToSpotifyUri(Some(item.uri)) === trackUri
-                  || item.artist === spotify.artist
-                  && item.title === spotify.name
-                );
+  let inQueue = track => {
+    switch (track) {
+    | Utils.Parse.Playlist(_) => resolve(NotInQueue)
+    | Track(uri) =>
+      uri
+      ->SpotifyUtils.trackId
+      ->Belt.Option.getWithDefault("")
+      ->Spotify.getSpotifyTrack
+      |> then_((spotify: Spotify.WejayTrack.t) =>
+           queueWithFallback()
+           |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
+                /* Only checking URI is not enough, so we do a
+                 * naive artist/track name match as well. Sonos
+                 * sometimes uses a different track URI
+                 * than what was pasted in Wejay because
+                 * of different regions or markets */
+                let existsInQueue =
+                  items->Belt.Array.some(item =>
+                    Utils.sonosUriToSpotifyUri(Some(item.uri)) === uri
+                    || item.artist === spotify.artist
+                    && item.title === spotify.name
+                  );
 
-              resolve(existsInQueue ? InQueue : NotInQueue);
-            })
-       );
+                resolve(existsInQueue ? InQueue : NotInQueue);
+              })
+         )
+    };
   };
 };
 
 module AsLastTrack = {
   let queue = track => {
-    device->Sonos.Methods.Queue.asLast(track)
-    |> then_(queuedTrack =>
-         Services.getCurrentTrack()
-         |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) => {
-              let {firstTrackNumberEnqueued}: Sonos.Decode.QueueTrack.t =
-                queuedTrack->Sonos.Decode.QueueTrack.make;
+    switch (track) {
+    | Utils.Parse.Track(uri) =>
+      device->Sonos.Methods.Queue.asLast(uri)
+      |> then_(queuedTrack =>
+           Services.getCurrentTrack()
+           |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) => {
+                let {firstTrackNumberEnqueued}: Sonos.Decode.QueueTrack.t =
+                  queuedTrack->Sonos.Decode.QueueTrack.make;
 
-              let message =
-                "Sweet! Your track is number *"
-                ++ trackPosition(
-                     ~first=firstTrackNumberEnqueued,
-                     ~queueAt=queuePosition,
-                     (),
-                   )
-                ++ "* in the queue :musical_note:";
+                let message =
+                  "Sweet! Your track is number *"
+                  ++ trackPosition(
+                       ~first=firstTrackNumberEnqueued,
+                       ~queueAt=queuePosition,
+                       (),
+                     )
+                  ++ "* in the queue :musical_note:";
 
-              `Ok(Slack.Block.make([`Section(message)])) |> resolve;
-            })
-       );
+                `Ok(Slack.Block.make([`Section(message)])) |> resolve;
+              })
+         )
+    | Playlist(uri) =>
+      switch (SpotifyUtils.trackId(uri)) {
+      | Some(id) =>
+        Spotify.Playlist.make(id)
+        |> then_(({owner}: Spotify.Playlist.t) =>
+             device->Sonos.Methods.Queue.asLast(
+               {j|spotify:user:$owner:playlist:$id|j},
+             )
+             |> then_(_ =>
+                  `Ok(
+                    Slack.Block.make([`Section("Playlist has been queued")]),
+                  )
+                  |> resolve
+                )
+           )
+      | None =>
+        resolve(
+          `Ok(
+            Slack.Block.make([`Section("Nothing queued, ID was invalid")]),
+          ),
+        )
+      }
+    };
   };
 
   let make = (track, ~skipExists=false, ()) => {
@@ -184,60 +213,65 @@ module AsLastTrack = {
       )
       |> resolve
     | track =>
-      let parsedTrack = Utils.parsedTrack(track);
+      let parsedTrack = Utils.Parse.make(track);
 
-      skipExists
-        ? queue(parsedTrack)
-        : Exists.inQueue(parsedTrack)
-          |> then_((existsInQueue: Exists.t) =>
-               switch (existsInQueue) {
-               | InQueue =>
-                 resolve(
-                   `Ok(
-                     Slack.Block.make([
-                       `Section(Message.trackExistsInQueue),
-                     ]),
-                   ),
-                 )
-               | NotInQueue =>
-                 queue(parsedTrack)
-                 |> catch(_ => `Failed("Failed to queue track") |> resolve)
-               }
-             );
+      switch (skipExists, parsedTrack) {
+      | (false, Playlist(_))
+      | (true, _) => queue(parsedTrack)
+      | (false, Track(_)) =>
+        Exists.inQueue(parsedTrack)
+        |> then_((existsInQueue: Exists.t) =>
+             switch (existsInQueue) {
+             | InQueue =>
+               resolve(
+                 `Ok(
+                   Slack.Block.make([`Section(Message.trackExistsInQueue)]),
+                 ),
+               )
+             | NotInQueue =>
+               queue(parsedTrack)
+               |> catch(_ => `Failed("Failed to queue track") |> resolve)
+             }
+           )
+      };
     };
   };
 };
 
 let next = track => {
-  let parsedTrack = Utils.parsedTrack(track);
+  let parsedTrack = Utils.Parse.make(track);
 
-  Exists.inQueue(parsedTrack)
-  |> then_((existsInQueue: Exists.t) =>
-       switch (existsInQueue) {
-       | InQueue =>
-         resolve(
-           `Ok(Slack.Block.make([`Section(Message.trackExistsInQueue)])),
-         )
-       | NotInQueue =>
-         Services.getCurrentTrack()
-         |> then_(({position, queuePosition}: Sonos.Decode.CurrentTrack.t) =>
-              device->Sonos.Methods.Queue.atPosition(
-                parsedTrack,
-                int_of_float(queuePosition) + 1,
+  switch (parsedTrack) {
+  | Utils.Parse.Playlist(uri)
+  | Track(uri) =>
+    Exists.inQueue(parsedTrack)
+    |> then_((existsInQueue: Exists.t) =>
+         switch (existsInQueue) {
+         | InQueue =>
+           resolve(
+             `Ok(Slack.Block.make([`Section(Message.trackExistsInQueue)])),
+           )
+         | NotInQueue =>
+           Services.getCurrentTrack()
+           |> then_(({position, queuePosition}: Sonos.Decode.CurrentTrack.t) =>
+                device->Sonos.Methods.Queue.atPosition(
+                  uri,
+                  int_of_float(queuePosition) + 1,
+                )
+                |> then_(() => {
+                     let message =
+                       switch (position, queuePosition) {
+                       | (0., 0.) => "Your track will play right now"
+                       | _ => "Your track will play right after the current"
+                       };
+
+                     `Ok(Slack.Block.make([`Section(message)])) |> resolve;
+                   })
+                |> catch(_ => `Failed("Failed to queue track") |> resolve)
               )
-              |> then_(() => {
-                   let message =
-                     switch (position, queuePosition) {
-                     | (0., 0.) => "Your track will play right now"
-                     | _ => "Your track will play right after the current"
-                     };
-
-                   `Ok(Slack.Block.make([`Section(message)])) |> resolve;
-                 })
-              |> catch(_ => `Failed("Failed to queue track") |> resolve)
-            )
-       }
-     );
+         }
+       )
+  };
 };
 
 type multiple = {
@@ -246,7 +280,7 @@ type multiple = {
 };
 
 let multiple = tracks => {
-  let parsedTracks = tracks->Belt.Array.map(Utils.parsedTrack);
+  let parsedTracks = tracks->Belt.Array.map(Utils.Parse.make);
   let exists = parsedTracks->Belt.Array.map(track => Exists.inQueue(track));
 
   all(exists)
@@ -257,7 +291,11 @@ let multiple = tracks => {
            switch (curr) {
            | Exists.InQueue => (inQueue + 1, notInQueue)
            | NotInQueue =>
-             AsLastTrack.make(parsedTracks[i], ~skipExists=true, ()) |> ignore;
+             switch (parsedTracks[i]) {
+             | Playlist(uri)
+             | Track(uri) =>
+               AsLastTrack.make(uri, ~skipExists=true, ()) |> ignore
+             };
 
              (inQueue, notInQueue + 1);
            }

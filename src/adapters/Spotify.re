@@ -103,3 +103,15 @@ module Search = {
     };
   };
 };
+
+module Playlist = {
+  [@decco]
+  type t = {owner: string};
+
+  let parse = json => t_decode(json)->Parser.handle;
+
+  let make = id => {
+    WejayUtils.getPlaylist(id)
+    |> then_(response => response |> parse |> resolve);
+  };
+};
