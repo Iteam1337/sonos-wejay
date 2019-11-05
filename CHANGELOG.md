@@ -1,3 +1,10 @@
+## [6.11.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.0...v6.11.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* handle playlists fixes [#68](https://github.com/Iteam1337/sonos-wejay/issues/68) ([0e00472](https://github.com/Iteam1337/sonos-wejay/commit/0e00472c35a477b2b7a8d92dd8f38bfa18e43c3a))
+
 # [6.11.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.10.0...v6.11.0) (2019-10-19)
 
 
