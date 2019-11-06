@@ -3,6 +3,9 @@ module Patterns = {
   let spotifyPlaylistURL = [%re
     "/https:\\/\\/open.spotify.com\\/user\\/(\\w+)\\/playlist\\/(\\w+)/"
   ];
+  let spotifyPlaylistURLWithoutUser = [%re
+    "/https:\\/\\/open.spotify.com\\/playlist\\//"
+  ];
 
   let queryParams = [%re "/\\?si=([^&]*)/"];
 

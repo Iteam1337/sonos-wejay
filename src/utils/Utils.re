@@ -84,6 +84,10 @@ module Parse = {
         ->replaceByRe(Patterns.removeSlackCommandBrackets, "")
         ->replaceByRe(Patterns.queryParams, "")
         ->replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
+        ->replaceByRe(
+            Patterns.spotifyPlaylistURLWithoutUser,
+            "spotify:playlist:",
+          )
       );
 
     switch (parsed |> Js.String.includes(":playlist:")) {

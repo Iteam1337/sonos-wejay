@@ -155,3 +155,58 @@ describe("RandomTrack", () =>
     |> toBeGreaterThan(0)
   )
 );
+
+describe("Parse", () => {
+  describe("Track", () => {
+    test("handles URI", () =>
+      expect(Parse.make("spotify:track:4UQLQJu3DNvVkMVglwElU2"))
+      |> toEqual(Parse.Track("spotify:track:4UQLQJu3DNvVkMVglwElU2"))
+    );
+
+    test("handles URI with Slack brackets", () =>
+      expect(Parse.make("<spotify:track:4UQLQJu3DNvVkMVglwElU2>"))
+      |> toEqual(Parse.Track("spotify:track:4UQLQJu3DNvVkMVglwElU2"))
+    );
+
+    test("handles URL", () =>
+      expect(
+        Parse.make(
+          "https://open.spotify.com/track/6dudjphptpe3zmta9jdcex?si=pufhmxrgtpc89vbp88caow",
+        ),
+      )
+      |> toEqual(Parse.Track("spotify:track:6dudjphptpe3zmta9jdcex"))
+    );
+
+    test("handles URL without query params", () =>
+      expect(
+        Parse.make("https://open.spotify.com/track/5fxDE80ZPA32JXjZN87pQJ"),
+      )
+      |> toEqual(Parse.Track("spotify:track:5fxDE80ZPA32JXjZN87pQJ"))
+    );
+  });
+
+  describe("Playlist", () => {
+    test("handles URL", () =>
+      expect(
+        Parse.make(
+          "https://open.spotify.com/playlist/5DhAWTN2iJ21BivcrMGqUy?si=YxmHGjm-QRyMJH7bQqBYjg",
+        ),
+      )
+      |> toEqual(Parse.Playlist("spotify:playlist:5DhAWTN2iJ21BivcrMGqUy"))
+    );
+
+    test("handles URL without query params", () =>
+      expect(
+        Parse.make(
+          "https://open.spotify.com/playlist/5DhAWTN2iJ21BivcrMGqUy",
+        ),
+      )
+      |> toEqual(Parse.Playlist("spotify:playlist:5DhAWTN2iJ21BivcrMGqUy"))
+    );
+
+    test("handles URI", () =>
+      expect(Parse.make("spotify:playlist:5DhAWTN2iJ21BivcrMGqUy"))
+      |> toEqual(Parse.Playlist("spotify:playlist:5DhAWTN2iJ21BivcrMGqUy"))
+    );
+  });
+});
