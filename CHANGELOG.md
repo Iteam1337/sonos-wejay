@@ -1,3 +1,10 @@
+## [6.11.2](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.1...v6.11.2) (2019-11-06)
+
+
+### Bug Fixes
+
+* handle spotify playlist url fixes [#69](https://github.com/Iteam1337/sonos-wejay/issues/69) ([995c626](https://github.com/Iteam1337/sonos-wejay/commit/995c6268e9ccaa4456d57b3a4281ac617c395b9a))
+
 ## [6.11.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.0...v6.11.1) (2019-11-05)
 
 
