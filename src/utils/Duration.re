@@ -1,10 +1,8 @@
-let cleanFloat = value => value |> int_of_float |> string_of_int;
-
 module LeadingZero = {
   let add = value =>
     switch (value) {
-    | v when v < 10. => "0" ++ value->cleanFloat
-    | _ => value->cleanFloat
+    | v when v < 10. => "0" ++ value->Utils.cleanFloat
+    | _ => value->Utils.cleanFloat
     };
 };
 
@@ -29,7 +27,8 @@ let make = milliseconds => {
   let min = Minutes.make(h, seconds);
 
   switch (h, min, s) {
-  | (0.0, min, s) => min->cleanFloat ++ ":" ++ s
-  | (h, min, s) => h->cleanFloat ++ ":" ++ LeadingZero.add(min) ++ ":" ++ s
+  | (0.0, min, s) => min->Utils.cleanFloat ++ ":" ++ s
+  | (h, min, s) =>
+    h->Utils.cleanFloat ++ ":" ++ LeadingZero.add(min) ++ ":" ++ s
   };
 };

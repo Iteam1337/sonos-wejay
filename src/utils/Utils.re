@@ -1,9 +1,3 @@
-let formatDate = dateString =>
-  dateString->Js.Date.fromString->DateFns.format("yyyy-MM-dd");
-
-let formatTimestamp = timestamp =>
-  timestamp->Js.Date.fromFloat->DateFns.format("yyyy-MM-dd");
-
 let splitBy = (str, split) => str |> Js.String.split(split);
 let joinWithNewline = arr => arr |> Js.Array.joinWith("\n");
 let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
@@ -20,15 +14,6 @@ let parsedTrack = track =>
 
 let removeUser = text =>
   text->Regex.replaceByRe(Regex.Patterns.removeSlackUser, "");
-
-let createAttachment = (~text, ~uri, ~thumbUrl="", ()) => {
-  "text": text,
-  "callback_id": "queue",
-  "thumb_url": thumbUrl,
-  "actions": [|
-    {"name": "track", "text": "Queue", "type": "button", "value": uri},
-  |],
-};
 
 let parseTrackCopy = track => track->parsedTrack->splitBy("\n");
 

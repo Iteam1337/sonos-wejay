@@ -7,12 +7,6 @@ open Expect;
 
 afterEach(clear);
 
-describe("#formatTimestamp", () =>
-  test("should format a timestamp", () =>
-    expect(formatTimestamp(1544185210000.)) |> toEqual("2018-12-07")
-  )
-);
-
 describe("#artistAndTitle", () =>
   test("artist and title combined", () =>
     expect(
@@ -64,49 +58,6 @@ describe("#cleanFloat", () =>
     expect(cleanFloat(50.)) |> toEqual("50")
   )
 );
-
-describe("#createAttachment", () => {
-  test("creates attachment without thumb_url", () =>
-    expect(createAttachment(~text="Text", ~uri="spotify:track:123", ()))
-    |> toEqual({
-         "text": "Text",
-         "callback_id": "queue",
-         "thumb_url": "",
-         "actions": [|
-           {
-             "name": "track",
-             "text": "Queue",
-             "type": "button",
-             "value": "spotify:track:123",
-           },
-         |],
-       })
-  );
-
-  test("creates attachment with thumb_url", () =>
-    expect(
-      createAttachment(
-        ~text="Text",
-        ~uri="spotify:track:123",
-        ~thumbUrl="image.png",
-        (),
-      ),
-    )
-    |> toEqual({
-         "text": "Text",
-         "callback_id": "queue",
-         "thumb_url": "image.png",
-         "actions": [|
-           {
-             "name": "track",
-             "text": "Queue",
-             "type": "button",
-             "value": "spotify:track:123",
-           },
-         |],
-       })
-  );
-});
 
 describe("#parseSpotifyCopy", () => {
   test("should parse spotify copy/paste", () =>

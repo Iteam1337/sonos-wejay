@@ -11,7 +11,7 @@ let message = (hits: Elastic.Search.t) =>
            Utils.listNumber(i)
            ++ Slack.User.make(hit.sender)
            ++ " on "
-           ++ Utils.formatDate(hit.timestamp)
+           ++ DateFns.Format.date(hit.timestamp)
          )
        ->Utils.joinWithNewline
   };
