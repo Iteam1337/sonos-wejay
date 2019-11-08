@@ -17,7 +17,7 @@ describe("Decode", () => {
   describe("eventPayload", () =>
     test("parses eventPayload", () => {
       let mockEvent =
-        Decode.EventType.EventCallback(
+        Decode.EventType.Event(
           Some({
             user: Some("UXXXXXXX"),
             command: Human(Commands.Help),

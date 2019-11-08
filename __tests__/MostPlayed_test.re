@@ -2,7 +2,7 @@ open Jest;
 open Expect;
 
 test("creates a formatted message", () => {
-  let tracks: array(Spotify.WejayTrack.t) = [|
+  let tracks: array(Spotify.Track.t) = [|
     {
       albumName: "30 Seconds to Mars",
       artist: "30 Seconds to Mars",

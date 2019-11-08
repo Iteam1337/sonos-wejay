@@ -1,5 +1,4 @@
-let message =
-    (tracks: array(Spotify.WejayTrack.t), hits: Elastic.Aggregate.t) =>
+let message = (tracks: array(Spotify.Track.t), hits: Elastic.Aggregate.t) =>
   "*Most played*\n"
   ++ tracks
      ->Belt.Array.mapWithIndex((i, {artist, name}) => {
@@ -21,25 +20,21 @@ let run = () => {
 
          Belt.Array.(
            switch (length(hits)) {
-           | 0 =>
-             resolve(`Ok(Slack.Block.make([`Section(Message.noPlays)])))
+           | 0 => Slack.Msg.make([`Section(Message.noPlays)]) |> resolve
            | _ =>
              hits
              ->keep(filterPlaylists)
              ->map(({key}) => key->SpotifyUtils.trackId)
              ->keepMap(track => track)
-             ->map(Spotify.getSpotifyTrack)
+             ->map(Spotify.Track.make)
              |> all
              |> then_(tracks =>
-                  `Ok(Slack.Block.make([`Section(message(tracks, hits))]))
+                  Slack.Msg.make([`Section(message(tracks, hits))])
                   |> resolve
                 )
            }
          );
        })
-    |> catch(err => {
-         Js.log(err);
-         resolve(`Failed("Error in :: Most played"));
-       })
+    |> catch(_ => resolve(Belt.Result.Error("Error in :: Most played")))
   );
 };

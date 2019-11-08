@@ -1,3 +1,10 @@
+module Result = {
+  type t('a) =
+    | Message(array(Js.t('a)));
+
+  type result('a) = Belt.Result.t(t('a), string);
+};
+
 module Block = {
   module Text = {
     let make = (~text) => {"type": "mrkdwn", "text": text} |> Obj.magic;
@@ -111,7 +118,9 @@ module Block = {
     };
 };
 
-let userId = id => "<@" ++ id ++ ">";
+module User = {
+  let make = id => "<@" ++ id ++ ">";
+};
 
 let sendPayload = payload => {
   Js.Promise.(
@@ -126,33 +135,6 @@ let sendPayload = payload => {
   )
   |> ignore;
 };
-
-let getUser = token => {
-  Js.Promise.(
-    API.createRequest(
-      ~url="https://slack.com/api/auth.test",
-      ~_method="POST",
-      ~data=Some({"token": token}),
-      ~headers=Some({"Authorization": "Bearer " ++ token}),
-      (),
-    )
-    |> then_(user =>
-         Belt.Option.getWithDefault(user##data##user_id, "") |> resolve
-       )
-  );
-};
-
-let makeAuthCallback = code =>
-  API.createRequest(
-    ~url=
-      "https://slack.com/api/oauth.access?client_id="
-      ++ Config.slackClientId
-      ++ "&client_secret="
-      ++ Config.slackClientSecret
-      ++ "&code="
-      ++ code,
-    (),
-  );
 
 module Message = {
   [@bs.obj]
@@ -171,4 +153,10 @@ module Message = {
 
   let make = (channel, blocks) =>
     slackMessage(~channel, ~blocks, ()) |> sendPayload;
+};
+
+module Msg = {
+  let make = message => {
+    Belt.Result.Ok(Result.Message(Block.make(message)));
+  };
 };

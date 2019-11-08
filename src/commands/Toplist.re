@@ -4,9 +4,9 @@ let message = (hits: Elastic.Aggregate.t) =>
   | _ =>
     "*Toplist*\n"
     ++ hits
-       ->Belt.Array.mapWithIndex((i, {key, count}) =>
+       ->Belt.Array.mapWithIndex((i, {key: id, count}) =>
            Utils.listNumber(i)
-           ++ Slack.userId(key)
+           ++ Slack.User.make(id)
            ++ " ("
            ++ string_of_int(count)
            ++ ")"
@@ -20,7 +20,7 @@ let run = () => {
     |> then_(response => {
          let resp = response##data->Elastic.Aggregate.make;
 
-         `Ok(Slack.Block.make([`Section(message(resp))])) |> resolve;
+         Slack.Msg.make([`Section(message(resp))]) |> resolve;
        })
   );
 };

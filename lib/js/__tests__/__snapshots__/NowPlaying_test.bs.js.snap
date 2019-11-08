@@ -2,70 +2,78 @@
 
 exports[`#nowPlayingData current track 1`] = `
 Array [
-  Object {
-    "accessory": Object {
-      "alt_text": "Album cover",
-      "image_url": "img",
-      "type": "image",
-    },
-    "fields": Array [
+  Array [
+    Array [
       Object {
-        "text": "*Artist*
+        "accessory": Object {
+          "alt_text": "Album cover",
+          "image_url": "img",
+          "type": "image",
+        },
+        "fields": Array [
+          Object {
+            "text": "*Artist*
 30 Seconds to Mars",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Track name*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Track name*
 Echelon",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Album*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Album*
 30 Seconds to Mars",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Current position*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Current position*
 2:00 / 6:00",
-        "type": "mrkdwn",
+            "type": "mrkdwn",
+          },
+        ],
+        "type": "section",
       },
     ],
-    "type": "section",
-  },
+  ],
 ]
 `;
 
 exports[`#nowPlayingData nothing is playing 1`] = `
 Array [
-  Object {
-    "accessory": Object {
-      "alt_text": "Album cover",
-      "image_url": "img",
-      "type": "image",
-    },
-    "fields": Array [
+  Array [
+    Array [
       Object {
-        "text": "*Artist*
+        "accessory": Object {
+          "alt_text": "Album cover",
+          "image_url": "img",
+          "type": "image",
+        },
+        "fields": Array [
+          Object {
+            "text": "*Artist*
 30 Seconds to Mars",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Track name*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Track name*
 Echelon",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Album*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Album*
 30 Seconds to Mars",
-        "type": "mrkdwn",
-      },
-      Object {
-        "text": "*Current position*
+            "type": "mrkdwn",
+          },
+          Object {
+            "text": "*Current position*
 20:00 / 1:00:00",
-        "type": "mrkdwn",
+            "type": "mrkdwn",
+          },
+        ],
+        "type": "section",
       },
     ],
-    "type": "section",
-  },
+  ],
 ]
 `;

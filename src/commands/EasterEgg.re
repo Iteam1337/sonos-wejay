@@ -45,7 +45,7 @@ let run =
     | Friday =>
       Utils.isFriday()
         ? Track.friday->next
-        : `Ok(Slack.Block.make([`Section("Sorry, it's not Friday")]))
+        : Slack.Msg.make([`Section("Sorry, it's not Friday")])
           |> Js.Promise.resolve
     | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
@@ -70,15 +70,12 @@ module Test = {
       |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
            let isEasterEgg =
              Track.easterEggTracks
-             ->Belt.List.some(track =>
-                 track == Utils.sonosUriToSpotifyUri(uri)
-               )
+             ->Belt.List.some(track => track == Utils.Sonos.toSpotifyUri(uri))
              ->fromBool;
 
            switch (isEasterEgg) {
            | EasterEgg =>
-             `Ok(Slack.Block.make([`Section(Message.cantSkipEasterEgg)]))
-             |> resolve
+             Slack.Msg.make([`Section(Message.cantSkipEasterEgg)]) |> resolve
            | RegularTrack => continuation
            };
          })

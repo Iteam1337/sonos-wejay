@@ -18,6 +18,6 @@ let make = cmd => {
     | None => [`Section(Message.help)]
     }
   )
-  ->(blocks => `Ok(Slack.Block.make(blocks)))
-  ->Js.Promise.resolve;
+  |> Slack.Msg.make
+  |> Js.Promise.resolve;
 };

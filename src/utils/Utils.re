@@ -8,7 +8,6 @@ let splitBy = (str, split) => str |> Js.String.split(split);
 let joinWithNewline = arr => arr |> Js.Array.joinWith("\n");
 let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
 let listNumber = number => string_of_int(number + 1) ++ ". ";
-let parseDuration = duration => duration *. 1000. |> Duration.parse;
 let cleanFloat = value => value |> int_of_float |> string_of_int;
 
 let parsedTrack = track =>
@@ -56,19 +55,21 @@ let isFriday = () =>
   | _ => false
   };
 
-let sonosUriToSpotifyUri = sonosUri => {
-  switch (sonosUri) {
-  | Some(sonosUri) =>
-    let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
+module Sonos = {
+  let toSpotifyUri = sonosUri => {
+    switch (sonosUri) {
+    | Some(sonosUri) =>
+      let spotifyUri = [%re "/spotify%3atrack%3a[a-z0-9]+/ig"];
 
-    Js.String.(
-      switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
-      | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
-      | (true, None) => sonosUri
-      | _ => ""
-      }
-    );
-  | None => ""
+      Js.String.(
+        switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
+        | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
+        | (true, None) => sonosUri
+        | _ => ""
+        }
+      );
+    | None => ""
+    };
   };
 };
 

@@ -1,10 +1,10 @@
 let message = (~sonos, ~cover) => {
   let {artist, title, album, position, duration}: Sonos.Decode.CurrentTrack.t = sonos;
 
-  let trackDuration = Utils.parseDuration(duration);
-  let currentPosition = Utils.parseDuration(position);
+  let trackDuration = Duration.make(duration);
+  let currentPosition = Duration.make(position);
 
-  Slack.Block.make([
+  Slack.Msg.make([
     `FieldsWithImage({
       accessory: `Image((cover, "Album cover")),
       fields: [
@@ -21,21 +21,21 @@ let run = () =>
   Js.Promise.(
     Services.getCurrentTrack()
     |> then_((sonos: Sonos.Decode.CurrentTrack.t) => {
-         let uri = Utils.sonosUriToSpotifyUri(sonos.uri);
+         let uri = Utils.Sonos.toSpotifyUri(sonos.uri);
          let id = SpotifyUtils.trackId(uri);
 
          switch (id) {
          | None =>
-           `Ok(Slack.Block.make([`Section("Nothing is currently playing")]))
+           Slack.Msg.make([`Section("Nothing is currently playing")])
            |> resolve
          | Some(id) =>
-           Spotify.getSpotifyTrack(id)
+           Spotify.Track.make(id)
            |> then_(spotifyTrack => {
-                let {cover}: Spotify.WejayTrack.t = spotifyTrack;
+                let {cover}: Spotify.Track.t = spotifyTrack;
 
-                `Ok(message(~cover, ~sonos)) |> resolve;
+                message(~cover, ~sonos) |> resolve;
               })
          };
        })
-    |> catch(_ => `Failed("Now playing failed") |> resolve)
+    |> catch(_ => Belt.Result.Error("Now playing failed") |> resolve)
   );

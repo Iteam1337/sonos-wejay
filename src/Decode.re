@@ -69,14 +69,14 @@ module Event = {
 module EventType = {
   type t =
     | UrlVerification
-    | EventCallback(option(Event.t))
+    | Event(option(Event.t))
     | UnknownEvent;
 
   let make = (eventString, event) =>
     switch (eventString) {
     | "url_verification" => UrlVerification
     | "app_mention"
-    | "event_callback" => EventCallback(Event.make(event))
+    | "event_callback" => Event(Event.make(event))
     | _ => UnknownEvent
     };
 };

@@ -3,9 +3,9 @@ open Slack;
 
 describe("Slack", () =>
   Expect.(
-    describe("#userId", () =>
+    describe("#User.make", () =>
       test("should a parsed user id", () =>
-        expect(userId("1337")) |> toEqual("<@1337>")
+        expect(User.make("1337")) |> toEqual("<@1337>")
       )
     )
   )

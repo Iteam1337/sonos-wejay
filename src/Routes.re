@@ -27,12 +27,15 @@ module EventRoute = {
       Event.make(~command, ~args, ~user, ())
       |> then_(response => {
            switch (response) {
-           | `Ok(r) => Slack.Message.make(channel, r)
-           | `Failed(_) => ()
+           | Belt.Result.Ok(Slack.Result.Message(r)) =>
+             Slack.Message.make(channel, r)
+           | Belt.Result.Error(_) => ()
            };
            resolve();
          })
       |> ignore;
+
+      Response.sendStatus(Ok);
     };
   };
 
@@ -44,11 +47,9 @@ module EventRoute = {
         |> (
           switch (Decode.EventResponse.make(body)) {
           | UrlVerification => VerificationCallback.make(body)
-          | EventCallback(event) =>
+          | Event(event) =>
             switch (event) {
-            | Some(event) =>
-              EventCallback.make(event);
-              Response.sendStatus(Ok);
+            | Some(event) => EventCallback.make(event)
             | None => badRequest
             }
           | UnknownEvent => badRequest
@@ -78,7 +79,7 @@ module ActionRoute = {
              );
 
              switch (message) {
-             | `Ok(m) =>
+             | Belt.Result.Ok(Slack.Result.Message(m)) =>
                API.createRequest(
                  ~url=response_url,
                  ~_method="POST",
@@ -87,47 +88,10 @@ module ActionRoute = {
                )
                |> then_(_ => res |> Response.sendStatus(Ok) |> resolve)
 
-             | `Failed(_) => res |> badRequest |> resolve
+             | Belt.Result.Error(_) => res |> badRequest |> resolve
              };
            });
       | None => res |> badRequest |> resolve
       }
     );
-};
-
-module SlackRoutes = {
-  let auth =
-    Middleware.from((_next, _req, res) =>
-      res
-      |> Response.redirectCode(
-           301,
-           "https://slack.com/oauth/authorize?scope=identity.basic&client_id="
-           ++ Config.slackClientId,
-         )
-    );
-
-  let token =
-    PromiseMiddleware.from((_next, req, res) => {
-      let query = Request.query(req);
-
-      let code =
-        switch (Js.Dict.get(query, "code")) {
-        | Some(json) => Js.Json.decodeString(json)
-        | _ => None
-        };
-
-      switch (code) {
-      | Some(c) =>
-        Slack.makeAuthCallback(c)
-        |> then_(response =>
-             resolve(
-               Response.sendString(
-                 Belt.Option.getWithDefault(response##data##access_token, ""),
-                 res,
-               ),
-             )
-           )
-      | None => res |> badRequest |> resolve
-      };
-    });
 };

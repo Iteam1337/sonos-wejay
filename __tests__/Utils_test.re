@@ -31,12 +31,6 @@ describe("#listNumber", () =>
   )
 );
 
-describe("#parseDuration", () =>
-  test("parses durations as seconds", () =>
-    expect(parseDuration(50.)) |> toEqual("0:50")
-  )
-);
-
 describe("#parsedTrack", () => {
   test("parses Spotify URI", () =>
     expect(parsedTrack("spotify:track:4UQLQJu3DNvVkMVglwElU2"))

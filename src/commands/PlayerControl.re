@@ -6,23 +6,19 @@ let device = Config.device;
 
 let pause = () =>
   device->Sonos.Methods.PlayerControl.pause()
-  |> then_(_ =>
-       `Ok(Slack.Block.make([`Section("Playback paused")])) |> resolve
-     )
+  |> then_(_ => Slack.Msg.make([`Section("Playback paused")]) |> resolve)
   |> catch(_ =>
-       `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
-       |> resolve
+       Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
      );
 
 let next = () =>
   EasterEgg.Test.make(
     device->Sonos.Methods.PlayerControl.next()
     |> then_(_ =>
-         `Ok(Slack.Block.make([`Section("Playing next track")])) |> resolve
+         Slack.Msg.make([`Section("Playing next track")]) |> resolve
        )
     |> catch(_ =>
-         `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
-         |> resolve
+         Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
        ),
   );
 
@@ -30,12 +26,10 @@ let previous = () =>
   EasterEgg.Test.make(
     device->Sonos.Methods.PlayerControl.previous()
     |> then_(_ =>
-         `Ok(Slack.Block.make([`Section("Playing previous track")]))
-         |> resolve
+         Slack.Msg.make([`Section("Playing previous track")]) |> resolve
        )
     |> catch(_ =>
-         `Ok(Slack.Block.make([`Section(Message.nothingIsPlaying)]))
-         |> resolve
+         Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
        ),
   );
 
@@ -44,7 +38,7 @@ let mute = isMuted =>
   |> then_(_ => {
        let message = isMuted ? "Muted speakers" : "Unmuted speakers";
 
-       `Ok(Slack.Block.make([`Section(message)])) |> resolve;
+       Slack.Msg.make([`Section(message)]) |> resolve;
      });
 
 let play = () =>
@@ -61,19 +55,15 @@ let play = () =>
            "Start playing!";
          };
 
-       resolve(`Ok(Slack.Block.make([`Section(message)])));
+       resolve(Slack.Msg.make([`Section(message)]));
      });
 
 let playTrack = trackNumber =>
   switch (trackNumber) {
   | "" =>
-    `Ok(
-      Slack.Block.make([
-        `Section(
-          "You forgot to add a track number\n*Example:* `playtrack 2`",
-        ),
-      ]),
-    )
+    Slack.Msg.make([
+      `Section("You forgot to add a track number\n*Example:* `playtrack 2`"),
+    ])
     |> resolve
   | trackNumber =>
     EasterEgg.Test.make(
@@ -94,14 +84,12 @@ let playTrack = trackNumber =>
                    })
                 |> ignore;
 
-                `Ok(
-                  Slack.Block.make([
-                    `Section(
-                      "*Playing track*\n"
-                      ++ Utils.artistAndTitle(~artist, ~title),
-                    ),
-                  ]),
-                )
+                Slack.Msg.make([
+                  `Section(
+                    "*Playing track*\n"
+                    ++ Utils.artistAndTitle(~artist, ~title),
+                  ),
+                ])
                 |> resolve;
               })
          )
@@ -131,15 +119,15 @@ let playTrack = trackNumber =>
                       )
                   };
 
-                `Ok(Slack.Block.make([`Section(message)])) |> resolve;
+                Slack.Msg.make([`Section(message)]) |> resolve;
               })
          ),
     )
   };
 
-  let playLatestTrack = () =>
-    Queue.queueWithFallback()
-      |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-        let lastTrack = items->Belt.Array.length;
-        playTrack(string_of_int(lastTrack))
-      })
+let playLatestTrack = () =>
+  Queue.queueWithFallback()
+  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
+       let lastTrack = items->Belt.Array.length;
+       playTrack(string_of_int(lastTrack));
+     });
