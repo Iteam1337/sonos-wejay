@@ -46,11 +46,11 @@ let make = (~command, ~args, ~user, ()) => {
     | Toplist => Toplist.run()
     | EasterEgg(egg) => EasterEgg.run(egg)
     | Help => Help.make(None)
-    | Time => Slack.Msg.make([`Section(Message.thisIsWejay)]) |> resolve
+    | Time => Slack.Msg.make([`Section(Message.thisIsWejay)])
 
     /* Unhandled and unknown */
     | UnknownCommand(cmd) =>
-      Slack.Msg.make([`Section(Message.unknownCommand(cmd))]) |> resolve
+      Slack.Msg.make([`Section(Message.unknownCommand(cmd))])
     | UnhandledCommand =>
       Belt.Result.Error(Message.unhandledCommand) |> resolve
     }

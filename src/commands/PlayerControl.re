@@ -6,31 +6,21 @@ let device = Config.device;
 
 let pause = () =>
   device->Sonos.Methods.PlayerControl.pause()
-  |> then_(_ => Slack.Msg.make([`Section("Playback paused")]) |> resolve)
-  |> catch(_ =>
-       Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
-     );
+  |> then_(_ => Slack.Msg.make([`Section("Playback paused")]))
+  |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)]));
 
 let next = () =>
   EasterEgg.Test.make(
     device->Sonos.Methods.PlayerControl.next()
-    |> then_(_ =>
-         Slack.Msg.make([`Section("Playing next track")]) |> resolve
-       )
-    |> catch(_ =>
-         Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
-       ),
+    |> then_(_ => Slack.Msg.make([`Section("Playing next track")]))
+    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)])),
   );
 
 let previous = () =>
   EasterEgg.Test.make(
     device->Sonos.Methods.PlayerControl.previous()
-    |> then_(_ =>
-         Slack.Msg.make([`Section("Playing previous track")]) |> resolve
-       )
-    |> catch(_ =>
-         Slack.Msg.make([`Section(Message.nothingIsPlaying)]) |> resolve
-       ),
+    |> then_(_ => Slack.Msg.make([`Section("Playing previous track")]))
+    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)])),
   );
 
 let mute = isMuted =>
@@ -38,7 +28,7 @@ let mute = isMuted =>
   |> then_(_ => {
        let message = isMuted ? "Muted speakers" : "Unmuted speakers";
 
-       Slack.Msg.make([`Section(message)]) |> resolve;
+       Slack.Msg.make([`Section(message)]);
      });
 
 let play = () =>
@@ -55,7 +45,7 @@ let play = () =>
            "Start playing!";
          };
 
-       resolve(Slack.Msg.make([`Section(message)]));
+       Slack.Msg.make([`Section(message)]);
      });
 
 let playTrack = trackNumber =>
@@ -64,7 +54,6 @@ let playTrack = trackNumber =>
     Slack.Msg.make([
       `Section("You forgot to add a track number\n*Example:* `playtrack 2`"),
     ])
-    |> resolve
   | trackNumber =>
     EasterEgg.Test.make(
       device->Sonos.Methods.Track.select(trackNumber |> int_of_string)
@@ -89,8 +78,7 @@ let playTrack = trackNumber =>
                     "*Playing track*\n"
                     ++ Utils.artistAndTitle(~artist, ~title),
                   ),
-                ])
-                |> resolve;
+                ]);
               })
          )
       |> catch(_ =>
@@ -119,7 +107,7 @@ let playTrack = trackNumber =>
                       )
                   };
 
-                Slack.Msg.make([`Section(message)]) |> resolve;
+                Slack.Msg.make([`Section(message)]);
               })
          ),
     )

@@ -2,7 +2,7 @@ open Jest;
 open Expect;
 
 describe("#nowPlayingData", () => {
-  test("nothing is playing", () => {
+  testPromise("nothing is playing", () => {
     let sonos: Sonos.Decode.CurrentTrack.t = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
@@ -15,10 +15,13 @@ describe("#nowPlayingData", () => {
       position: 1200.0,
     };
 
-    expect(NowPlaying.message(~sonos, ~cover="img")) |> toMatchSnapshot;
+    NowPlaying.message(~sonos, ~cover="img")
+    |> Js.Promise.then_(v =>
+         expect(v) |> toMatchSnapshot |> Js.Promise.resolve
+       );
   });
 
-  test("current track", () => {
+  testPromise("current track", () => {
     let sonos: Sonos.Decode.CurrentTrack.t = {
       album: Some("30 Seconds to Mars"),
       albumArtURI: "",
@@ -31,6 +34,9 @@ describe("#nowPlayingData", () => {
       position: 120.0,
     };
 
-    expect(NowPlaying.message(~sonos, ~cover="img")) |> toMatchSnapshot;
+    NowPlaying.message(~sonos, ~cover="img")
+    |> Js.Promise.then_(v =>
+         expect(v) |> toMatchSnapshot |> Js.Promise.resolve
+       );
   });
 });

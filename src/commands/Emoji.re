@@ -54,8 +54,7 @@ let make =
   | ThumbsUp => Volume.update("10")
   | Santa => Christmas.make()->Queue.next
   | UnhandledEmoji(emoji) =>
-    Slack.Msg.make([`Section(Message.unknownCommand(emoji))])
-    |> Js.Promise.resolve;
+    Slack.Msg.make([`Section(Message.unknownCommand(emoji))]);
 
 let isEmoji = command =>
   switch (Js.String.match(Regex.Patterns.isEmoji, command)) {

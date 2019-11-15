@@ -18,6 +18,5 @@ let make = cmd => {
     | None => [`Section(Message.help)]
     }
   )
-  |> Slack.Msg.make
-  |> Js.Promise.resolve;
+  |> Slack.Msg.make;
 };

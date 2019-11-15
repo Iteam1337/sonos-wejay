@@ -19,9 +19,11 @@ let parseTrackCopy = track => track->parsedTrack->splitBy("\n");
 
 let parsePlaylistCopy = track =>
   switch (Js.String.match(Regex.Patterns.spotifyPlaylistURL, track)) {
-  | Some(matches) => [|
-      "spotify:user:" ++ matches[1] ++ ":playlist:" ++ matches[2],
-    |]
+  | Some(matches) =>
+    switch (matches->Belt.Array.get(1)) {
+    | Some(id) => [|"spotify:playlist:" ++ id|]
+    | None => [||]
+    }
   | _ => [||]
   };
 

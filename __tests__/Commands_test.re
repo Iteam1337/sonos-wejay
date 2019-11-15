@@ -38,15 +38,11 @@ describe("#make", () => {
       expect(
         make(
           Some(
-            "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+            "https://open.spotify.com/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
           ),
         ),
       )
-      |> toEqual(
-           SpotifyCopy([|
-             "spotify:user:believer:playlist:77ffhasgb5saaregvpnxwd",
-           |]),
-         )
+      |> toEqual(SpotifyCopy([|"spotify:playlist:77ffhasgb5saaregvpnxwd"|]))
     );
   });
 

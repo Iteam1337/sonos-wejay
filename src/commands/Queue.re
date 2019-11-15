@@ -34,7 +34,6 @@ let clear = () =>
            "I have cleared the queue for you. Add some new tracks! :dusty_stick:",
          ),
        ])
-       |> resolve
      )
   |> catch(_ => Belt.Result.Error("Failed to clear queue") |> resolve);
 
@@ -67,7 +66,8 @@ let removeMultipleTracks = args => {
          | (_, 1) => "I removed it for you!"
          | _ => "I removed them for you!"
          };
-       Slack.Msg.make([`Section(message)]) |> resolve;
+
+       Slack.Msg.make([`Section(message)]);
      });
 };
 
@@ -95,7 +95,7 @@ let current = () =>
                 "*Upcoming tracks*\n" ++ tracks;
               };
 
-            Slack.Msg.make([`Section(message)]) |> resolve;
+            Slack.Msg.make([`Section(message)]);
           })
        |> catch(_ =>
             Belt.Result.Error("Failed to get current queue") |> resolve
@@ -114,7 +114,7 @@ let full = () =>
            "*Here's the full queue*\n" ++ tracks;
          };
 
-       Slack.Msg.make([`Section(message)]) |> resolve;
+       Slack.Msg.make([`Section(message)]);
      })
   |> catch(_ => Belt.Result.Error("Failed to get full queue") |> resolve);
 
@@ -173,7 +173,7 @@ module AsLastTrack = {
                      )
                   ++ "* in the queue :musical_note:";
 
-                Slack.Msg.make([`Section(message)]) |> resolve;
+                Slack.Msg.make([`Section(message)]);
               })
          )
     | Playlist(uri) =>
@@ -186,13 +186,9 @@ module AsLastTrack = {
              )
              |> then_(_ =>
                   Slack.Msg.make([`Section("Playlist has been queued")])
-                  |> resolve
                 )
            )
-      | None =>
-        resolve(
-          Slack.Msg.make([`Section("Nothing queued, ID was invalid")]),
-        )
+      | None => Slack.Msg.make([`Section("Nothing queued, ID was invalid")])
       }
     };
   };
@@ -205,7 +201,6 @@ module AsLastTrack = {
           "You forgot to tell me what I should add to the queue\n*Example:* `q spotify:track:4fK6E2UywZTJIa5kWnCD6x`",
         ),
       ])
-      |> resolve
     | track =>
       let parsedTrack = Utils.Parse.make(track);
 
@@ -217,9 +212,7 @@ module AsLastTrack = {
         |> then_((existsInQueue: Exists.t) =>
              switch (existsInQueue) {
              | InQueue =>
-               resolve(
-                 Slack.Msg.make([`Section(Message.trackExistsInQueue)]),
-               )
+               Slack.Msg.make([`Section(Message.trackExistsInQueue)])
              | NotInQueue =>
                queue(parsedTrack)
                |> catch(_ =>
@@ -241,8 +234,7 @@ let next = track => {
     Exists.inQueue(parsedTrack)
     |> then_((existsInQueue: Exists.t) =>
          switch (existsInQueue) {
-         | InQueue =>
-           resolve(Slack.Msg.make([`Section(Message.trackExistsInQueue)]))
+         | InQueue => Slack.Msg.make([`Section(Message.trackExistsInQueue)])
          | NotInQueue =>
            Services.getCurrentTrack()
            |> then_(({position, queuePosition}: Sonos.Decode.CurrentTrack.t) =>
@@ -257,7 +249,7 @@ let next = track => {
                        | _ => "Your track will play right after the current"
                        };
 
-                     Slack.Msg.make([`Section(message)]) |> resolve;
+                     Slack.Msg.make([`Section(message)]);
                    })
                 |> catch(_ =>
                      Belt.Result.Error("Failed to queue track") |> resolve
@@ -306,6 +298,6 @@ let multiple = tracks => {
          | (x, y) => {j|Queued *$y* tracks, skipped *$x* that are already queued|j}
          };
 
-       resolve(Slack.Msg.make([`Section(message)]));
+       Slack.Msg.make([`Section(message)]);
      });
 };

@@ -36,9 +36,7 @@ let run = args =>
          let uri = Utils.Sonos.toSpotifyUri(uri);
 
          Request.make(uri)
-         |> then_(response =>
-              Slack.Msg.make([`Section(message(response))]) |> resolve
-            );
+         |> then_(response => Slack.Msg.make([`Section(message(response))]));
        })
   | index =>
     Queue.queueWithFallback()
@@ -49,13 +47,12 @@ let run = args =>
 
            Request.make(uri)
            |> then_(response =>
-                Slack.Msg.make([`Section(message(response))]) |> resolve
+                Slack.Msg.make([`Section(message(response))])
               );
          | None =>
            Slack.Msg.make([
              `Section("Could not find track number " ++ index),
            ])
-           |> resolve
          }
        )
   };

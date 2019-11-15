@@ -25,15 +25,13 @@ let run = () =>
          let id = SpotifyUtils.trackId(uri);
 
          switch (id) {
-         | None =>
-           Slack.Msg.make([`Section("Nothing is currently playing")])
-           |> resolve
+         | None => Slack.Msg.make([`Section("Nothing is currently playing")])
          | Some(id) =>
            Spotify.Track.make(id)
            |> then_(spotifyTrack => {
                 let {cover}: Spotify.Track.t = spotifyTrack;
 
-                message(~cover, ~sonos) |> resolve;
+                message(~cover, ~sonos);
               })
          };
        })

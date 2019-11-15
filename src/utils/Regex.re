@@ -1,7 +1,7 @@
 module Patterns = {
   let spotifyTrackURL = [%re "/https:\\/\\/open.spotify.com\\/track\\//ig"];
   let spotifyPlaylistURL = [%re
-    "/https:\\/\\/open.spotify.com\\/user\\/(\\w+)\\/playlist\\/(\\w+)/"
+    "/https:\\/\\/open.spotify.com\\/playlist\\/(\\w+)/"
   ];
   let spotifyPlaylistURLWithoutUser = [%re
     "/https:\\/\\/open.spotify.com\\/playlist\\//"

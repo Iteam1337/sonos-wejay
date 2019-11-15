@@ -46,7 +46,6 @@ let run =
       Utils.isFriday()
         ? Track.friday->next
         : Slack.Msg.make([`Section("Sorry, it's not Friday")])
-          |> Js.Promise.resolve
     | Rednex => Track.rednex->next
     | Shoreline => Track.shoreline->next
     | Slowdance => Playlist.slowdance->AsLastTrack.make()
@@ -75,7 +74,7 @@ module Test = {
 
            switch (isEasterEgg) {
            | EasterEgg =>
-             Slack.Msg.make([`Section(Message.cantSkipEasterEgg)]) |> resolve
+             Slack.Msg.make([`Section(Message.cantSkipEasterEgg)])
            | RegularTrack => continuation
            };
          })

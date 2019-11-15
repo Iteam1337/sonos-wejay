@@ -157,6 +157,7 @@ module Message = {
 
 module Msg = {
   let make = message => {
-    Belt.Result.Ok(Result.Message(Block.make(message)));
+    Belt.Result.Ok(Result.Message(Block.make(message)))
+    |> Js.Promise.resolve;
   };
 };

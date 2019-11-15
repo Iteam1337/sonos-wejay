@@ -6,7 +6,6 @@ let current = () =>
        Slack.Msg.make([
          `Section("Current volume is " ++ (volume |> Utils.cleanFloat)),
        ])
-       |> resolve
      )
   |> catch(_ => Belt.Result.Error("Cannot get current volume") |> resolve);
 
@@ -24,7 +23,6 @@ let update = volumeValue =>
             Slack.Msg.make([
               `Section("Volume set to " ++ Utils.cleanFloat(newVolume)),
             ])
-            |> resolve
           );
      })
   |> catch(_ => Belt.Result.Error("Cannot update volume") |> resolve);

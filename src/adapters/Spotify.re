@@ -69,7 +69,6 @@ module Search = {
           ++ "`",
         ),
       ])
-      |> resolve
     | query =>
       WejayUtils.search(query |> Js.Global.encodeURIComponent)
       |> then_(response => {

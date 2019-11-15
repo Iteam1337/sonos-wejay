@@ -20,7 +20,7 @@ let run = () => {
 
          Belt.Array.(
            switch (length(hits)) {
-           | 0 => Slack.Msg.make([`Section(Message.noPlays)]) |> resolve
+           | 0 => Slack.Msg.make([`Section(Message.noPlays)])
            | _ =>
              hits
              ->keep(filterPlaylists)
@@ -30,7 +30,6 @@ let run = () => {
              |> all
              |> then_(tracks =>
                   Slack.Msg.make([`Section(message(tracks, hits))])
-                  |> resolve
                 )
            }
          );

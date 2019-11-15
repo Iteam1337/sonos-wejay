@@ -75,10 +75,10 @@ describe("#parseSpotifyCopy", () => {
   test("should parse spotify playlist links", () =>
     expect(
       parseSpotifyCopy(
-        "https://open.spotify.com/user/believer/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
+        "https://open.spotify.com/playlist/77ffhasgb5saaregvpnxwd?si=e-l_i0jdt7oq370tn23ccg",
       ),
     )
-    |> toEqual([|"spotify:user:believer:playlist:77ffhasgb5saaregvpnxwd"|])
+    |> toEqual([|"spotify:playlist:77ffhasgb5saaregvpnxwd"|])
   );
 });
 

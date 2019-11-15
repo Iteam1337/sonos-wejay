@@ -17,4 +17,4 @@ let typeOfSearch =
 
 let isSpotifyCopy = text =>
   Js.String.includes("https://open.spotify.com/track", text)
-  || Js.String.includes("https://open.spotify.com/user/", text);
+  || Js.String.includes("https://open.spotify.com/playlist/", text);
