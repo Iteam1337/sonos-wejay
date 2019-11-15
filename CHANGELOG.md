@@ -1,3 +1,10 @@
+## [6.11.3](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.2...v6.11.3) (2019-11-15)
+
+
+### Bug Fixes
+
+* uri equality ([73e11f5](https://github.com/Iteam1337/sonos-wejay/commit/73e11f52d6792135a9570363ab4a217c3832eda4))
+
 ## [6.11.2](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.1...v6.11.2) (2019-11-06)
 
 
