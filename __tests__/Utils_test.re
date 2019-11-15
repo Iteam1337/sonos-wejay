@@ -2,11 +2,6 @@ open Jest;
 open Utils;
 open Expect;
 
-[@bs.module "jest-date-mock"] external clear: unit => unit = "clear";
-[@bs.module "jest-date-mock"] external advanceTo: float => unit = "advanceTo";
-
-afterEach(clear);
-
 describe("#artistAndTitle", () =>
   test("artist and title combined", () =>
     expect(
@@ -80,18 +75,6 @@ describe("#parseSpotifyCopy", () => {
     )
     |> toEqual([|"spotify:playlist:77ffhasgb5saaregvpnxwd"|])
   );
-});
-
-test("is it friday", () => {
-  advanceTo(1550839500000.0);
-
-  expect(isFriday()) |> toEqual(true);
-});
-
-test("is it not friday", () => {
-  advanceTo(1551335810449.0);
-
-  expect(isFriday()) |> toEqual(false);
 });
 
 describe("RandomTrack", () =>

@@ -51,9 +51,9 @@ module Search = {
       }),
       `Actions([
         `Button({
+          action_id: "queue_new_track",
           text: "Queue track",
           value: uri,
-          action_id: "queue_new_track",
         }),
       ]),
     ]);

@@ -37,13 +37,19 @@ module Playlist = {
     toPlaylistUri(~user="believer", ~id="5DQzhEf0U4Lji5kvXnPYSy");
 };
 
+let isFriday = () =>
+  switch (Js.Date.make() |> Js.Date.getDay) {
+  | 5. => true
+  | _ => false
+  };
+
 let run =
   Queue.(
     fun
     | IteamClassics => Playlist.iteamClassics->AsLastTrack.make()
     | FreeBird => Track.freeBird->next
     | Friday =>
-      Utils.isFriday()
+      isFriday()
         ? Track.friday->next
         : Slack.Msg.make([`Section("Sorry, it's not Friday")])
     | Rednex => Track.rednex->next

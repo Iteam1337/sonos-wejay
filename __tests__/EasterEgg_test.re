@@ -1,6 +1,11 @@
 open Jest;
-open EasterEgg;
 open Expect;
+open EasterEgg;
+
+[@bs.module "jest-date-mock"] external clear: unit => unit = "clear";
+[@bs.module "jest-date-mock"] external advanceTo: float => unit = "advanceTo";
+
+afterEach(clear);
 
 describe("Tracks", () => {
   test("Lynyrd Skynyrd - Free bird", () =>
@@ -36,4 +41,18 @@ describe("Playlists", () => {
     expect(Playlist.slowdance)
     |> toEqual("spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy")
   );
+});
+
+describe("#isFriday", () => {
+  test("is it friday", () => {
+    advanceTo(1550839500000.0);
+
+    expect(isFriday()) |> toEqual(true);
+  });
+
+  test("is it not friday", () => {
+    advanceTo(1551335810449.0);
+
+    expect(isFriday()) |> toEqual(false);
+  });
 });

@@ -32,23 +32,19 @@ let run = args =>
   switch (args) {
   | "" =>
     Services.getCurrentTrack()
-    |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
-         let uri = Utils.Sonos.toSpotifyUri(uri);
-
-         Request.make(uri)
-         |> then_(response => Slack.Msg.make([`Section(message(response))]));
-       })
+    |> then_(({uri}: Sonos.Decode.CurrentTrack.t) =>
+         Request.make(Utils.Sonos.toSpotifyUri(uri))
+       )
+    |> then_(response => Slack.Msg.make([`Section(message(response))]))
   | index =>
     Queue.queueWithFallback()
     |> then_(({items}: Sonos.Decode.CurrentQueue.t) =>
          switch (items->Belt.Array.get(index->int_of_string - 1)) {
          | Some({uri}) =>
-           let uri = Utils.Sonos.toSpotifyUri(Some(uri));
-
-           Request.make(uri)
+           Request.make(Utils.Sonos.toSpotifyUri(Some(uri)))
            |> then_(response =>
                 Slack.Msg.make([`Section(message(response))])
-              );
+              )
          | None =>
            Slack.Msg.make([
              `Section("Could not find track number " ++ index),
