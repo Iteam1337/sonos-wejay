@@ -21,10 +21,10 @@ module Track = {
   let easterEggTracks = [
     freeBird,
     friday,
+    rednex,
     shoreline,
     tequila,
     worldwideweb,
-    rednex,
   ];
 };
 
@@ -75,7 +75,9 @@ module Test = {
       |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
            let isEasterEgg =
              Track.easterEggTracks
-             ->Belt.List.some(track => track == Utils.Sonos.toSpotifyUri(uri))
+             ->Belt.List.some(track =>
+                 track === Utils.Sonos.toSpotifyUri(uri)
+               )
              ->fromBool;
 
            switch (isEasterEgg) {
