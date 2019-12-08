@@ -1,6 +1,0 @@
-*.js -diff -merge
-*.js linguist-generated=true
-
-# Tell github that .re and .rei files are Reason
-*.re linguist-language=Reason
-*.rei linguist-language=Reason
