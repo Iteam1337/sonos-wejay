@@ -58,3 +58,5 @@ let trackExistsInQueue = "Hey, this track already exists in the queue!";
 let botRequest = "That's a bot request :robot:";
 
 let unhandledCommand = "This is not the command you are looking for";
+
+let sorry = "Sorry, I don't know who added this track";

@@ -40,6 +40,7 @@
     "all-contributors-cli": "6.11.2",
     "bs-axios": "0.0.42",
     "bs-express": "1.0.0",
+    "bs-let": "0.1.11",
     "bs-platform": "7.0.1",
     "cross-env": "6.0.3",
     "is-ci-cli": "2.0.0",
@@ -49,6 +50,7 @@
     "semantic-release-slack-bot": "1.3.6"
   },
   "dependencies": {
+    "@aantron/repromise": "^0.6.1",
     "@wejay/spotify": "0.1.8",
     "body-parser": "1.19.0",
     "bs-sonos": "3.0.0",
@@ -56,7 +58,8 @@
     "decco": "^1.1.1",
     "dotenv": "8.2.0",
     "express": "4.17.1",
-    "sonos": "1.12.5"
+    "sonos": "1.12.5",
+    "tablecloth-bucklescript": "0.0.6"
   },
   "jest": {
     "setupFiles": [

@@ -1,4 +1,5 @@
 open Js.Promise;
+open Tablecloth;
 
 /* The Sonos device we send all commands to. Connect devices in the Sonos
  * Controller App to make it play everywhere. */
@@ -23,32 +24,31 @@ let previous = () =>
     |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)])),
   );
 
-let mute = isMuted =>
-  device->Sonos.Methods.PlayerControl.Volume.mute(isMuted)
-  |> then_(_ => {
-       let message = isMuted ? "Muted speakers" : "Unmuted speakers";
+let mute = isMuted => {
+  let%Async _ = device->Sonos.Methods.PlayerControl.Volume.mute(isMuted);
+  let message = isMuted ? "Muted speakers" : "Unmuted speakers";
 
-       Slack.Msg.make([`Section(message)]);
-     });
+  Slack.Msg.make([`Section(message)]);
+};
 
-let play = () =>
-  Queue.queueWithFallback()
-  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-       let message =
-         switch (items->Belt.Array.length) {
-         | 0 => Message.emptyQueue
-         | _ =>
-           device->Sonos.Methods.PlayerControl.play()
-           |> then_(_ => resolve(true))
-           |> ignore;
+let play = () => {
+  let%Async {items} = Queue.queueWithFallback();
 
-           "Start playing!";
-         };
+  let message =
+    switch (items->Belt.Array.length) {
+    | 0 => Message.emptyQueue
+    | _ =>
+      device->Sonos.Methods.PlayerControl.play()
+      |> then_(_ => resolve(true))
+      |> ignore;
 
-       Slack.Msg.make([`Section(message)]);
-     });
+      "Start playing!";
+    };
 
-let playTrack = trackNumber =>
+  Slack.Msg.make([`Section(message)]);
+};
+
+let playTrack = trackNumber => {
   switch (trackNumber) {
   | "" =>
     Slack.Msg.make([
@@ -57,65 +57,57 @@ let playTrack = trackNumber =>
   | trackNumber =>
     EasterEgg.Test.make(
       device->Sonos.Methods.Track.select(trackNumber |> int_of_string)
-      |> then_(_ =>
-           Services.getCurrentTrack()
-           |> then_(({artist, title}: Sonos.Decode.CurrentTrack.t) => {
-                Services.getPlayingState()
-                |> then_((state: Sonos.Decode.CurrentPlayState.t) => {
-                     switch (state) {
-                     | Paused
-                     | Stopped => play() |> ignore
-                     | Playing
-                     | UnknownState => ()
-                     };
+      |> then_(_ => {
+           let%Async {artist, title} = Services.getCurrentTrack();
+           let%Async state = Services.getPlayingState();
 
-                     resolve(true);
-                   })
-                |> ignore;
+           switch (state) {
+           | Paused
+           | Stopped => play() |> ignore
+           | Playing
+           | UnknownState => ()
+           };
 
-                Slack.Msg.make([
-                  `Section(
-                    "*Playing track*\n"
-                    ++ Utils.artistAndTitle(~artist, ~title),
-                  ),
-                ]);
-              })
-         )
-      |> catch(_ =>
-           Queue.queueWithFallback()
-           |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-                let message =
-                  switch (items->Belt.Array.length) {
-                  | 0 =>
-                    "*Cannot play track "
-                    ++ trackNumber
-                    ++ "*\n"
-                    ++ Message.emptyQueue
-                  | _ =>
-                    items
-                    ->Belt.Array.mapWithIndex((i, {artist, title}) =>
-                        Utils.listNumber(i)
-                        ++ Utils.artistAndTitle(~artist, ~title)
-                      )
-                    ->Utils.joinWithNewline
-                    ->(
-                        tracks =>
-                          "*Cannot play track "
-                          ++ trackNumber
-                          ++ ". Here's the whole queue*\n"
-                          ++ tracks
-                      )
-                  };
+           Slack.Msg.make([
+             `Section(
+               "*Playing track*\n" ++ Utils.artistAndTitle(~artist, ~title),
+             ),
+           ]);
+         })
+      |> catch(_ => {
+           let%Async {items} = Queue.queueWithFallback();
 
-                Slack.Msg.make([`Section(message)]);
-              })
-         ),
+           let message =
+             switch (Array.length(items)) {
+             | 0 =>
+               "*Cannot play track "
+               ++ trackNumber
+               ++ "*\n"
+               ++ Message.emptyQueue
+             | _ =>
+               items
+               ->Array.mapWithIndex(~f=(i, {artist, title}) =>
+                   Utils.listNumber(i)
+                   ++ Utils.artistAndTitle(~artist, ~title)
+                 )
+               ->Utils.joinWithNewline
+               ->(
+                   tracks =>
+                     "*Cannot play track "
+                     ++ trackNumber
+                     ++ ". Here's the whole queue*\n"
+                     ++ tracks
+                 )
+             };
+
+           Slack.Msg.make([`Section(message)]);
+         }),
     )
   };
+};
 
-let playLatestTrack = () =>
-  Queue.queueWithFallback()
-  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-       let lastTrack = items->Belt.Array.length;
-       playTrack(string_of_int(lastTrack));
-     });
+let playLatestTrack = () => {
+  let%Async {items} = Queue.queueWithFallback();
+
+  items->Array.length->String.fromInt->playTrack;
+};

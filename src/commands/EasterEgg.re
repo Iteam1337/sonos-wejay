@@ -1,3 +1,5 @@
+open Tablecloth;
+
 type t =
   | FreeBird
   | Friday
@@ -70,22 +72,16 @@ module Test = {
     | false => RegularTrack;
 
   let make = continuation => {
-    Js.Promise.(
-      Services.getCurrentTrack()
-      |> then_(({uri}: Sonos.Decode.CurrentTrack.t) => {
-           let isEasterEgg =
-             Track.easterEggTracks
-             ->Belt.List.some(track =>
-                 track === Utils.Sonos.toSpotifyUri(uri)
-               )
-             ->fromBool;
+    let%Async {uri} = Services.getCurrentTrack();
 
-           switch (isEasterEgg) {
-           | EasterEgg =>
-             Slack.Msg.make([`Section(Message.cantSkipEasterEgg)])
-           | RegularTrack => continuation
-           };
-         })
-    );
+    let isEasterEgg =
+      Track.easterEggTracks
+      ->List.any(~f=track => track === Utils.Sonos.toSpotifyUri(uri))
+      ->fromBool;
+
+    switch (isEasterEgg) {
+    | EasterEgg => Slack.Msg.make([`Section(Message.cantSkipEasterEgg)])
+    | RegularTrack => continuation
+    };
   };
 };

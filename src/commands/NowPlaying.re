@@ -1,32 +1,25 @@
-open Js.Promise;
+let run = () => {
+  let%Async {artist, title, album, position, duration, uri} =
+    Services.getCurrentTrack();
 
-let run = () =>
-  Services.getCurrentTrack()
-  |> then_((sonos: Sonos.Decode.CurrentTrack.t) =>
-       switch (sonos.uri |> Utils.Sonos.toSpotifyUri |> SpotifyUtils.trackId) {
-       | None => Slack.Msg.make([`Section("Nothing is currently playing")])
-       | Some(id) =>
-         Spotify.Track.make(id)
-         |> then_((track: Spotify.Track.t) => {
-              let {artist, title, album, position, duration}: Sonos.Decode.CurrentTrack.t = sonos;
+  switch (uri |> Utils.Sonos.toSpotifyUri |> SpotifyUtils.trackId) {
+  | None => Slack.Msg.make([`Section("Nothing is currently playing")])
+  | Some(id) =>
+    let%Async track = Spotify.Track.make(id);
 
-              let trackDuration = Duration.make(duration);
-              let currentPosition = Duration.make(position);
+    let trackDuration = Duration.make(duration);
+    let currentPosition = Duration.make(position);
 
-              Slack.Msg.make([
-                `FieldsWithImage({
-                  accessory: `Image((track.cover, "Album cover")),
-                  fields: [
-                    `Text({j|*Artist*\n$artist|j}),
-                    `Text({j|*Track name*\n$title|j}),
-                    `Text({j|*Album*\n$album|j}),
-                    `Text(
-                      {j|*Current position*\n$currentPosition / $trackDuration|j},
-                    ),
-                  ],
-                }),
-              ]);
-            })
-       }
-     )
-  |> catch(_ => Error("Now playing failed") |> resolve);
+    Slack.Msg.make([
+      `FieldsWithImage({
+        accessory: `Image((track.cover, "Album cover")),
+        fields: [
+          `Text({j|*Artist*\n$artist|j}),
+          `Text({j|*Track name*\n$title|j}),
+          `Text({j|*Album*\n$album|j}),
+          `Text({j|*Current position*\n$currentPosition / $trackDuration|j}),
+        ],
+      }),
+    ]);
+  };
+};

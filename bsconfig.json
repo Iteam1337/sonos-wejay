@@ -21,10 +21,12 @@
     "bs-express",
     "@glennsl/bs-json",
     "@ahrefs/bs-dotenv",
-    "decco"
+    "decco",
+    "@aantron/repromise",
+    "tablecloth-bucklescript"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
-  "ppx-flags": ["decco/ppx"],
+  "ppx-flags": ["decco/ppx", "bs-let/ppx"],
   "warnings": {
     "number": "+A-4-9-40-41-42-48",
     "error": "+A-3-4-40-42-44-102"

@@ -1,10 +1,12 @@
+open Tablecloth;
+
 let message = (hits: Elastic.Aggregate.t) =>
-  switch (Belt.Array.length(hits)) {
+  switch (Array.length(hits)) {
   | 0 => Message.noPlays
   | _ =>
     "*Toplist*\n"
     ++ hits
-       ->Belt.Array.mapWithIndex((i, {key: id, count}) =>
+       ->Array.mapWithIndex(~f=(i, {key: id, count}) =>
            Utils.listNumber(i)
            ++ Slack.User.make(id)
            ++ " ("
@@ -15,12 +17,8 @@ let message = (hits: Elastic.Aggregate.t) =>
   };
 
 let run = () => {
-  Js.Promise.(
-    API.createRequest(~url=Config.toplistUrl, ())
-    |> then_(response => {
-         let resp = response##data->Elastic.Aggregate.make;
+  let%Async response = API.createRequest(~url=Config.toplistUrl, ());
+  let resp = response##data->Elastic.Aggregate.make;
 
-         Slack.Msg.make([`Section(message(resp))]);
-       })
-  );
+  Slack.Msg.make([`Section(message(resp))]);
 };

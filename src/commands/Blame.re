@@ -1,13 +1,19 @@
 open Js.Promise;
+open Tablecloth;
 
 let message = (hits: Elastic.Search.t) =>
-  switch (Belt.Array.length(hits)) {
-  | 0 => "Sorry, I don't know who added this track"
-  | 1 => Slack.User.make(hits[0].sender) ++ " added this awesome track!"
+  switch (Array.length(hits)) {
+  | 0 => Message.sorry
+  | 1 =>
+    switch (hits->Array.get(~index=0)) {
+    | Some({sender}) =>
+      Slack.User.make(sender) ++ " added this awesome track!"
+    | None => Message.sorry
+    }
   | _ =>
     "*This track has been added by*\n"
     ++ hits
-       ->Belt.Array.mapWithIndex((i, hit) =>
+       ->Array.mapWithIndex(~f=(i, hit) =>
            Utils.listNumber(i)
            ++ Slack.User.make(hit.sender)
            ++ " on "
@@ -18,37 +24,33 @@ let message = (hits: Elastic.Search.t) =>
 
 module Request = {
   let make = uri => {
-    API.createRequest(
-      ~url=Config.blameUrl,
-      ~_method="POST",
-      ~data=Some({"uri": uri}),
-      (),
-    )
-    |> then_(response => response##data->Elastic.Search.make->resolve);
+    let%Async response =
+      API.createRequest(
+        ~url=Config.blameUrl,
+        ~_method="POST",
+        ~data=Some({"uri": uri}),
+        (),
+      );
+
+    response##data->Elastic.Search.make->resolve;
   };
 };
 
 let run = args =>
   switch (args) {
   | "" =>
-    Services.getCurrentTrack()
-    |> then_(({uri}: Sonos.Decode.CurrentTrack.t) =>
-         Request.make(Utils.Sonos.toSpotifyUri(uri))
-       )
-    |> then_(response => Slack.Msg.make([`Section(message(response))]))
+    let%Async {uri} = Services.getCurrentTrack();
+    let%Async response = Request.make(Utils.Sonos.toSpotifyUri(uri));
+
+    Slack.Msg.make([`Section(message(response))]);
   | index =>
-    Queue.queueWithFallback()
-    |> then_(({items}: Sonos.Decode.CurrentQueue.t) =>
-         switch (items->Belt.Array.get(index->int_of_string - 1)) {
-         | Some({uri}) =>
-           Request.make(Utils.Sonos.toSpotifyUri(Some(uri)))
-           |> then_(response =>
-                Slack.Msg.make([`Section(message(response))])
-              )
-         | None =>
-           Slack.Msg.make([
-             `Section("Could not find track number " ++ index),
-           ])
-         }
-       )
+    let%Async {items} = Queue.queueWithFallback();
+
+    switch (items->Array.get(~index=index->int_of_string - 1)) {
+    | Some({uri}) =>
+      Request.make(Utils.Sonos.toSpotifyUri(Some(uri)))
+      |> then_(response => Slack.Msg.make([`Section(message(response))]))
+    | None =>
+      Slack.Msg.make([`Section("Could not find track number " ++ index)])
+    };
   };
