@@ -6,14 +6,7 @@
     ["@semantic-release/npm", {
       "npmPublish": false
     }],
-    "@semantic-release/git",
-    [
-      "semantic-release-slack-bot",
-      {
-        "notifyOnSuccess": true,
-        "notifyOnFail": false
-      }
-    ]
+    "@semantic-release/git"
   ]
 }
 
