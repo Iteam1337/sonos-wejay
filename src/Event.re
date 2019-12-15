@@ -51,9 +51,8 @@ let make = (~command, ~args, ~user, ()) => {
     /* Unhandled and unknown */
     | UnknownCommand(cmd) =>
       Slack.Msg.make([`Section(Message.unknownCommand(cmd))])
-    | UnhandledCommand =>
-      Belt.Result.Error(Message.unhandledCommand) |> resolve
+    | UnhandledCommand => Error(Message.unhandledCommand) |> resolve
     }
-  | (Bot, _) => resolve(Belt.Result.Error(Message.botRequest))
+  | (Bot, _) => resolve(Error(Message.botRequest))
   };
 };

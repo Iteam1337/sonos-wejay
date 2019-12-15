@@ -27,9 +27,8 @@ module EventRoute = {
       Event.make(~command, ~args, ~user, ())
       |> then_(response => {
            switch (response) {
-           | Belt.Result.Ok(Slack.Result.Message(r)) =>
-             Slack.Message.make(channel, r)
-           | Belt.Result.Error(_) => ()
+           | Ok(Slack.Result.Message(r)) => Slack.Message.make(channel, r)
+           | Error(_) => ()
            };
            resolve();
          })
@@ -79,7 +78,7 @@ module ActionRoute = {
              );
 
              switch (message) {
-             | Belt.Result.Ok(Slack.Result.Message(m)) =>
+             | Ok(Slack.Result.Message(m)) =>
                API.createRequest(
                  ~url=response_url,
                  ~_method="POST",
@@ -88,7 +87,7 @@ module ActionRoute = {
                )
                |> then_(_ => res |> Response.sendStatus(Ok) |> resolve)
 
-             | Belt.Result.Error(_) => res |> badRequest |> resolve
+             | Error(_) => res |> badRequest |> resolve
              };
            });
       | None => res |> badRequest |> resolve

@@ -35,7 +35,7 @@ let clear = () =>
          ),
        ])
      )
-  |> catch(_ => Belt.Result.Error("Failed to clear queue") |> resolve);
+  |> catch(_ => Error("Failed to clear queue") |> resolve);
 
 let handleRemoveArgs = args => {
   switch (args) {
@@ -97,11 +97,9 @@ let current = () =>
 
             Slack.Msg.make([`Section(message)]);
           })
-       |> catch(_ =>
-            Belt.Result.Error("Failed to get current queue") |> resolve
-          )
+       |> catch(_ => Error("Failed to get current queue") |> resolve)
      )
-  |> catch(_ => Belt.Result.Error("Failed to get current queue") |> resolve);
+  |> catch(_ => Error("Failed to get current queue") |> resolve);
 
 let full = () =>
   queueWithFallback()
@@ -116,7 +114,7 @@ let full = () =>
 
        Slack.Msg.make([`Section(message)]);
      })
-  |> catch(_ => Belt.Result.Error("Failed to get full queue") |> resolve);
+  |> catch(_ => Error("Failed to get full queue") |> resolve);
 
 module Exists = {
   type t =
@@ -215,9 +213,7 @@ module AsLastTrack = {
                Slack.Msg.make([`Section(Message.trackExistsInQueue)])
              | NotInQueue =>
                queue(parsedTrack)
-               |> catch(_ =>
-                    Belt.Result.Error("Failed to queue track") |> resolve
-                  )
+               |> catch(_ => Error("Failed to queue track") |> resolve)
              }
            )
       };
@@ -251,9 +247,7 @@ let next = track => {
 
                      Slack.Msg.make([`Section(message)]);
                    })
-                |> catch(_ =>
-                     Belt.Result.Error("Failed to queue track") |> resolve
-                   )
+                |> catch(_ => Error("Failed to queue track") |> resolve)
               )
          }
        )

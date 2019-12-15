@@ -7,7 +7,7 @@ let current = () =>
          `Section("Current volume is " ++ (volume |> Utils.cleanFloat)),
        ])
      )
-  |> catch(_ => Belt.Result.Error("Cannot get current volume") |> resolve);
+  |> catch(_ => Error("Cannot get current volume") |> resolve);
 
 let update = volumeValue =>
   Config.device->Sonos.Methods.PlayerControl.Volume.get()
@@ -25,7 +25,7 @@ let update = volumeValue =>
             ])
           );
      })
-  |> catch(_ => Belt.Result.Error("Cannot update volume") |> resolve);
+  |> catch(_ => Error("Cannot update volume") |> resolve);
 
 let control =
   fun

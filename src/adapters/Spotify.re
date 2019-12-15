@@ -90,7 +90,7 @@ module Search = {
              );
 
            resolve(
-             Belt.Result.Ok(
+             Ok(
                Slack.Result.Message(
                  Slack.Block.make([`Section(message)])
                  ->Belt.Array.concat(attachments),

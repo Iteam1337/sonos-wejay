@@ -1,5 +1,3 @@
-open Belt.Result;
-
 module Verification = {
   [@decco]
   type t = {

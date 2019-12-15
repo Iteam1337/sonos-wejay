@@ -34,6 +34,6 @@ let run = () => {
            }
          );
        })
-    |> catch(_ => resolve(Belt.Result.Error("Error in :: Most played")))
+    |> catch(_ => resolve(Error("Error in :: Most played")))
   );
 };

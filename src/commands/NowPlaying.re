@@ -29,4 +29,4 @@ let run = () =>
             })
        }
      )
-  |> catch(_ => Belt.Result.Error("Now playing failed") |> resolve);
+  |> catch(_ => Error("Now playing failed") |> resolve);
