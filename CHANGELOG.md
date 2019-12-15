@@ -1,3 +1,10 @@
+# [6.12.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.3...v6.12.0) (2019-12-15)
+
+
+### Features
+
+* update to bucklescript 7 ([777592e](https://github.com/Iteam1337/sonos-wejay/commit/777592ea7d6d383620332dd9f29e31bcebc33c7e))
+
 ## [6.11.3](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.2...v6.11.3) (2019-11-15)
 
 
