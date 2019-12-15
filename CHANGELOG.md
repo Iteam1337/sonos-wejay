@@ -1,3 +1,10 @@
+# [6.13.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.12.0...v6.13.0) (2019-12-15)
+
+
+### Features
+
+* start using bs-let fixes [#73](https://github.com/Iteam1337/sonos-wejay/issues/73) ([35925c0](https://github.com/Iteam1337/sonos-wejay/commit/35925c04ed3c50530a2d7e908846ca9823d9ba9c))
+
 # [6.12.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.11.3...v6.12.0) (2019-12-15)
 
 
