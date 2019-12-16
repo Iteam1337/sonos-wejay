@@ -42,17 +42,3 @@ describe("Playlists", () => {
     |> toEqual("spotify:user:believer:playlist:5DQzhEf0U4Lji5kvXnPYSy")
   );
 });
-
-describe("#isFriday", () => {
-  test("is it friday", () => {
-    advanceTo(1550839500000.0);
-
-    expect(isFriday()) |> toEqual(true);
-  });
-
-  test("is it not friday", () => {
-    advanceTo(1551335810449.0);
-
-    expect(isFriday()) |> toEqual(false);
-  });
-});

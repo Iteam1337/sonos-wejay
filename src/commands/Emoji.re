@@ -43,6 +43,8 @@ let emojiCommand = text => {
   | ":+1:" => ThumbsUp
   | ":thumbsdown:"
   | ":-1:" => ThumbsDown
+  | ":christmas_tree:"
+  | ":mother_christmas:"
   | ":santa:" => Santa
   | emoji => UnhandledEmoji(emoji)
   };
@@ -52,7 +54,14 @@ let make =
   fun
   | ThumbsDown => Volume.update("-10")
   | ThumbsUp => Volume.update("10")
-  | Santa => Christmas.make()->Queue.next
+  | Santa =>
+    Date.isMonth(December)
+      ? Christmas.make()->Queue.next
+      : Slack.Msg.make([
+          `Section(
+            "Sorry, it's not December :santa: :mother_christmas: :christmas_tree:",
+          ),
+        ])
   | UnhandledEmoji(emoji) =>
     Slack.Msg.make([`Section(Message.unknownCommand(emoji))]);
 
