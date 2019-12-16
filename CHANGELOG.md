@@ -1,3 +1,10 @@
+# [6.14.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.13.1...v6.14.0) (2019-12-16)
+
+
+### Features
+
+* only allow christmas emojis in december fixes [#71](https://github.com/Iteam1337/sonos-wejay/issues/71) ([0094d87](https://github.com/Iteam1337/sonos-wejay/commit/0094d871fa8c4ce411a1bbe8a72ac50585620332))
+
 ## [6.13.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.13.0...v6.13.1) (2019-12-16)
 
 
