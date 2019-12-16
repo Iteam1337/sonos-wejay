@@ -10,19 +10,29 @@ let pause = () =>
   |> then_(_ => Slack.Msg.make([`Section("Playback paused")]))
   |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)]));
 
-let next = () =>
-  EasterEgg.Test.make(
-    device->Sonos.Methods.PlayerControl.next()
-    |> then_(_ => Slack.Msg.make([`Section("Playing next track")]))
-    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)])),
-  );
+let next = () => {
+  let%Async isEasterEgg = EasterEgg.Test.make();
 
-let previous = () =>
-  EasterEgg.Test.make(
+  switch (isEasterEgg) {
+  | Ok(_) =>
+    device->Sonos.Methods.PlayerControl.next()
+    |> then_(_ => {Slack.Msg.make([`Section("Playing next track")])})
+    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)]))
+  | Error(msg) => Slack.Msg.make([`Section(msg)])
+  };
+};
+
+let previous = () => {
+  let%Async isEasterEgg = EasterEgg.Test.make();
+
+  switch (isEasterEgg) {
+  | Ok(_) =>
     device->Sonos.Methods.PlayerControl.previous()
     |> then_(_ => Slack.Msg.make([`Section("Playing previous track")]))
-    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)])),
-  );
+    |> catch(_ => Slack.Msg.make([`Section(Message.nothingIsPlaying)]))
+  | Error(msg) => Slack.Msg.make([`Section(msg)])
+  };
+};
 
 let mute = isMuted => {
   let%Async _ = device->Sonos.Methods.PlayerControl.Volume.mute(isMuted);
@@ -55,7 +65,11 @@ let playTrack = trackNumber => {
       `Section("You forgot to add a track number\n*Example:* `playtrack 2`"),
     ])
   | trackNumber =>
-    EasterEgg.Test.make(
+    let%Async isEasterEgg = EasterEgg.Test.make();
+
+    switch (isEasterEgg) {
+    | Error(msg) => Slack.Msg.make([`Section(msg)])
+    | Ok(_) =>
       device->Sonos.Methods.Track.select(trackNumber |> int_of_string)
       |> then_(_ => {
            let%Async {artist, title} = Services.getCurrentTrack();
@@ -101,8 +115,8 @@ let playTrack = trackNumber => {
              };
 
            Slack.Msg.make([`Section(message)]);
-         }),
-    )
+         })
+    };
   };
 };
 

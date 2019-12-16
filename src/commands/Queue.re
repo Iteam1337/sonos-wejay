@@ -1,4 +1,5 @@
 open Js.Promise;
+open Tablecloth;
 
 let device = Config.device;
 
@@ -6,36 +7,34 @@ let trackPosition = (~first, ~queueAt, ()) =>
   int_of_string(first) - int_of_float(queueAt) + 1 |> string_of_int;
 
 let listTracks = (tracks: array(Sonos.Decode.CurrentQueue.queueItem)) =>
-  tracks->Belt.Array.mapWithIndex((i, {artist, title}) =>
+  tracks->Array.mapWithIndex(~f=(i, {artist, title}) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
   );
 
-let queueWithFallback = () =>
-  device->Sonos.Methods.Queue.get()
-  |> then_(queue =>
-       (
-         switch (Js.Types.classify(queue)) {
-         | JSFalse =>
-           {|{ "returned": "0", "total": "0", "items": [] }|}
-           |> Json.parseOrRaise
-         | _ => queue
-         }
-       )
-       |> Sonos.Decode.CurrentQueue.make
-       |> resolve
-     );
+let queueWithFallback = () => {
+  let%Async queue = device->Sonos.Methods.Queue.get();
+
+  (
+    switch (Js.Types.classify(queue)) {
+    | JSFalse =>
+      {|{ "returned": "0", "total": "0", "items": [] }|} |> Json.parseOrRaise
+    | _ => queue
+    }
+  )
+  |> Sonos.Decode.CurrentQueue.make
+  |> resolve;
+};
 
 /* CLI style */
-let clear = () =>
-  device->Sonos.Methods.Queue.clear()
-  |> then_(_ =>
-       Slack.Msg.make([
-         `Section(
-           "I have cleared the queue for you. Add some new tracks! :dusty_stick:",
-         ),
-       ])
-     )
-  |> catch(_ => Error("Failed to clear queue") |> resolve);
+let clear = () => {
+  let%Async _ = device->Sonos.Methods.Queue.clear();
+
+  Slack.Msg.make([
+    `Section(
+      "I have cleared the queue for you. Add some new tracks! :dusty_stick:",
+    ),
+  ]);
+};
 
 let handleRemoveArgs = args => {
   switch (args) {
@@ -260,8 +259,8 @@ type multiple = {
 };
 
 let multiple = tracks => {
-  let parsedTracks = tracks->Belt.Array.map(Utils.Parse.make);
-  let exists = parsedTracks->Belt.Array.map(track => Exists.inQueue(track));
+  let parsedTracks = tracks->Array.map(~f=Utils.Parse.make);
+  let exists = parsedTracks->Array.map(~f=track => Exists.inQueue(track));
 
   all(exists)
   |> then_(allTracks => {
@@ -271,10 +270,11 @@ let multiple = tracks => {
            switch (curr) {
            | Exists.InQueue => (inQueue + 1, notInQueue)
            | NotInQueue =>
-             switch (parsedTracks[i]) {
-             | Playlist(uri)
-             | Track(uri) =>
+             switch (parsedTracks |> Array.get(~index=i)) {
+             | Some(Playlist(uri))
+             | Some(Track(uri)) =>
                AsLastTrack.make(uri, ~skipExists=true, ()) |> ignore
+             | None => ()
              };
 
              (inQueue, notInQueue + 1);

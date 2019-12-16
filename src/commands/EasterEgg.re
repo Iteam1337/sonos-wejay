@@ -71,7 +71,7 @@ module Test = {
     | true => EasterEgg
     | false => RegularTrack;
 
-  let make = continuation => {
+  let make = () => {
     let%Async {uri} = Services.getCurrentTrack();
 
     let isEasterEgg =
@@ -79,9 +79,12 @@ module Test = {
       ->List.any(~f=track => track === Utils.Sonos.toSpotifyUri(uri))
       ->fromBool;
 
-    switch (isEasterEgg) {
-    | EasterEgg => Slack.Msg.make([`Section(Message.cantSkipEasterEgg)])
-    | RegularTrack => continuation
-    };
+    (
+      switch (isEasterEgg) {
+      | EasterEgg => Error(Message.cantSkipEasterEgg)
+      | RegularTrack => Ok(RegularTrack)
+      }
+    )
+    |> Js.Promise.resolve;
   };
 };
