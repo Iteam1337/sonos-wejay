@@ -1,3 +1,10 @@
+## [6.13.1](https://github.com/Iteam1337/sonos-wejay/compare/v6.13.0...v6.13.1) (2019-12-16)
+
+
+### Bug Fixes
+
+* skipping easter eggs fixes [#70](https://github.com/Iteam1337/sonos-wejay/issues/70) ([681fa59](https://github.com/Iteam1337/sonos-wejay/commit/681fa59307cf2c424d3c5749e5d56d5deb3c88a9))
+
 # [6.13.0](https://github.com/Iteam1337/sonos-wejay/compare/v6.12.0...v6.13.0) (2019-12-15)
 
 
