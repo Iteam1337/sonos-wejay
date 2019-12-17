@@ -36,7 +36,7 @@ module Christmas = {
 };
 
 let emojiCommand = text => {
-  let cleanEmoji = text->Regex.replaceByRe(Regex.Patterns.skinTone, "");
+  let cleanEmoji = text->Js.String2.replaceByRe(Regex.Patterns.skinTone, "");
 
   switch (cleanEmoji) {
   | ":thumbsup:"
@@ -49,6 +49,13 @@ let emojiCommand = text => {
   | emoji => UnhandledEmoji(emoji)
   };
 };
+
+let toString =
+  fun
+  | ThumbsUp => "volume-up"
+  | ThumbsDown => "volume-down"
+  | Santa => "santa"
+  | _ => "unknown";
 
 let make =
   fun

@@ -1,3 +1,5 @@
+open Tablecloth;
+
 type t =
   | Blame
   | Clear
@@ -29,19 +31,34 @@ type t =
 let parseCommand = text =>
   text
   |> Utils.removeUser
-  |> Js.String.toLowerCase
-  |> Js.String.split(" ")
-  |> Js.Array.slice(~start=0, ~end_=1)
-  |> (array => array[0]);
+  |> String.toLower
+  |> String.split(~on=" ")
+  |> List.getAt(~index=0)
+  |> Option.withDefault(~default="");
+
+module CommandType = {
+  type t =
+    | SpotifyCommand(array(string))
+    | EmojiCommand(Emoji.t)
+    | Command(string);
+
+  let make = input => {
+    switch (SpotifyUtils.isSpotifyCopy(input), Emoji.isEmoji(input)) {
+    | (true, _) => SpotifyCommand(Utils.parseSpotifyCopy(input))
+    | (_, true) => EmojiCommand(Emoji.emojiCommand(input))
+    | _ => Command(parseCommand(input))
+    };
+  };
+};
 
 let make = text => {
   switch (text) {
   | Some(text) =>
-    switch (SpotifyUtils.isSpotifyCopy(text), Emoji.isEmoji(text)) {
-    | (true, _) => SpotifyCopy(Utils.parseSpotifyCopy(text))
-    | (_, true) => Emoji(Emoji.emojiCommand(text))
-    | (_, _) =>
-      switch (parseCommand(text)) {
+    switch (CommandType.make(text)) {
+    | SpotifyCommand(tracks) => SpotifyCopy(tracks)
+    | EmojiCommand(emoji) => Emoji(emoji)
+    | Command(cmd) =>
+      switch (cmd) {
       | "" => UnhandledCommand
       | "classics" => EasterEgg(IteamClassics)
       | "blame" => Blame
@@ -91,31 +108,13 @@ let make = text => {
   };
 };
 
-let eggToString: EasterEgg.t => string =
-  fun
-  | IteamClassics => "classics"
-  | FreeBird => "freebird"
-  | Friday => "friday"
-  | Rednex => "rednex"
-  | Shoreline => "shoreline"
-  | Slowdance => "slowdance"
-  | Tequila => "tequila"
-  | WWW => "world-wide-web";
-
-let emojiToString: Emoji.t => string =
-  fun
-  | ThumbsUp => "volume-up"
-  | ThumbsDown => "volume-down"
-  | Santa => "santa"
-  | _ => "unknown";
-
-let commandToString =
+let toString =
   fun
   | Blame => "blame"
   | Clear => "clear"
   | CurrentQueue => "current-queue"
-  | EasterEgg(egg) => "easteregg-" ++ eggToString(egg)
-  | Emoji(emoji) => "emoji-" ++ emojiToString(emoji)
+  | EasterEgg(egg) => "easteregg-" ++ EasterEgg.toString(egg)
+  | Emoji(emoji) => "emoji-" ++ Emoji.toString(emoji)
   | FullQueue => "full-queue"
   | Help => "help"
   | MostPlayed => "most-played"

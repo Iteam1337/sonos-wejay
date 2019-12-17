@@ -31,17 +31,15 @@ module Search = {
 };
 
 let sendLog = data => {
-  Js.Promise.(
+  let%Async _ =
     API.createRequest(
       ~url=Config.elasticLogUrl,
       ~_method="POST",
       ~data=Some(data),
       (),
-    )
-    |> then_(_ => resolve(true))
-    |> catch(_ => resolve(false))
-  )
-  |> ignore;
+    );
+
+  Js.Promise.resolve();
 };
 
 let log = (~command: Decode.Requester.t, ~text, ~user) => {
@@ -52,11 +50,12 @@ let log = (~command: Decode.Requester.t, ~text, ~user) => {
     | (None, _) => ()
     | (Some(sender), SpotifyCopy(copiedTracks)) =>
       elasticLog(~sender, ~command="spotify-copy", ~args=copiedTracks)
-      |> sendLog
+      ->sendLog
+      ->ignore
     | (Some(sender), _) =>
       elasticLog(
         ~sender,
-        ~command=Commands.commandToString(cmd),
+        ~command=Commands.toString(cmd),
         ~args=
           switch (cmd) {
           | UnknownCommand(c) => [|c|]
@@ -64,7 +63,8 @@ let log = (~command: Decode.Requester.t, ~text, ~user) => {
             Js.String.length(text) > 0 ? [|Utils.parsedTrack(text)|] : [||]
           },
       )
-      |> sendLog
+      ->sendLog
+      ->ignore
     }
   | (_, Bot) => ()
   };

@@ -39,6 +39,17 @@ module Playlist = {
     toPlaylistUri(~user="believer", ~id="5DQzhEf0U4Lji5kvXnPYSy");
 };
 
+let toString =
+  fun
+  | IteamClassics => "classics"
+  | FreeBird => "freebird"
+  | Friday => "friday"
+  | Rednex => "rednex"
+  | Shoreline => "shoreline"
+  | Slowdance => "slowdance"
+  | Tequila => "tequila"
+  | WWW => "world-wide-web";
+
 let run =
   Queue.(
     fun

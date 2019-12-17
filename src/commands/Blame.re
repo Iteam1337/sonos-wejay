@@ -44,13 +44,19 @@ let run = args =>
 
     Slack.Msg.make([`Section(message(response))]);
   | index =>
-    let%Async {items} = Queue.queueWithFallback();
+    let%Async queue = Queue.WithFallback.make();
 
-    switch (items->Array.get(~index=index->int_of_string - 1)) {
-    | Some({uri}) =>
-      Request.make(Utils.Sonos.toSpotifyUri(Some(uri)))
-      |> then_(response => Slack.Msg.make([`Section(message(response))]))
-    | None =>
-      Slack.Msg.make([`Section("Could not find track number " ++ index)])
+    switch (queue) {
+    | Queue({items}) =>
+      switch (items->Array.get(~index=index->int_of_string - 1)) {
+      | Some({uri}) =>
+        let%Async response =
+          Request.make(Utils.Sonos.toSpotifyUri(Some(uri)));
+
+        Slack.Msg.make([`Section(message(response))]);
+      | None =>
+        Slack.Msg.make([`Section("Could not find track number " ++ index)])
+      }
+    | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
     };
   };

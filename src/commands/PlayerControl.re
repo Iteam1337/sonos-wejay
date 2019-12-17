@@ -42,20 +42,24 @@ let mute = isMuted => {
 };
 
 let play = () => {
-  let%Async {items} = Queue.queueWithFallback();
+  let%Async queue = Queue.WithFallback.make();
 
-  let message =
-    switch (items->Belt.Array.length) {
-    | 0 => Message.emptyQueue
-    | _ =>
-      device->Sonos.Methods.PlayerControl.play()
-      |> then_(_ => resolve(true))
-      |> ignore;
+  switch (queue) {
+  | Queue({items}) =>
+    let message =
+      switch (Array.length(items)) {
+      | 0 => Message.emptyQueue
+      | _ =>
+        device->Sonos.Methods.PlayerControl.play()
+        |> then_(_ => resolve(true))
+        |> ignore;
 
-      "Start playing!";
-    };
+        "Start playing!";
+      };
 
-  Slack.Msg.make([`Section(message)]);
+    Slack.Msg.make([`Section(message)]);
+  | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
+  };
 };
 
 let playTrack = trackNumber => {
@@ -89,39 +93,46 @@ let playTrack = trackNumber => {
            ]);
          })
       |> catch(_ => {
-           let%Async {items} = Queue.queueWithFallback();
+           let%Async queue = Queue.WithFallback.make();
 
-           let message =
-             switch (Array.length(items)) {
-             | 0 =>
-               "*Cannot play track "
-               ++ trackNumber
-               ++ "*\n"
-               ++ Message.emptyQueue
-             | _ =>
-               items
-               ->Array.mapWithIndex(~f=(i, {artist, title}) =>
-                   Utils.listNumber(i)
-                   ++ Utils.artistAndTitle(~artist, ~title)
-                 )
-               ->Utils.joinWithNewline
-               ->(
-                   tracks =>
-                     "*Cannot play track "
-                     ++ trackNumber
-                     ++ ". Here's the whole queue*\n"
-                     ++ tracks
-                 )
-             };
+           switch (queue) {
+           | Queue({items}) =>
+             let message =
+               switch (Array.length(items)) {
+               | 0 =>
+                 "*Cannot play track "
+                 ++ trackNumber
+                 ++ "*\n"
+                 ++ Message.emptyQueue
+               | _ =>
+                 items
+                 ->Array.mapWithIndex(~f=(i, {artist, title}) =>
+                     Utils.listNumber(i)
+                     ++ Utils.artistAndTitle(~artist, ~title)
+                   )
+                 ->Utils.joinWithNewline
+                 ->(
+                     tracks =>
+                       "*Cannot play track "
+                       ++ trackNumber
+                       ++ ". Here's the whole queue*\n"
+                       ++ tracks
+                   )
+               };
 
-           Slack.Msg.make([`Section(message)]);
+             Slack.Msg.make([`Section(message)]);
+           | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
+           };
          })
     };
   };
 };
 
 let playLatestTrack = () => {
-  let%Async {items} = Queue.queueWithFallback();
+  let%Async queue = Queue.WithFallback.make();
 
-  items->Array.length->String.fromInt->playTrack;
+  switch (queue) {
+  | Queue({items}) => items->Array.length->String.fromInt->playTrack
+  | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
+  };
 };

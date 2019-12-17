@@ -1,4 +1,5 @@
-let splitBy = (str, split) => str |> Js.String.split(split);
+open Tablecloth;
+
 let joinWithNewline = arr => arr |> Js.Array.joinWith("\n");
 let artistAndTitle = (~artist, ~title) => artist ++ " - " ++ title;
 let listNumber = number => string_of_int(number + 1) ++ ". ";
@@ -7,20 +8,20 @@ let cleanFloat = value => value |> int_of_float |> string_of_int;
 let parsedTrack = track =>
   Regex.(
     track
-    ->replaceByRe(Patterns.removeSlackCommandBrackets, "")
-    ->replaceByRe(Patterns.queryParams, "")
-    ->replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
+    ->Js.String2.replaceByRe(Patterns.removeSlackCommandBrackets, "")
+    ->Js.String2.replaceByRe(Patterns.queryParams, "")
+    ->Js.String2.replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
   );
 
 let removeUser = text =>
-  text->Regex.replaceByRe(Regex.Patterns.removeSlackUser, "");
+  text->Js.String2.replaceByRe(Regex.Patterns.removeSlackUser, "");
 
-let parseTrackCopy = track => track->parsedTrack->splitBy("\n");
+let parseTrackCopy = track => track->parsedTrack->Js.String2.split("\n");
 
 let parsePlaylistCopy = track =>
   switch (Js.String.match(Regex.Patterns.spotifyPlaylistURL, track)) {
   | Some(matches) =>
-    switch (matches->Belt.Array.get(1)) {
+    switch (matches->Array.get(~index=1)) {
     | Some(id) => [|"spotify:playlist:" ++ id|]
     | None => [||]
     }
@@ -39,7 +40,11 @@ module Sonos = {
 
       Js.String.(
         switch (includes("x-file", sonosUri), sonosUri |> match(spotifyUri)) {
-        | (false, Some(match)) => Js.Global.decodeURIComponent(match[0])
+        | (false, Some(match)) =>
+          switch (match->Array.get(~index=0)) {
+          | Some(uri) => Js.Global.decodeURIComponent(uri)
+          | None => ""
+          }
         | (true, None) => sonosUri
         | _ => ""
         }
@@ -58,10 +63,10 @@ module Parse = {
     let parsed =
       Regex.(
         track
-        ->replaceByRe(Patterns.removeSlackCommandBrackets, "")
-        ->replaceByRe(Patterns.queryParams, "")
-        ->replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
-        ->replaceByRe(
+        ->Js.String2.replaceByRe(Patterns.removeSlackCommandBrackets, "")
+        ->Js.String2.replaceByRe(Patterns.queryParams, "")
+        ->Js.String2.replaceByRe(Patterns.spotifyTrackURL, "spotify:track:")
+        ->Js.String2.replaceByRe(
             Patterns.spotifyPlaylistURLWithoutUser,
             "spotify:playlist:",
           )
@@ -80,6 +85,9 @@ module RandomTrack = {
     Random.init(int_of_float(Js.Date.now()));
 
     let randomSongIndex = Random.int(List.length(input));
-    input->Belt.List.get(randomSongIndex)->Belt.Option.getWithDefault("");
+
+    input
+    ->List.getAt(~index=randomSongIndex)
+    ->Option.withDefault(~default="");
   };
 };

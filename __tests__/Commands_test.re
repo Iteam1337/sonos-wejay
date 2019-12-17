@@ -16,6 +16,32 @@ describe("parseCommand", () => {
   );
 });
 
+describe("CommandType", () => {
+  test("handles spotify command", () => {
+    CommandType.make(
+      "<https://open.spotify.com/track/2mPE346iPVnss0GoRgwGTK>",
+    )
+    |> expect
+    |> toEqual(
+         CommandType.SpotifyCommand([|
+           "spotify:track:2mPE346iPVnss0GoRgwGTK",
+         |]),
+       )
+  });
+
+  test("handles emoji command", () => {
+    CommandType.make(":thumbsup:")
+    |> expect
+    |> toEqual(CommandType.EmojiCommand(Emoji.ThumbsUp))
+  });
+
+  test("handles regular command", () => {
+    CommandType.make("help test")
+    |> expect
+    |> toEqual(CommandType.Command("help"))
+  });
+});
+
 describe("#make", () => {
   describe("SpotifyCopy", () => {
     test("should add spotify copy and paste", () =>

@@ -11,18 +11,19 @@ let listTracks = (tracks: array(Sonos.Decode.CurrentQueue.queueItem)) =>
     Utils.listNumber(i) ++ Utils.artistAndTitle(~artist, ~title)
   );
 
-let queueWithFallback = () => {
-  let%Async queue = device->Sonos.Methods.Queue.get();
+module WithFallback = {
+  type t =
+    | Queue(Sonos.Decode.CurrentQueue.t)
+    | NoTracks;
 
-  (
+  let make = () => {
+    let%Async queue = device->Sonos.Methods.Queue.get();
+
     switch (Js.Types.classify(queue)) {
-    | JSFalse =>
-      {|{ "returned": "0", "total": "0", "items": [] }|} |> Json.parseOrRaise
-    | _ => queue
-    }
-  )
-  |> Sonos.Decode.CurrentQueue.make
-  |> resolve;
+    | JSFalse => NoTracks |> resolve
+    | _ => Queue(Sonos.Decode.CurrentQueue.make(queue)) |> resolve
+    };
+  };
 };
 
 /* CLI style */
@@ -70,50 +71,53 @@ let removeMultipleTracks = args => {
      });
 };
 
-let current = () =>
-  queueWithFallback()
-  |> then_(({items}: Sonos.Decode.CurrentQueue.t) =>
-       Services.getCurrentTrack()
-       |> then_(({queuePosition}: Sonos.Decode.CurrentTrack.t) => {
-            let numberOfTracks = items->Belt.Array.length;
+let current = () => {
+  let%Async queue = WithFallback.make();
 
-            let message =
-              switch (numberOfTracks, queuePosition) {
-              | (0, _) => Message.emptyQueue
-              | (nt, qp) when int_of_float(qp) == nt => Message.emptyQueue
-              | _ =>
-                let tracks =
-                  items
-                  ->Belt.Array.slice(
-                      ~offset=queuePosition |> int_of_float,
-                      ~len=Belt.Array.length(items),
-                    )
-                  ->listTracks
-                  ->Utils.joinWithNewline;
+  switch (queue) {
+  | Queue({items}) =>
+    let%Async {queuePosition} = Services.getCurrentTrack();
+    let numberOfTracks = items->Belt.Array.length;
 
-                "*Upcoming tracks*\n" ++ tracks;
-              };
+    let message =
+      switch (numberOfTracks, queuePosition) {
+      | (0, _) => Message.emptyQueue
+      | (nt, qp) when int_of_float(qp) == nt => Message.emptyQueue
+      | _ =>
+        let tracks =
+          items
+          ->Belt.Array.slice(
+              ~offset=queuePosition |> int_of_float,
+              ~len=Belt.Array.length(items),
+            )
+          ->listTracks
+          ->Utils.joinWithNewline;
 
-            Slack.Msg.make([`Section(message)]);
-          })
-       |> catch(_ => Error("Failed to get current queue") |> resolve)
-     )
-  |> catch(_ => Error("Failed to get current queue") |> resolve);
+        "*Upcoming tracks*\n" ++ tracks;
+      };
 
-let full = () =>
-  queueWithFallback()
-  |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-       let message =
-         switch (items->Belt.Array.length) {
-         | 0 => Message.emptyQueue
-         | _ =>
-           let tracks = items->listTracks->Utils.joinWithNewline;
-           "*Here's the full queue*\n" ++ tracks;
-         };
+    Slack.Msg.make([`Section(message)]);
+  | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
+  };
+};
 
-       Slack.Msg.make([`Section(message)]);
-     })
-  |> catch(_ => Error("Failed to get full queue") |> resolve);
+let full = () => {
+  let%Async queue = WithFallback.make();
+
+  switch (queue) {
+  | Queue({items}) =>
+    let message =
+      switch (items->Belt.Array.length) {
+      | 0 => Message.emptyQueue
+      | _ =>
+        let tracks = items->listTracks->Utils.joinWithNewline;
+        "*Here's the full queue*\n" ++ tracks;
+      };
+
+    Slack.Msg.make([`Section(message)]);
+  | NoTracks => Slack.Msg.make([`Section(Message.emptyQueue)])
+  };
+};
 
 module Exists = {
   type t =
@@ -129,21 +133,25 @@ module Exists = {
       ->Belt.Option.getWithDefault("")
       ->Spotify.Track.make
       |> then_((spotify: Spotify.Track.t) =>
-           queueWithFallback()
-           |> then_(({items}: Sonos.Decode.CurrentQueue.t) => {
-                /* Only checking URI is not enough, so we do a
-                 * naive artist/track name match as well. Sonos
-                 * sometimes uses a different track URI
-                 * than what was pasted in Wejay because
-                 * of different regions or markets */
-                let existsInQueue =
-                  items->Belt.Array.some(item =>
-                    Utils.Sonos.toSpotifyUri(Some(item.uri)) === uri
-                    || item.artist === spotify.artist
-                    && item.title === spotify.name
-                  );
+           WithFallback.make()
+           |> then_((queue: WithFallback.t) => {
+                switch (queue) {
+                | Queue({items}) =>
+                  /* Only checking URI is not enough, so we do a
+                   * naive artist/track name match as well. Sonos
+                   * sometimes uses a different track URI
+                   * than what was pasted in Wejay because
+                   * of different regions or markets */
+                  let existsInQueue =
+                    items->Belt.Array.some(item =>
+                      Utils.Sonos.toSpotifyUri(Some(item.uri)) === uri
+                      || item.artist === spotify.artist
+                      && item.title === spotify.name
+                    );
 
-                resolve(existsInQueue ? InQueue : NotInQueue);
+                  resolve(existsInQueue ? InQueue : NotInQueue);
+                | NoTracks => resolve(NotInQueue)
+                }
               })
          )
     };
