@@ -57,7 +57,7 @@
     "date-fns": "2.8.1",
     "decco": "^1.1.1",
     "dotenv": "8.2.0",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "sonos": "1.12.5",
     "tablecloth-bucklescript": "0.0.6"
   },
